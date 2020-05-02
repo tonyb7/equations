@@ -24,6 +24,7 @@ create() {
 	fi
 	set -x
 	# mkdir -p var/uploads
+	mkdir -p var
 	sqlite3 var/equations.sqlite3 < sql/schema.sql
 	sqlite3 var/equations.sqlite3 < sql/data.sql
 	{ set +x; } 2>/dev/null

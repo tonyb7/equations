@@ -3,6 +3,7 @@
 *equations/html/
 
 *.db
+var
 equations.sqlite3
 
 node_modules/
