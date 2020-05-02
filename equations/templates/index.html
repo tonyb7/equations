@@ -3,6 +3,11 @@
     <head>
         <title>Equations</title>
         <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+        <style>
+            body {
+                background-image: url("/static/images/background.jpg");
+            }
+        </style>
         <!-- <link rel="stylesheet" type="text/css" href="../static/css/style.css"> -->
         <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script>
@@ -41,11 +46,12 @@
             <form id="join-existing" action="/join/" method="post" enctype="multipart/form-data">
                 <div class="user-inputs">
                     Enter your name: <input type='text' name='name'/> <br/>
-                    Enter Room ID*: <input type='text' name='room'/> <br/>
+                    Enter Room ID<font color="white">*</font>: <input type='text' name='room'/> <br/>
                 </div>
                 <input type="submit" name="join" value="Join Room"/>
             </form>
-            <p>* If the URL ends with "/game/a1b2c3", then the Room ID is a1b2c3</p>
+            <p><font color="white">*</font> If the URL ends with "/game/a1b2c3-d4", <br/>
+            then the Room ID is a1b2c3-d4</p>
         </div>
 
     </body>
