@@ -1,0 +1,17 @@
+#!/bin/bash
+# run equations Flask app 
+
+set -Eeuo pipefail 
+
+dirpath=$(dirname $(realpath $0))
+
+if [ ! -f $dirpath/../var/equations.sqlite3 ]; then
+	$dirpath/equationsdb create
+fi
+
+set -x
+
+export FLASK_DEBUG=TRUE
+export FLASK_APP=equations
+export EQ_SETTINGS=config.py
+flask run --host 0.0.0.0 --port 8000

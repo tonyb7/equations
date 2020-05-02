@@ -1,0 +1,77 @@
+#!/bin/bash
+# equationsdb
+
+# Stop on errors
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# Sanity check command line options
+usage() {
+  echo "Usage: $0 (create|destroy|reset|dump)"
+}
+
+if [ $# -ne 1 ]; then
+  usage
+  exit 1
+fi
+
+dirpath=$(dirname $(realpath $0))
+
+create() {
+	if [ -f $dirpath/../var/equations.sqlite3 ]; then
+		echo "Error: database already exists"
+		exit 1
+	fi
+	set -x
+	# mkdir -p var/uploads
+	sqlite3 var/equations.sqlite3 < sql/schema.sql
+	sqlite3 var/equations.sqlite3 < sql/data.sql
+	{ set +x; } 2>/dev/null
+	# cp sql/uploads/* var/uploads/
+	# echo "+ cp sql/uploads/* var/uploads/"
+}
+
+destroy() {
+	set -x
+	rm -rf var/equations.sqlite3 # var/uploads/
+	{ set +x; } 2>/dev/null
+}
+
+reset () {
+	destroy
+	create
+}
+
+dump() {
+	# tables=()
+	# sqlite3 var/equations.sqlite3 ".tables" 2>/dev/null | read tables
+	# $tables
+	set -x
+	sqlite3 -batch -line var/equations.sqlite3 'SELECT * FROM games'
+	sqlite3 -batch -line var/equations.sqlite3 'SELECT * FROM states'
+	sqlite3 -batch -line var/equations.sqlite3 'SELECT * FROM scores'
+	{ set +x; } 2>/dev/null
+}
+
+# Parse argument.  $1 is the first argument
+case $1 in
+  "create")
+    create
+    ;;
+
+  "destroy")
+    destroy
+    ;;
+
+  "reset")
+    reset
+    ;;
+
+  "dump")
+    dump
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac

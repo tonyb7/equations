@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Equations</title>
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+        <!-- <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script> -->
+    </head>
+    <body>
+        <h1>Equations Room {{ nonce }}</h1>
+        <!-- <script async src="/game.bundle.js"></script> -->
+        <div id='join-menu'>
+            <form id="join-form" action="/" method="post" enctype="multipart/form-data">
+                Enter your name: <input id="name-field" type='text' name='name'/> <br/>
+                Enter a room ID: <input id="room-field" type='text' name='room'/> <br/>
+                <input type="submit" name="join" value="Join"/>
+            </form>
+        </div>
+    </body>
+</html>
