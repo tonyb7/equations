@@ -3,7 +3,6 @@
 *equations/html/
 
 *.db
-var/
 
 node_modules/
 cookies.txt
