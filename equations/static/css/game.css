@@ -184,17 +184,45 @@ p {
     background-color: thistle;
 }
 
+#resourcestext {
+    transform: translateX(1.3%) translateY(33%);
+    text-align: left;
+}
+
+.gametext {
+    font-family: monospace;
+    font-size: 20px;
+    color: white;
+    transform: translateY(23%);
+}
+
 #scores {
     /* Scores of match, including total time left */
-    background-color: green;
+    background-color: forestgreen;
+    outline:2px solid white;
+    width: 100%;
+    height: 40%;
 }
 
 #turn {
     /* Turn info, including timer */
     background-color: pink;
+    outline:2px solid white;
+
+    height: 15%;
+}
+
+#timertext {
+    text-align: left;
+    font-size: 30px;
+    transform: translateX(1.3%);
+    margin-left: 10px;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 #buttons {
     /* Buttons for challenges, timing, etc. */
-    background-color: red;
+    height: 45%;
+    outline:2px solid white;
 }
