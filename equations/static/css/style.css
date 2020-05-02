@@ -1,8 +1,16 @@
 
+body {
+    text-align: center;
+}
+
 h1 {
     text-align: center;
 }
 
-#join-menu {
-    text-align: center;
+#join-options {
+    padding: 20px;
+} 
+
+.user-inputs {
+    padding: 10px;
 }

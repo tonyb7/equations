@@ -3,17 +3,50 @@
     <head>
         <title>Equations</title>
         <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-        <!-- <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script> -->
+        <!-- <link rel="stylesheet" type="text/css" href="../static/css/style.css"> -->
+        <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script>
+            $(function() {
+                $('#join-existing').slideUp(0);
+                $('#join-new').slideUp(0);
+
+                $('#create-button').on('click', function() {
+                    $('#join-existing').slideUp(0);
+                    $('#join-new').slideDown(300);
+                });
+
+                $('#join-button').on('click', function() {
+                    $('#join-new').slideUp(0);
+                    $('#join-existing').slideDown(300);
+                });
+            });
+        </script>
     </head>
     <body>
-        <h1>Equations</h1>
+        <h1>Welcome to Equations Online</h1>
         <!-- <script async src="/game.bundle.js"></script> -->
-        <div id='join-menu'>
-            <form id="join-form" action="/" method="post" enctype="multipart/form-data">
-                Enter your name: <input id="name-field" type='text' name='name'/> <br/>
-                Enter a room ID: <input id="room-field" type='text' name='room'/> <br/>
-                <input type="submit" name="join" value="Join"/>
+        <div id="join-options">    
+            <button id="create-button">Create New Game</button>
+            <button id="join-button">Join Existing Game</button>
+        </div>
+        <div id='join-new'>
+            <form id="join-new" action="/create/" method="post" enctype="multipart/form-data">
+                <div class="user-inputs">
+                    Enter your name: <input type='text' name='name'/> <br/>
+                </div>
+                <input type="submit" name="create" value="Create Room"/>
             </form>
         </div>
+        <div id='join-existing'>
+            <form id="join-existing" action="/join/" method="post" enctype="multipart/form-data">
+                <div class="user-inputs">
+                    Enter your name: <input type='text' name='name'/> <br/>
+                    Enter Room ID*: <input type='text' name='room'/> <br/>
+                </div>
+                <input type="submit" name="join" value="Join Room"/>
+            </form>
+            <p>* If the URL ends with "/game/a1b2c3", then the Room ID is a1b2c3</p>
+        </div>
+
     </body>
 </html>
