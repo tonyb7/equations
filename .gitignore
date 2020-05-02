@@ -3,6 +3,7 @@
 *equations/html/
 
 *.db
+equations.sqlite3
 
 node_modules/
 cookies.txt
