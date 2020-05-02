@@ -2,14 +2,82 @@
 <html>
     <head>
         <title>Equations</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+        <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
+        <link rel="stylesheet" type="text/css" href="../static/css/game.css">
         <!-- <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script> -->
     </head>
     <body>
-        <h1>Equations Game Room</h1>
-        <!-- <script async src="/game.bundle.js"></script> -->
-        <p>Share this URL for friends to join: {{ shareable_url }}</p>
-        <p>Shareable Room ID: {{ nonce }}</p>
-        <p>Your name is {{ name }}</p>
+        <section class="vsplit left" id="header">
+            <section class="hsplit top">
+                <h1>Equations Game Room</h1>
+                <!-- <script async src="/game.bundle.js"></script> -->
+                <p>Share this URL for friends to join: {{ shareable_url }}</p>
+                <p>Shareable Room ID: {{ nonce }}</p>
+                <p>Your name is {{ name }}</p>
+            </section>
+            <section class="hsplit bottom">
+                Game goes here
+            </section>
+        </section>
+        <section class="vsplit right">
+            <h1>Chat</h1>
+            <section class="chat top">
+                <div class="chatArea">
+                    <ul class="messages">
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                        <p>Hello</p>
+                    </ul>
+                </div>
+            </section>
+            <section class="chat bottom">
+                <input class="inputMessage" placeholder="Type here..."/>
+            </section>
+        </section>  
     </body>
 </html>

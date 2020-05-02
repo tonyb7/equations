@@ -1,0 +1,80 @@
+
+#header {
+    text-align: center;
+}
+
+body {
+    height: 95vh;
+    overflow: hidden;
+}
+
+p {
+    margin: 0;
+}
+
+.vsplit {
+    float: left;
+    height: 100vh;
+}
+
+.left {
+    background: white;
+    width: 75%;
+}
+
+.right {
+    background: rgb(0, 195, 255);
+    width: 25%;
+    text-align:center;
+    /* overflow: scroll; */
+}
+
+.hsplit {
+    padding: 5px;
+}
+
+.hsplit.top {
+    height: 17%;
+    background: lightblue;
+}
+
+.hsplit.bottom {
+    background: white;
+    height: 83%;
+    background: lightcyan;
+}
+
+/* Chat messages */
+
+.chat.top {
+    height: 79%;
+    overflow-y: scroll;
+}
+
+.chat.bottom {
+    height: 15%;
+}
+
+/* .chatArea {
+    height: 100%;
+    padding-bottom: 60px;
+  } */
+  
+.messages {
+    height: 100%;
+    margin: 0;
+    padding: 10px 20px 10px 20px;
+    text-align: left;
+}
+  
+.inputMessage {
+    border: 10px solid #000;
+    bottom: 0;
+    height: 60px;
+    left: 0;
+    outline: none;
+    padding-left: 10px;
+    position: relative;
+    right: 0;
+    width: 91%;
+}
