@@ -42,6 +42,7 @@ p {
     background: white;
     height: 83%;
     background: lightcyan;
+    
 }
 
 /* Chat messages */
@@ -77,4 +78,123 @@ p {
     position: relative;
     right: 0;
     width: 91%;
+}
+
+/* The Game */
+.game {
+    float: left;
+}
+
+.game.left {
+    /* Left column */
+    background-color: wheat;
+    width: 75%;
+    height: 95%;
+}
+
+.game.right {
+    /* Right column */
+    background-color: lightgreen;
+    width: 25%;
+    height: 95%;
+}
+
+#board {
+    /* The board */
+    width: 96%;
+    height: 66%;
+}
+
+#board-inner {
+    /* background-color: blue; */
+    width: 99%;
+    height: 95%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    margin-left: 20px;
+    background-color: white;
+}
+
+.gameboard {
+    height: 70.7%;
+    width: 100%;
+    background-color: white;
+}
+
+.gameboard.top {
+    background-color: #00CBAE;
+    width: 100%;
+    height: 95%
+}
+
+.sector {
+    float: left;
+}
+
+.sector.forbidden {
+    width: 32.53%;
+    height: 98%;
+    border: solid;
+    border-color: white;
+}
+
+.sector.permitted {
+    width: 32.53%;
+    height: 98%;
+    border: solid;
+    border-color: white;
+}
+
+.sector.required {
+    width: 32.53%;
+    height: 98%;
+    border: solid;
+    border-color: white;
+}
+
+.boardlabel {
+    font-family: monospace;
+    font-size: 15px;
+    transform: translateY(-123%);
+}
+
+.gameboard.bottom {
+    background-color: #488CCD;
+    width: 99%;
+    height: 46% !important;
+    border: solid;
+    border-color: white;
+}
+
+#goaltext {
+    font-family: monospace;
+    font-size: 35px;
+    top: 50%;
+    transform: translateY(93%);
+    vertical-align: middle;
+    text-align: left;
+    padding-left: 12px;
+}
+
+#resources {
+    /*  Resources (cubes) */
+    width: 100%;
+    height: 30.6%;
+    background-color: thistle;
+}
+
+#scores {
+    /* Scores of match, including total time left */
+    background-color: green;
+}
+
+#turn {
+    /* Turn info, including timer */
+    background-color: pink;
+}
+
+#buttons {
+    /* Buttons for challenges, timing, etc. */
+    background-color: red;
 }
