@@ -5,8 +5,8 @@ Academic Games online
 
 https://www.agloa.org/equations/
 
-Instructions for running server
-===============================
+Running server
+================
 1. Download this repo
 ```
 git clone https://github.com/tonyb7/equations.git
