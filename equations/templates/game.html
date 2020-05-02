@@ -27,12 +27,15 @@
                                 <div class='gameboard top'>
                                     <div class='sector forbidden'>
                                         <h6 class='boardlabel'><font color="white">Forbidden</font></h6>
+                                        <div class="sector play-area" id="forbidden-play-area"></div>
                                     </div>
                                     <div class='sector permitted'>
                                         <h6 class='boardlabel'><font color="white">Permitted</font></h6>
+                                        <div class="sector play-area" id="permitted-play-area"></div>
                                     </div>
                                     <div class='sector required'>
                                         <h6 class='boardlabel'><font color="white">Required</font></h6>
+                                        <div class="sector play-area" id="required-play-area"></div>
                                     </div>
                                 </div>
                                 <div class='gameboard bottom'>
@@ -40,6 +43,7 @@
                                         <p id='goaltext'>
                                             <font color="white"><b>Goal:</b></font>
                                         </p>
+                                        <div id="goal-area"></div>
                                     </div>
                                 </div>
                             </div>
@@ -47,17 +51,29 @@
                     </div>
                     <div id='resources'>
                         <p class="gametext" id="resourcestext">Resources</p>
+                        <div id="resources-area"></div>
                     </div>
                 </div>
                 <div class='game right'>
                     <div id='scores'>
-                        <p class="gametext">Game Stats</p>
+                        <p class="gametext">Game Stats</p> 
+                        <div id='stats-area'></div>
                     </div>
                     <div id='turn'>
                         <p class="gametext" id='timertext'>Turn: </p>
                         <p class="gametext" id='timertext'>Timer: <p>
                     </div>
-                    <div id='buttons'></div>
+                    <div id='buttons'>
+                        <div id="the-buttons">
+                            <button>Start Game</button> <br/>
+                            <button>Flip Timer</button> <br/>
+                            <button>Claim 10 Second Warning</button> <br/>
+                            <button>Claim -1</button> <br/>
+                            <button>Challenge Now</button> <br/>
+                            <button>Challenge Impossible</button> <br/>
+                            <button>Challenge Force Out</button> <br/>
+                        </div>
+                    </div>
                 </div>
             </section>
 
