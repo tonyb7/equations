@@ -1,282 +1,392 @@
 
-#header {
-    text-align: center;
+#main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+    align-content: stretch;
+    width: 100%;
+    height: 97vh;
 }
 
-body {
-    height: 95vh;
-    overflow: hidden;
-}
-
-p {
-    margin: 0;
-}
-
-.vsplit {
-    float: left;
-    height: 100vh;
-}
-
-.left {
-    background: white;
-    width: 75%;
-}
-
-.right {
-    background: rgb(0, 195, 255);
+.main.right {
     width: 25%;
-    text-align:center;
-    /* overflow: scroll; */
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: stretch;
 }
 
-.hsplit {
-    padding: 5px;
+.main.right.top {
+    background: rgb(0, 195, 255);
+
+    height: 10%;
+    width: auto;
 }
 
-.hsplit.top {
-    height: 17%;
-    background: lightblue;
+.main.right.top h2 {
+    font-size: 3vh;
+    text-align: center;
+    font-family: monospace;
+    /* transform: translateY(5%); */
 }
 
-.hsplit.bottom {
-    background: white;
-    height: 83%;
-    background: lightcyan;
-    
-}
+.main.right.mid {
+    background: rgb(0, 195, 255);
 
-/* Chat messages */
+    height: 80%;
+    width: auto;
 
-.chat.top {
-    height: 79%;
+    font-family: monospace;
     overflow-y: scroll;
 }
 
-.chat.bottom {
-    height: 15%;
-}
-
-/* .chatArea {
-    height: 100%;
-    padding-bottom: 60px;
-  } */
-  
 .messages {
     height: 100%;
     margin: 0;
-    padding: 10px 20px 10px 20px;
+    padding: 1vh 2vh 1vh 2vh;
     text-align: left;
 }
-  
+
+.main.right.bot {
+    height: 10%;
+    width: auto;
+}
+
 .inputMessage {
-    border: 10px solid #000;
+    border: 1vh solid #000;
     bottom: 0;
-    height: 60px;
+    height: 100%;
     left: 0;
     outline: none;
-    padding-left: 10px;
+    padding-left: 2vh;
     position: relative;
     right: 0;
     width: 91%;
 }
 
-/* The Game */
-.game {
-    float: left;
-}
-
-.game.left {
-    /* Left column */
-    background-color: wheat;
+.main.left {    
     width: 75%;
-    height: 95%;
-}
 
-.game.right {
-    /* Right column */
-    background-color: lightgreen;
-    width: 25%;
-    height: 95%;
-}
-
-#board {
-    /* The board */
-    width: 96%;
-    height: 66%;
-}
-
-#board-inner {
-    /* background-color: blue; */
-    width: 99%;
-    height: 95%;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-right: 20px;
-    margin-left: 20px;
-    background-color: white;
-}
-
-.gameboard {
-    height: 70.7%;
-    width: 100%;
-    background-color: white;
-}
-
-.gameboard.top {
-    background-color: #00CBAE;
-    width: 100%;
-    height: 95%
-}
-
-.sector {
-    float: left;
-}
-
-.sector.forbidden {
-    width: 32.53%;
-    height: 98%;
-    border: solid;
-    border-color: white;
-}
-
-.sector.permitted {
-    width: 32.53%;
-    height: 98%;
-    border: solid;
-    border-color: white;
-}
-
-.sector.required {
-    width: 32.53%;
-    height: 98%;
-    border: solid;
-    border-color: white;
-}
-
-.sector.play-area {
-    border: dotted;
-    border-color: grey;
-    translate: translateY(-123%);
-    margin-left: 7px;
-    width: 92%;
-    height: 73%;
-}
-
-.boardlabel {
-    font-family: monospace;
-    font-size: 15px;
-    transform: translateY(-123%);
-    margin-bottom: 0;
-}
-
-.gameboard.bottom {
-    background-color: #488CCD;
-    width: 99%;
-    height: 46% !important;
-    border: solid;
-    border-color: white;
-}
-
-#goal {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    align-items: stretch;
 }
 
-#goaltext {
-    font-family: monospace;
-    font-size: 35px;
-    top: 50%;
-    transform: translateY(93%);
-    vertical-align: middle;
-    text-align: left;
-    padding-left: 12px;
+.main.left.top {
+    background-color: lightcyan;
+
+    width: auto;
+    height: 17%;
+
+    text-align: center;
 }
 
-#goal-area {
-    border: dotted;
-    border-color: grey;
-    height: 45%;
-    width: 77%;
-    transform: translateY(-20%) translateX(24%);
-    text-align: left;
-}
-
-#resources {
-    /*  Resources (cubes) */
-    width: 100%;
-    height: 30.6%;
-    background-color: thistle;
-}
-
-#resourcestext {
-    transform: translateX(1.3%) translateY(33%);
-    text-align: left;
-}
-
-#resources-area {
-    border: dotted;
-    border-color: grey;
-    height: 70%;
-    width: 95%;
-    transform: translateX(2%) translateY(10%);
-}
-
-.gametext {
-    font-family: monospace;
-    font-size: 20px;
-    color: white;
-    transform: translateY(23%);
-}
-
-#scores {
-    /* Scores of match, including total time left */
-    background-color: forestgreen;
-    outline:2px solid white;
-    width: 100%;
-    height: 40%;
-}
-
-#stats-area {
-    border: dotted;
-    border-color: grey;
-    height: 76%;
-    width: 90%;
-    transform: translateY(7%) translateX(4%);
-}
-
-#turn {
-    /* Turn info, including timer */
-    background-color: pink;
-    outline:2px solid white;
-
-    height: 15%;
-}
-
-#timertext {
-    text-align: left;
-    font-size: 30px;
-    transform: translateX(1.3%);
-    margin-left: 10px;
+.main.left.top p, h3 {
+    margin-bottom: 0;
     margin-top: 0;
-    margin-bottom: 10px;
+    font-size: 3vh;
+    transform: translateY(15%);
+    font-family: monospace;
 }
 
-#buttons {
-    /* Buttons for challenges, timing, etc. */
-    height: 45%;
-    outline:2px solid white;
+.main.left.bot {
+    width: auto;
+    height: 83%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
 }
 
-#the-buttons {
-    /* border: dotted;
-    border-color: grey; */
-    height: 85%;
-    transform: translateY(8%);
+.info {
+    height: auto;
+    width: 25%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
-#the-buttons button {
-    margin-bottom: 10px;
-    border-radius: 10px;
-    font-size: 15px;
+.stats {
+    background-color: green;
+
+    height: 30%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.stats.header {
+    height: 16%;
+}
+
+.stats.header p {
+    font-family: monospace;
+    text-align: center;
+    font-size: 2.6vh;
+    transform: translateY(-75%);
+    color: white;
+}
+
+.stats.the-stats-outer {
+    height: 84%;
+
+    position: relative;
+}
+
+.stats.the-stats-inner {
+    border: dotted;
+    border-color: white;
+
+    height: 88%;
     width: 90%;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.time {
+    background-color: pink;
+    height: 20%;
+    position: relative;
+}
+
+.time.inner {
+    height: 80%;
+    width: 92%;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.time.inner p {
+    color: white;
+    font-family: monospace;
+    text-align: left;
+    font-size: 3.5vh;
+    transform: translate(3%, -75%);
+}
+
+.time-inner-first {
+    height: 50%;
+    width: 100%;
+}
+
+.time-inner-second {
+    height: 50%;
+    width: 100%;
+}
+
+.buttons {
+    background-color: lightgreen;
+    height: 50%;
+    position: relative;
+}
+
+.buttons-inner {
+    height: 90%;
+    width: 90%;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -45%);
+
+    text-align: center;
+}
+
+.buttons-inner button {
+    margin-bottom: 1vh;
+    border-radius: 3vh;
+    font-size: 2vh;
+    width: 90%;
+}
+
+.game {
+    height: auto;
+    width: 75%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.resources {
+    background-color: thistle;
+    height: 30%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.resources.heading {
+    height: 20%;
+}
+
+.resources.heading p {
+    color: white;
+    text-align: left;
+    font-size: 3vh;
+    font-family: monospace;
+    transform: translate(1%, -60%);
+}
+
+.resources.cubes {
+    height: 80%;
+    position: relative;
+}
+
+.resources.cubes.playable-area {
+    border: dotted;
+    border-color: white;
+
+    height: 88%;
+    width: 97%;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.board-outer {
+    background-color: wheat;
+    height: 70%;
+    position: relative;
+}
+
+.board-inner {
+    border: solid;
+    border-color: white;
+    border-width: 1vh;
+
+    width: 95%;
+    height: 90%;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.goal-area {
+    background-color: #488CCD;
+
+    border-top: solid;
+    border-color: white;
+
+    height: 35%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.goal-area.goal-text {
+    width: 16%;
+    height: auto;
+}
+
+.goal-area.goal-text p {
+    color: white;
+    text-align: center;
+    font-size: 4vh;
+    font-family: monospace;
+    transform: translate(30%, 20%);
+}
+
+.goal-area.goal-cubes {
+    width: 84%;
+    height: auto;
+
+    position: relative;
+}
+
+.goal-area.goal-cubes.playable-area {
+    border: dotted;
+    border-color: white;
+
+    width: 95%;
+    height: 55%;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.cube-area {    
+    height: 65%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.play-sector {
+    background-color: #00CBAE;
+
+    border-left: solid;
+    border-right: solid;
+    border-color: white;
+
+    width: 33.333%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.play-sector.heading {
+    height: 20%;
+    width: 100%;
+}
+
+.play-sector.heading p {
+    color: white;
+    text-align: center;
+    font-size: 2.4vh;
+    font-family: monospace;
+    transform: translateY(-25%);
+}
+
+.play-sector.cubes {
+
+    height: 80%;
+    width: 100%;
+
+    position: relative;
+}
+
+.play-sector.cubes.playable-area {
+    border: dotted;
+    border-color: white;
+
+    width: 88%;
+    height: 84%;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }

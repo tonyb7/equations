@@ -4,86 +4,103 @@
         <title>Equations</title>
         <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
         <link rel="stylesheet" type="text/css" href="../static/css/game.css">
-        <!-- <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script> -->
     </head>
     <body>
-        <section class="vsplit left" id="header">
-
-            <!-- The Header (page information) -->
-            <section class="hsplit top">
-                <h1>Equations Game Room</h1>
-                <!-- <script async src="/game.bundle.js"></script> -->
-                <p>Share this URL for friends to join: {{ shareable_url }}</p>
-                <p>Shareable Room ID: {{ nonce }}</p>
-                <p>Your name is {{ name }}</p>
-            </section>
-
-            <!-- The Game -->
-            <section class="hsplit bottom">
-                <div class='game left'>
-                    <div id='board'>
-                        <div id='board-inner'>
-                            <div class='gameboard'>
-                                <div class='gameboard top'>
-                                    <div class='sector forbidden'>
-                                        <h6 class='boardlabel'><font color="white">Forbidden</font></h6>
-                                        <div class="sector play-area" id="forbidden-play-area"></div>
+        <div id="main">
+            <div class="main left">
+                <div class="main left top">
+                    <h3>Equations Game Room</h3>
+                    <p>Share this URL for friends to join: {{ shareable_url }}</p>
+                    <p>Shareable Room ID: {{ nonce }}</p>
+                    <p>Your name is {{ name }}</p>
+                </div>
+                <div class="main left bot">
+                    <div class="game">
+                        <div class="board-outer">
+                            <div class="board-inner">
+                                <div class="cube-area">
+                                    <div class="play-sector">
+                                        <div class="play-sector heading">
+                                            <p><b>Forbidden</b></p>
+                                        </div>
+                                        <div class="play-sector cubes">
+                                            <div class="play-sector cubes playable-area"></div>
+                                        </div>
                                     </div>
-                                    <div class='sector permitted'>
-                                        <h6 class='boardlabel'><font color="white">Permitted</font></h6>
-                                        <div class="sector play-area" id="permitted-play-area"></div>
+                                    <div class="play-sector">
+                                        <div class="play-sector heading">
+                                            <p><b>Permitted</b></p>
+                                        </div>
+                                        <div class="play-sector cubes">
+                                            <div class="play-sector cubes playable-area"></div>
+                                        </div>
                                     </div>
-                                    <div class='sector required'>
-                                        <h6 class='boardlabel'><font color="white">Required</font></h6>
-                                        <div class="sector play-area" id="required-play-area"></div>
+                                    <div class="play-sector">
+                                        <div class="play-sector heading">
+                                            <p><b>Required</b></p>
+                                        </div>
+                                        <div class="play-sector cubes">
+                                            <div class="play-sector cubes playable-area"></div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class='gameboard bottom'>
-                                    <div id='goal'>
-                                        <p id='goaltext'>
-                                            <font color="white"><b>Goal:</b></font>
-                                        </p>
-                                        <div id="goal-area"></div>
+                                <div class="goal-area">
+                                    <div class="goal-area goal-text">
+                                        <p><b>Goal:</b></p>
+                                    </div>
+                                    <div class="goal-area goal-cubes">
+                                        <div class="goal-area goal-cubes playable-area"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="resources">
+                            <div class="resources heading">
+                                <p>Resources</p>
+                            </div>
+                            <div class="resources cubes">
+                                <div class="resources cubes playable-area"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div id='resources'>
-                        <p class="gametext" id="resourcestext">Resources</p>
-                        <div id="resources-area"></div>
-                    </div>
-                </div>
-                <div class='game right'>
-                    <div id='scores'>
-                        <p class="gametext">Game Stats</p> 
-                        <div id='stats-area'></div>
-                    </div>
-                    <div id='turn'>
-                        <p class="gametext" id='timertext'>Turn: </p>
-                        <p class="gametext" id='timertext'>Timer: <p>
-                    </div>
-                    <div id='buttons'>
-                        <div id="the-buttons">
-                            <button>Start Game</button> <br/>
-                            <button>Flip Timer</button> <br/>
-                            <button>Claim 10 Second Warning</button> <br/>
-                            <button>Claim -1</button> <br/>
-                            <button>Challenge Now</button> <br/>
-                            <button>Challenge Impossible</button> <br/>
-                            <button>Challenge Force Out</button> <br/>
+                    <div class="info">
+                        <div class="stats">
+                            <div class="stats header">
+                                <p>Game Stats</p>
+                            </div>
+                            <div class="stats the-stats-outer">
+                                <div class="stats the-stats-inner"></div>
+                            </div>
+                        </div>
+                        <div class="time">
+                            <div class="time inner">
+                                <div class="time-inner-first">
+                                    <p id="turn">Turn: </p>
+                                </div>
+                                <div class="time-inner-second">
+                                    <p id="timer">Time: </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buttons">
+                            <div class="buttons-inner">
+                                <button>Start Game</button> <br/>
+                                <button>Flip Timer</button> <br/>
+                                <button>Claim 10 Second Warning</button> <br/>
+                                <button>Claim -1</button> <br/>
+                                <button>Challenge Now</button> <br/>
+                                <button>Challenge Impossible</button> <br/>
+                                <button>Challenge Force Out</button> <br/>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
-
-        </section>
-
-        <!-- The Chat -->
-        <section class="vsplit right">
-            <h1>Chat</h1>
-            <section class="chat top">
-                <div class="chatArea">
+            </div>
+            <div class="main right">
+                <div class="main right top">
+                    <h2>Chat</h2>
+                </div>
+                <div class="main right mid">
                     <ul class="messages">
                         <p>Hello</p>
                         <p>Hello</p>
@@ -135,10 +152,10 @@
                         <p>Hello</p>
                     </ul>
                 </div>
-            </section>
-            <section class="chat bottom">
-                <input class="inputMessage" placeholder="Type here..."/>
-            </section>
-        </section>  
+                <div class="main right bot">
+                    <input class="inputMessage" placeholder="Type here..."/>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
