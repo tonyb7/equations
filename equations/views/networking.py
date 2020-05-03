@@ -17,6 +17,17 @@ def on_connect():
 def on_disconnect():
     """Handle disconnect."""
     print(f"Client {flask.request.sid} disconnected!")
+    socketid = flask.request.sid
+    room = None
+    if socketid in socket_info:
+        room = socket_info[socketid]
+    else:
+        print(f"Client {socketid} didn't have a room!?")
+        return
+    
+    leave_room(room)
+    del socket_info[socketid]
+    print(f"Client {socketid}: Player left room {room}")
 
 @equations.socketio.on('register_player')
 def register_player(player_info):
@@ -31,18 +42,6 @@ def register_player(player_info):
     # TODO: Error checking, save info in dict
 
     join_room(room)
-
-@equations.socketio.on('deregister_player')
-def deregister_player(player_info):
-    socketid = flask.request.sid
-    name = player_info['name']
-    room = player_info['room']
-
-    print(f"Client {socketid}: Player {name} left room {room}")
-
-    # TODO
-
-    leave_room(room)
 
 @equations.socketio.on('new_message')
 def receive_message(message_info):

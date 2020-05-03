@@ -33,6 +33,11 @@
     /* transform: translateY(5%); */
 }
 
+#note {
+    margin-top: 1vw;
+    font-size: 1vw !important;
+}
+
 .main.right.mid {
     background: rgb(0, 195, 255);
 

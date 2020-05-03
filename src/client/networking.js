@@ -37,7 +37,7 @@ export const connect = () => {
 function registerSocketCallbacks(player_info) {
     socket.on('disconnect', () => {
         console.log(`${name} disconnected from room ${room_nonce}`);
-        socket.emit("deregister_player", player_info);
+        // socket.emit("deregister_player", player_info);
     });
 
     socket.on('message', (message_info) => {

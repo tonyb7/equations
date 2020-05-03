@@ -71,8 +71,11 @@ def join_game():
 @equations.app.route("/game/<nonce>/", methods=['GET'])
 def show_game(nonce):
     """Show the game with nonce nonce."""
-    base_url = equations.app.config["BASE_URL"]
+    if not flask.request.referrer:
+        flask.flash("Please join a game by clicking \"Join Existing Game\"")
+        return flask.redirect(flask.url_for('show_index'))
 
+    base_url = equations.app.config["BASE_URL"]
     context = {
         "nonce": nonce,
         "name": flask.request.args.get('name'),
