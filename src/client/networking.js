@@ -36,7 +36,7 @@ export const connect = () => {
 
 function registerSocketCallbacks(player_info) {
     socket.on('disconnect', () => {
-        console.log(`${name} disconnected from room ${room_nonce}`);
+        console.log(`${name} disconnected from room ${player_info['room']}`);
         // socket.emit("deregister_player", player_info);
     });
 
@@ -44,7 +44,12 @@ function registerSocketCallbacks(player_info) {
         let name = message_info['name']
         let message = message_info['message']
         console.log(`Received message ${message} from ${name}`);
+        appendMessage(name, message);
+    });
 
+    socket.on("server_message", (message) => {
+        let name = "Server";
+        console.log(`Server sending message ${message}`);
         appendMessage(name, message);
     });
     

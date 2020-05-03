@@ -4,9 +4,18 @@ import flask
 import equations
 from flask_socketio import join_room, leave_room, emit
 
-# Map room_nonce to: num_players, player_ids/names, game_started
+# Map room nonce to: game_started, num_players, socketids
 rooms_info = {}
+# Map socketid to room nonce and name
 socket_info = {}
+
+def can_join_room(room):
+    """Returns whether another player can join the room."""
+    if room not in rooms_info:
+        return True
+    if rooms_info[room]['game_started'] or rooms_info[room]['num_players'] >= 3:
+        return False
+    return True
 
 @equations.socketio.on('connect')
 def on_connect():
@@ -20,12 +29,13 @@ def on_disconnect():
     socketid = flask.request.sid
     room = None
     if socketid in socket_info:
-        room = socket_info[socketid]
+        room = socket_info[socketid]['room']
     else:
         print(f"Client {socketid} didn't have a room!?")
         return
     
     leave_room(room)
+    emit("server_message", f"Player {socket_info[socketid]['name']} has left.", room=room);
     del socket_info[socketid]
     print(f"Client {socketid}: Player left room {room}")
 
@@ -37,11 +47,36 @@ def register_player(player_info):
     room = player_info['room']
 
     print(f"Client {socketid}: Player {name} wants to join room {room}")
-    socket_info[socketid] = room
 
-    # TODO: Error checking, save info in dict
+    # Save room nonce -> room info mapping
+    if room not in rooms_info:
+        rooms_info[room] = {
+            "game_started": False,
+            "num_players": 1,
+            "socketids": [socketid]
+        }
+    else:
+        rooms_info[room]['num_players'] += 1
+        rooms_info[room]['socketids'].append(socketid)
+
+    # Save socketid -> room nonce, name mapping
+    if socketid in socket_info:
+        print("This socket is somehow connected to another room...")
+    socket_info[socketid] = {
+        "room": room,
+        "name": name
+    }
 
     join_room(room)
+    print(f"Client {socketid}: Player {name} joined room {room}")
+    emit("server_message", f"Player {name} has joined.", room=room)
+
+    names = []
+    for sid in rooms_info[room]['socketids']:
+        names.append(socket_info[sid]['name'])
+    message = "Players in this room: "
+    names_message = ", ".join(names)
+    emit("server_message", message + names_message, room=room)
 
 @equations.socketio.on('new_message')
 def receive_message(message_info):
@@ -51,7 +86,7 @@ def receive_message(message_info):
     print(f"I got a message from {name}: {message}")
 
     # Send the message to everyone in the room
-    emit('message', message_info, room = socket_info[flask.request.sid])
+    emit('message', message_info, room = socket_info[flask.request.sid]['room'])
 
 @equations.socketio.on('start_game')
 def handle_start_game(player_info):

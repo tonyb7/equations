@@ -3,7 +3,7 @@ import flask
 from flask_socketio import SocketIO
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
-socketio = SocketIO(app)
+socketio = SocketIO(app, ping_timeout=5, ping_interval=2)
 
 # Read settings from config module (equations/config.py)
 app.config.from_object('equations.config')

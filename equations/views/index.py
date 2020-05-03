@@ -4,6 +4,7 @@ import os
 import flask
 import equations
 import uuid
+from equations.views.networking import can_join_room
 
 @equations.app.route("/favicon.ico")
 def show_favicon():
@@ -73,6 +74,10 @@ def show_game(nonce):
     """Show the game with nonce nonce."""
     if not flask.request.referrer:
         flask.flash("Please join a game by clicking \"Join Existing Game\"")
+        return flask.redirect(flask.url_for('show_index'))
+
+    if not can_join_room(nonce):
+        flask.flash("That game has already started or is full. Spectator mode is not supported at the moment")
         return flask.redirect(flask.url_for('show_index'))
 
     base_url = equations.app.config["BASE_URL"]
