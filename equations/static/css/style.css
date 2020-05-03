@@ -29,3 +29,7 @@ button, input {
 input {
     padding-left: 0.5vw;
 }
+
+.flashed {
+    margin-bottom: 0px;
+}

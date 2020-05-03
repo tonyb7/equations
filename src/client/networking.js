@@ -1,6 +1,7 @@
 // Handle client networking.
 
 import io from 'socket.io-client';
+import { cleanInput, appendMessage } from './message_utils';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -43,16 +44,8 @@ function registerSocketCallbacks(player_info) {
         let name = message_info['name']
         let message = message_info['message']
         console.log(`Received message ${message} from ${name}`);
-        
-        let message_html = `<b>${name}: </b> ${message}`;
-        let new_message = document.createElement('li');
-        new_message.innerHTML = message_html;
 
-        let messages = document.getElementById('message-list');
-        messages.appendChild(new_message);
-        
-        let messages_div = document.getElementById('message-list-div');
-        messages_div.scrollTop = messages_div.scrollHeight;
+        appendMessage(name, message);
     });
     
 }
@@ -95,8 +88,3 @@ export function handleChatEnter() {
         }
     });
 }
-
-const cleanInput = (input) => {
-    return $('<div/>').text(input).html();
-}
-

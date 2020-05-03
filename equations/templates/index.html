@@ -30,6 +30,13 @@
     <body>
         <h1>Welcome to Equations Online</h1>
         <!-- <script async src="/game.bundle.js"></script> -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p class='flashed'>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <div id="join-options">    
             <button id="create-button">Create New Game</button>
             <button id="join-button">Join Existing Game</button>

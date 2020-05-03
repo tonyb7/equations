@@ -14,30 +14,17 @@ def show_favicon():
 @equations.app.route("/", methods=['GET'])
 def show_index():
     """Show homepage."""
-    if flask.request.method == 'POST':
-        name = flask.request.form['name']
-        room = flask.request.form['room']
-
-        connection = equations.model.get_db()
-        game_nonce_dict = connection.execute(
-            "SELECT nonce FROM games "
-            f"WHERE nonce=\'{room}\'"
-        ).fetchone()
-
-        game_nonce = None
-        if game_nonce_dict is None:
-            game_nonce = room
-        else:
-            game_nonce = game_nonce_dict['nonce']
-        
-        return flask.redirect(flask.url_for('show_game', nonce=game_nonce))
-
     return flask.render_template("index.html")
 
 @equations.app.route("/create/", methods=['POST'])
 def create_game():
     """Create a new game."""
     name = flask.request.form['name']
+    
+    if len(name) < 1:
+        flask.flash("Your name cannot be empty!")
+        return flask.redirect(flask.url_for('show_index'))
+
     connection = equations.model.get_db()
 
     # This is ugly and might break if enough games are played
@@ -63,6 +50,10 @@ def create_game():
 def join_game():
     """Join an existing game."""
     name = flask.request.form['name']
+    if len(name) < 1:
+        flask.flash("Your name cannot be empty!")
+        return flask.redirect(flask.url_for('show_index'))
+    
     room_id = flask.request.form['room']
     connection = equations.model.get_db()
 
@@ -72,7 +63,8 @@ def join_game():
     ).fetchone()
 
     if game_info is None:
-        return flask.render_template("bad_join.html", room_id=room_id)
+        flask.flash(f"The Room ID you entered ({room_id}) does not exist!")
+        return flask.redirect(flask.url_for('show_index'))
 
     return flask.redirect(flask.url_for('show_game', nonce=room_id, name=name))
 
