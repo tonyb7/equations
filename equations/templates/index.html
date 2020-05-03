@@ -37,7 +37,7 @@
         <div id='join-new'>
             <form id="join-new" action="/create/" method="post" enctype="multipart/form-data">
                 <div class="user-inputs">
-                    Enter your name: <input type='text' name='name'/> <br/>
+                    <p><b>Enter your name: </b><input type='text' name='name'/></p> 
                 </div>
                 <input type="submit" name="create" value="Create Room"/>
             </form>
@@ -45,13 +45,13 @@
         <div id='join-existing'>
             <form id="join-existing" action="/join/" method="post" enctype="multipart/form-data">
                 <div class="user-inputs">
-                    Enter your name: <input type='text' name='name'/> <br/>
-                    Enter Room ID<font color="white">*</font>: <input type='text' name='room'/> <br/>
+                    <p><b>Enter your name: </b><input type='text' name='name'/> </p>
+                    <p><b>Enter Room ID* : <input type='text' name='room'/> </p>
                 </div>
                 <input type="submit" name="join" value="Join Room"/>
             </form>
-            <p><font color="white">*</font> If the URL ends with "/game/a1b2c3-d4", <br/>
-            then the Room ID is a1b2c3-d4</p>
+            <p><em>* If the URL ends with "/game/a1b2c3-d4", <br/>
+            then the Room ID is a1b2c3-d4</em></p>
         </div>
 
     </body>

@@ -14,3 +14,8 @@ h1 {
 .user-inputs {
     padding: 10px;
 }
+
+p, h1 {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+}
