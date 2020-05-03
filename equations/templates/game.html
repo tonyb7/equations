@@ -24,8 +24,7 @@
             <div class="main left">
                 <div class="main left top">
                     <h3>Equations Game Room</h3>
-                    <p>Share this URL for friends to join: {{ shareable_url }}</p>
-                    <p>Shareable Room ID: <a id="room-nonce">{{ nonce }}</a></p>
+                    <p>Share this Room ID for friends to join: <a id="room-nonce">{{ nonce }}</a></p>
                     <p>Your name is <a id="name">{{ name }}</a></p>
                 </div>
                 <div class="main left bot">
@@ -115,14 +114,14 @@
                             </div>
                         </div>
                         <div class="buttons">
-                            <div class="buttons-inner">
-                                <button>Start Game</button> <br/>
-                                <button>Flip Timer</button> <br/>
-                                <button>Claim 10 Second Warning</button> <br/>
-                                <button>Claim -1</button> <br/>
-                                <button>Challenge Now</button> <br/>
-                                <button>Challenge Impossible</button> <br/>
-                                <button>Challenge Force Out</button> <br/>
+                            <div class="buttons-inner" id="buttons-div">
+                                <button id="start-game">Start Game</button> <br/>
+                                <button id="flip-timer">Flip Timer</button> <br/>
+                                <button id="claim-warning">Claim 10 Second Warning</button> <br/>
+                                <button id="claim-minus-one">Claim -1</button> <br/>
+                                <button id="a-flub">Challenge Now</button> <br/>
+                                <button id="p-flub">Challenge Impossible</button> <br/>
+                                <button id="force-out">Challenge Force Out</button> <br/>
                             </div>
                         </div>
                     </div>
