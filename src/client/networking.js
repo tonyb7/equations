@@ -17,57 +17,86 @@ export const connect = () => {
         let room_nonce = document.getElementById("room-nonce").innerHTML;
         let name = document.getElementById("name").innerHTML;
 
+        let player_info = {
+            'room': room_nonce, 
+            'name': name
+        };
+
         // Register callbacks
-        socket.on('disconnect', () => {
-            console.log(`${name} disconnected from room ${room_nonce}`);
-        });
-        registerButtonCallbacks();
+        registerSocketCallbacks(player_info);
+        registerButtonCallbacks(player_info);
 
         // Tell server wanna join
         console.log(`Connecting as ${name} in room ${room_nonce}`);
-        socket.emit("register_player", {'room': room_nonce, 'name': name});
+        socket.emit("register_player", player_info);
     })
     .catch((error) => console.log("Error: ", error));
 }
 
-function registerButtonCallbacks() {
+function registerSocketCallbacks(player_info) {
+    socket.on('disconnect', () => {
+        console.log(`${name} disconnected from room ${room_nonce}`);
+        socket.emit("deregister_player", player_info);
+    });
+
+    socket.on('message', (message_info) => {
+        let name = message_info['name']
+        let message = message_info['message']
+        console.log(`Received message ${message} from ${name}`);
+        
+        let message_html = `<b>${name}: </b> ${message}`;
+        let new_message = document.createElement('li');
+        new_message.innerHTML = message_html;
+
+        let messages = document.getElementById('message-list');
+        messages.appendChild(new_message);
+        
+        let messages_div = document.getElementById('message-list-div');
+        messages_div.scrollTop = messages_div.scrollHeight;
+    });
+    
+}
+
+function registerButtonCallbacks(player_info) {
     var buttons = document.getElementById("buttons-div");
     if (buttons.length === 0) {
         throw Error("Error finding buttons on page!?");
     }
 
-    let start_btn = buttons.querySelector("#start-game");
-    start_btn.onclick = () => {
-        console.log("Start game button clicked!");
-    };
+    registerButton(buttons.querySelector("#start-game"), 'start_game', player_info);
+    registerButton(buttons.querySelector('#flip-timer'), 'flip_timer', player_info);
+    registerButton(buttons.querySelector('#claim-warning'), 'claim_warning', player_info);
+    registerButton(buttons.querySelector('#claim-minus-one'), 'claim_minus_one', player_info);
+    registerButton(buttons.querySelector('#a-flub'), 'a_flub', player_info);
+    registerButton(buttons.querySelector('#p-flub'), 'p_flub', player_info);
+    registerButton(buttons.querySelector('#force-out'), 'force_out', player_info);
+}
 
-    let flip_timer_btn = buttons.querySelector('#flip-timer');
-    flip_timer_btn.onclick = () => {
-        console.log("Flip timer button clicked!");
-    };
-
-    let claim_warning_btn = buttons.querySelector("#claim-warning");
-    claim_warning_btn.onclick = () => {
-        console.log("Claim 10 second warning button clicked!");
-    };
-
-    let claim_minus_one_btn = buttons.querySelector('#claim-minus-one');
-    claim_minus_one_btn.onclick = () => {
-        console.log("Claim minus one button clicked!");
-    };
-
-    let a_flub_btn = buttons.querySelector('#a-flub');
-    a_flub_btn.onclick = () => {
-        console.log("Challenge now button clicked!");
-    }; 
-
-    let p_flub_btn = buttons.querySelector('#p-flub');
-    p_flub_btn.onclick = () => {
-        console.log("Challenge impossible button clicked!");
-    }; 
-
-    let force_out_btn = buttons.querySelector('#force-out');
-    force_out_btn.onclick = () => {
-        console.log("Force out button clicked!");
+function registerButton(button, socket_label, player_info) {
+    button.onclick = () => {
+        console.log(`Button for ${socket_label} clicked by ${player_info['name']}!`);
+        socket.emit(socket_label, player_info);
     };
 }
+
+export function handleChatEnter() {
+    let $window = $(window);
+    let $inputMessage = $('.inputMessage');
+    $window.keydown(event => {
+        // enter key was pressed
+        if ($inputMessage.is(":focus") && event.which === 13 && $inputMessage.val().length > 0) {
+            let message = $inputMessage.val();
+            let name = document.getElementById("name").innerHTML;
+            message = cleanInput(message);
+
+            $inputMessage.val('');
+            socket.emit('new_message', {'name': name, 'message': message});
+            console.log(`Sent message ${message} from user ${name}`);
+        }
+    });
+}
+
+const cleanInput = (input) => {
+    return $('<div/>').text(input).html();
+}
+

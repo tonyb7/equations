@@ -1,5 +1,6 @@
 // Client entrypoint
 
-import { connect } from './networking';
+import { connect, handleChatEnter } from './networking';
 
+$(document).ready(handleChatEnter);
 connect();
