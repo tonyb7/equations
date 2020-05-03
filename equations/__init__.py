@@ -1,7 +1,9 @@
 """Equations package initializer."""
 import flask
+from flask_socketio import SocketIO
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
+socketio = SocketIO(app)
 
 # Read settings from config module (equations/config.py)
 app.config.from_object('equations.config')

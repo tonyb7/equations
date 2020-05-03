@@ -17,6 +17,7 @@
                 );
             });
         </script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/game.bundle.js') }}"></script>
     </head>
     <body>
         <div id="main">
@@ -24,8 +25,8 @@
                 <div class="main left top">
                     <h3>Equations Game Room</h3>
                     <p>Share this URL for friends to join: {{ shareable_url }}</p>
-                    <p>Shareable Room ID: {{ nonce }}</p>
-                    <p>Your name is {{ name }}</p>
+                    <p>Shareable Room ID: <a id="room-nonce">{{ nonce }}</a></p>
+                    <p>Your name is <a id="name">{{ name }}</a></p>
                 </div>
                 <div class="main left bot">
                     <div class="game">

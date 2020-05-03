@@ -1,8 +1,15 @@
 """Show the homepage."""
 
+import os
 import flask
 import equations
 import uuid
+
+@equations.app.route("/favicon.ico")
+def show_favicon():
+    """Deliver the favicon asset."""
+    return flask.send_from_directory(os.path.join(
+        equations.app.root_path, 'static', 'images'), 'favicon.ico')
 
 @equations.app.route("/", methods=['GET'])
 def show_index():

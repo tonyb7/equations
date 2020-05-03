@@ -19,3 +19,13 @@ p, h1 {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     color: white;
 }
+
+button, input {
+    margin-bottom: 0.7vw;
+    border-radius: 2.1vw;
+    font-size: 1vw;
+}
+
+input {
+    padding-left: 0.5vw;
+}
