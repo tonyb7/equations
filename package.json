@@ -1,0 +1,38 @@
+{
+  "name": "equations",
+  "version": "1.0.0",
+  "description": "Play Equations (AG) online",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js",
+    "start": "./bin/run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tonyb7/equations.git"
+  },
+  "keywords": [
+    "equations",
+    "academic",
+    "games"
+  ],
+  "author": "Tony Bai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tonyb7/equations/issues"
+  },
+  "homepage": "https://github.com/tonyb7/equations#readme",
+  "dependencies": {
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
