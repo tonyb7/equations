@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>Equations</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/game.css">
-        <!-- <link rel="stylesheet" type="text/css" href="../static/css/game.css"> -->
+        <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
+        <link rel="stylesheet" type="text/css" href="../static/css/game.css">
     </head>
     <body>
         <div id="main">
@@ -24,7 +24,7 @@
                                             <p><b>Forbidden</b></p>
                                         </div>
                                         <div class="play-sector cubes">
-                                            <div class="play-sector cubes playable-area"></div>
+                                            <div class="play-sector cubes playable-area hide-border"></div>
                                         </div>
                                     </div>
                                     <div class="play-sector">
@@ -32,7 +32,7 @@
                                             <p><b>Permitted</b></p>
                                         </div>
                                         <div class="play-sector cubes">
-                                            <div class="play-sector cubes playable-area"></div>
+                                            <div class="play-sector cubes playable-area hide-border"></div>
                                         </div>
                                     </div>
                                     <div class="play-sector">
@@ -40,7 +40,7 @@
                                             <p><b>Required</b></p>
                                         </div>
                                         <div class="play-sector cubes">
-                                            <div class="play-sector cubes playable-area"></div>
+                                            <div class="play-sector cubes playable-area hide-border"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
                                         <p><b>Goal:</b></p>
                                     </div>
                                     <div class="goal-area goal-cubes">
-                                        <div class="goal-area goal-cubes playable-area"></div>
+                                        <div class="goal-area goal-cubes playable-area hide-border"></div>
                                     </div>
                                 </div>
                             </div>
@@ -59,7 +59,7 @@
                                 <p>Resources</p>
                             </div>
                             <div class="resources cubes">
-                                <div class="resources cubes playable-area"></div>
+                                <div class="resources cubes playable-area hide-border"></div>
                             </div>
                         </div>
                     </div>
@@ -69,7 +69,25 @@
                                 <p>Game Stats</p>
                             </div>
                             <div class="stats the-stats-outer">
-                                <div class="stats the-stats-inner"></div>
+                                <div class="stats the-stats-inner">
+                                    <div class="time-elapsed">
+                                        <p>Time Elapsed: </p>
+                                    </div>
+                                    <div class="scores">
+                                        <table>
+                                            <tr>
+                                                <th>Player 1</th>
+                                                <th>Player 2</th>
+                                                <th>Player 3</th>
+                                            </tr>
+                                            <tr>
+                                                <th>-</th>
+                                                <th>-</th>
+                                                <th>-</th>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="time">
