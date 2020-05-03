@@ -32,7 +32,7 @@ npm run build
  
 4. Run Flask server
 ```
-npm start # or equivalently, ./bin/run 
+npm start # (or equivalently, ./bin/run)
 ```
 
 5. Go to http://localhost:8000 in browser
