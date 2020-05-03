@@ -4,6 +4,19 @@
         <title>Equations</title>
         <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
         <link rel="stylesheet" type="text/css" href="../static/css/game.css">
+        <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script>
+            $(function () {
+                $(".playable-area").hover(
+                    function () {
+                        $(this).removeClass("hide-border");
+                    },
+                    function () {
+                        $(this).addClass("hide-border");
+                    }
+                );
+            });
+        </script>
     </head>
     <body>
         <div id="main">
