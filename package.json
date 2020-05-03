@@ -1,0 +1,24 @@
+{
+  "name": "equations",
+  "version": "1.0.0",
+  "description": "Play Equations (AG) online",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tonyb7/equations.git"
+  },
+  "keywords": [
+    "equations",
+    "academic",
+    "games"
+  ],
+  "author": "Tony Bai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tonyb7/equations/issues"
+  },
+  "homepage": "https://github.com/tonyb7/equations#readme"
+}
