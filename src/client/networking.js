@@ -26,14 +26,14 @@ export const connect = () => {
         // Tell server wanna join
         console.log(`Connecting as ${name} in room ${room_nonce}`);
         socket.emit("register_player", {'room': room_nonce, 'name': name});
-    });
+    })
+    .catch((error) => console.log("Error: ", error));
 }
 
 function registerButtonCallbacks() {
     var buttons = document.getElementById("buttons-div");
     if (buttons.length === 0) {
-        console.log("Error finding buttons on page!?");
-        return;
+        throw Error("Error finding buttons on page!?");
     }
 
     let start_btn = buttons.querySelector("#start-game");
