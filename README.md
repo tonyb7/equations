@@ -24,9 +24,15 @@ source env/bin/activate
 pip install -e .
 ```
 
+4. Compile JavaScript bundle
+```
+npm install .
+npm run build
+```
+ 
 4. Run Flask server
 ```
-./bin/run
+npm start # or equivalently, ./bin/run 
 ```
 
 5. Go to http://localhost:8000 in browser
