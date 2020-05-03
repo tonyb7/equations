@@ -27,7 +27,7 @@
 }
 
 .main.right.top h2 {
-    font-size: 3vh;
+    font-size: 2vw;
     text-align: center;
     font-family: monospace;
     /* transform: translateY(5%); */
@@ -46,7 +46,7 @@
 .messages {
     height: 100%;
     margin: 0;
-    padding: 1vh 2vh 1vh 2vh;
+    padding: 0.6vw 1.2vw 0.6vw 1.2vw;
     text-align: left;
 }
 
@@ -56,12 +56,12 @@
 }
 
 .inputMessage {
-    border: 1vh solid #000;
+    border: 0.6vw solid #000;
     bottom: 0;
     height: 100%;
     left: 0;
     outline: none;
-    padding-left: 2vh;
+    padding-left: 1vw;
     position: relative;
     right: 0;
     width: 91%;
@@ -88,7 +88,7 @@
 .main.left.top p, h3 {
     margin-bottom: 0;
     margin-top: 0;
-    font-size: 3vh;
+    font-size: 1.65vw;
     transform: translateY(15%);
     font-family: monospace;
 }
@@ -128,7 +128,7 @@
 .stats.header p {
     font-family: monospace;
     text-align: center;
-    font-size: 2.6vh;
+    font-size: 1.5vw;
     transform: translateY(-75%);
     color: white;
 }
@@ -176,7 +176,7 @@
     color: white;
     font-family: monospace;
     text-align: left;
-    font-size: 3.5vh;
+    font-size: 2vw;
     transform: translate(3%, -75%);
 }
 
@@ -209,9 +209,9 @@
 }
 
 .buttons-inner button {
-    margin-bottom: 1vh;
-    border-radius: 3vh;
-    font-size: 2vh;
+    margin-bottom: 0.7vw;
+    border-radius: 2.1vw;
+    font-size: 1vw;
     width: 90%;
 }
 
@@ -240,7 +240,7 @@
 .resources.heading p {
     color: white;
     text-align: left;
-    font-size: 3vh;
+    font-size: 1.7vw;
     font-family: monospace;
     transform: translate(1%, -60%);
 }
@@ -272,7 +272,7 @@
 .board-inner {
     border: solid;
     border-color: white;
-    border-width: 1vh;
+    border-width: 0.6vw;
 
     width: 95%;
     height: 90%;
@@ -309,9 +309,9 @@
 .goal-area.goal-text p {
     color: white;
     text-align: center;
-    font-size: 4vh;
+    font-size: 2.4vw;
     font-family: monospace;
-    transform: translate(30%, 20%);
+    transform: translate(20%, 10%);
 }
 
 .goal-area.goal-cubes {
@@ -365,7 +365,7 @@
 .play-sector.heading p {
     color: white;
     text-align: center;
-    font-size: 2.4vh;
+    font-size: 1.5vw;
     font-family: monospace;
     transform: translateY(-25%);
 }
