@@ -80,7 +80,7 @@ function registerSocketCallbacks(player_info) {
                 image_clone.classList.remove("show-border");
             };
             image_clone.onclick = () => {
-                // TODO if turn!!!
+                // TODO if my turn and other cube has not been selected!!!
                 image_clone.classList.add("highlight-img");
             };
 
