@@ -178,7 +178,7 @@
     align-items: stretch;
 }
 
-.time-elapsed #text {
+.time-elapsed #elapsed-text {
     /* border: dotted;
     border-color: white; */
     width: 45%;
@@ -213,7 +213,8 @@
 
     text-align: center;
     /* overflow-wrap: break-word; */
-    overflow-x: hidden;
+    overflow-x: scroll;
+    font-size: 0.7vw;
 }
 
 .time {
@@ -258,7 +259,7 @@
     border-color: white; */
 }
 
-.time-inner-first #text {
+.time-inner-first #turn-text {
     /* border: dotted;
     border-color: white; */
     width: 37%;
@@ -286,7 +287,7 @@
     align-items: stretch;
 }
 
-.time-inner-second #text {
+.time-inner-second #time-text {
     width: 37%;
 }
 

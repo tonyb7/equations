@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>Equations</title>
-        <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
-        <link rel="stylesheet" type="text/css" href="../static/css/game.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/game.css">
+        <!-- <link rel="stylesheet" type="text/css" href="../static/css/game.css"> -->
         <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script>
             $(function () {
@@ -141,7 +141,7 @@
                             <div class="stats the-stats-outer">
                                 <div class="stats the-stats-inner">
                                     <div class="time-elapsed">
-                                        <div id="text">Time Elapsed: </div>
+                                        <div id="elapsed-text">Time Elapsed: </div>
                                         <div id="elapsed">00:00</div>
                                     </div>
                                     <div class="scores">
@@ -159,11 +159,11 @@
                         <div class="time">
                             <div class="time inner">
                                 <div class="time-inner-first">
-                                    <div id="text"><p>Turn: </p></div>
-                                    <div id="turn"><p>--------</p></div>
+                                    <div id="turn-text"><p>Turn: </p></div>
+                                    <div id="turn"><p id="actual-turn-text">--------</p></div>
                                 </div>
                                 <div class="time-inner-second">
-                                    <div id="text"><p>Time: </p></div>
+                                    <div id="time-text"><p>Time: </p></div>
                                     <div id="time"><p>00:00</p></div>
                                 </div>
                             </div>

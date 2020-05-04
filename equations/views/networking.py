@@ -149,6 +149,10 @@ def handle_start_game(player_info):
     room = player_info['room']
     print(f"{name} pressed start_game for room {room}!")
 
+    if room not in rooms_info or rooms_info[room]['game_started']:
+        print("Game start rejected")
+        return
+
     current_players = rooms_info[room]['players']
 
     if len(current_players) < 2:
@@ -171,6 +175,8 @@ def handle_start_game(player_info):
     }
 
     # TODO now that this info is avaialble, send on "rejoin" in on_connect
+    # TODO replace game_begin_instructions
+    # TODO move players in here
     rooms_info[room]['game_info'] = {
         "cube_index": rolled_cubes,  # fixed length of 24, index is cube's id
         "resources": rolled_cubes,  # fixed length of 24
@@ -181,6 +187,7 @@ def handle_start_game(player_info):
         "turn": game_begin_instructions['firstmove'],
         "state": "goalset",  # enum?
         "starttime": time.time(),
+        "touched_cube": False,
     }
 
     emit("begin_game", game_begin_instructions, room=room)
@@ -228,7 +235,13 @@ def handleClickCube(pos):
     user = socket_info[socketid]
     room = user_info[user]['room']
 
-    # TODO
-    
-    emit("highlight_cube", pos, room=room)
+    if rooms_info[room]['game_info']['touched_cube']:
+        return
+
+    turn_idx = rooms_info[room]['game_info']['turn']
+    turn_user = rooms_info[room]['players'][turn_idx]
+
+    if turn_user == user:
+        rooms_info[room]['game_info']['touched_cube'] = True
+        emit("highlight_cube", pos, room=room)
 

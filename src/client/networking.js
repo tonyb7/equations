@@ -72,9 +72,8 @@ function registerSocketCallbacks(player_info) {
         console.log(players[data['firstmove']]);
 
         let firstmover = players[data['firstmove']];
-        let turn_elt = document.getElementById("turn");
-        console.log("turn_elt: ", turn_elt);
-        turn_elt.innerHTML = `Turn: ${firstmover}`;
+        let turn_elt = document.getElementById("actual-turn-text");
+        turn_elt.innerHTML = `${firstmover}`;
     });
 
     socket.on("highlight_cube", (pos) => {
