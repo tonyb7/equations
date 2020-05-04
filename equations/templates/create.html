@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div id="create-account">
+        <h2>Create an account</h2>
+        <form action="/create_account/" method="post" enctype="multipart/form-data">
+            Username: <input type="text" name="username"/> <br><br>
+            Password: <input type="password" name="password"/> <br><br>
+            <input type="submit" name="signup" value="sign up"/> <br><br>
+        </form>
+        <p>Have an account? <a href="/login/"><b>Log in here</b></a></p>
+    </div>
+
+{% endblock %}

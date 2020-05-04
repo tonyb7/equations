@@ -15,12 +15,25 @@ def show_favicon():
 @equations.app.route("/", methods=['GET'])
 def show_index():
     """Show homepage."""
-    return flask.render_template("index.html")
+    context = {
+        "logged_in": False,
+        "username": '',
+    }
+
+    if "username" in flask.session:
+        context['logged_in'] = True
+        context['username'] = flask.session['username']
+
+    return flask.render_template("index.html", **context)
 
 @equations.app.route("/create/", methods=['POST'])
 def create_game():
     """Create a new game."""
-    name = flask.request.form['name']
+    if 'username' not in flask.session:
+        flask.flash("Please log in before creating a game.")
+        return flask.redirect(flask.url_for('show_index'))
+
+    name = flask.session['username']
     
     if len(name) < 1:
         flask.flash("Your name cannot be empty!")
@@ -50,7 +63,13 @@ def create_game():
 @equations.app.route("/join/", methods=['POST'])
 def join_game():
     """Join an existing game."""
-    name = flask.request.form['name']
+    if 'username' not in flask.session:
+        flask.flash("Please log in before creating a game.")
+        return flask.redirect(flask.url_for('show_index'))
+        
+    name = flask.session['username']
+
+    # Redundant now
     if len(name) < 1:
         flask.flash("Your name cannot be empty!")
         return flask.redirect(flask.url_for('show_index'))
@@ -76,6 +95,11 @@ def show_game(nonce):
         flask.flash("Please join a game by clicking \"Join Existing Game\"")
         return flask.redirect(flask.url_for('show_index'))
 
+    # Also redundant
+    if 'username' not in flask.session:
+        flask.flash("Please log in before joining a game.")
+        return flask.redirect(flask.url_for('show_index'))
+
     if not can_join_room(nonce):
         flask.flash("That game has already started or is full. Spectator mode is not supported at the moment")
         return flask.redirect(flask.url_for('show_index'))
@@ -83,7 +107,7 @@ def show_game(nonce):
     base_url = equations.app.config["BASE_URL"]
     context = {
         "nonce": nonce,
-        "name": flask.request.args.get('name'),
+        "name": flask.session['username'],
         "shareable_url": base_url + "/game/" + nonce,
     }
 

@@ -34,7 +34,7 @@ create() {
 
 destroy() {
 	set -x
-	rm -rf var/equations.sqlite3 # var/uploads/
+	rm -rf var/equations.sqlite3 var/uploads/
 	{ set +x; } 2>/dev/null
 }
 

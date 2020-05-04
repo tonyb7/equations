@@ -1,14 +1,41 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Equations</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-        <!-- <link rel="stylesheet" type="text/css" href="../static/css/style.css"> -->
-        <style>
-            body {
-                background-image: url("/static/images/background.jpg");
-            }
-        </style>
+{% extends "base.html" %}
+{% block content %}
+
+    {% if not logged_in %}
+        <div id="join-options">
+            <button id="login" onclick="window.location.href='/login/'">Log In</button>
+        </div>
+    {% else %}
+        <div id="user-info">
+            <h3>Logged in as: {{ username }}</h3>
+        </div>
+        <div id="join-options">    
+            <button id="create-button">Create New Game</button>
+            <button id="join-button">Join Existing Game</button>
+        </div>
+        <div id='join-new'>
+            <form id="join-new" action="/create/" method="post" enctype="multipart/form-data">
+                <!-- <div class="user-inputs">
+                    <p><b>Enter your name: </b><input type='text' name='name'/></p> 
+                </div> -->
+                <input type="submit" name="create" value="Create Room"/>
+            </form>
+        </div>
+        <div id='join-existing'>
+            <form id="join-existing" action="/join/" method="post" enctype="multipart/form-data">
+                <div class="user-inputs">
+                    <!-- <p><b>Enter your name: </b><input type='text' name='name'/> </p> -->
+                    <p><b>Enter Room ID* : <input type='text' name='room'/> </p>
+                </div>
+                <input type="submit" name="join" value="Join Room"/>
+            </form>
+            <p><em>* If the URL ends with "/game/a1b2c3-d4", <br/>
+            then the Room ID is a1b2c3-d4</em></p>
+        </div>
+        <div id="logout-button">
+            <button id="logout" onclick="window.location.href='/logout/'">Log Out</button>
+        </div>
+
         <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script>
             $(function() {
@@ -26,40 +53,5 @@
                 });
             });
         </script>
-    </head>
-    <body>
-        <h1>Welcome to Equations Online</h1>
-        <!-- <script async src="/game.bundle.js"></script> -->
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p class='flashed'>Oops! {{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <div id="join-options">    
-            <button id="create-button">Create New Game</button>
-            <button id="join-button">Join Existing Game</button>
-        </div>
-        <div id='join-new'>
-            <form id="join-new" action="/create/" method="post" enctype="multipart/form-data">
-                <div class="user-inputs">
-                    <p><b>Enter your name: </b><input type='text' name='name'/></p> 
-                </div>
-                <input type="submit" name="create" value="Create Room"/>
-            </form>
-        </div>
-        <div id='join-existing'>
-            <form id="join-existing" action="/join/" method="post" enctype="multipart/form-data">
-                <div class="user-inputs">
-                    <p><b>Enter your name: </b><input type='text' name='name'/> </p>
-                    <p><b>Enter Room ID* : <input type='text' name='room'/> </p>
-                </div>
-                <input type="submit" name="join" value="Join Room"/>
-            </form>
-            <p><em>* If the URL ends with "/game/a1b2c3-d4", <br/>
-            then the Room ID is a1b2c3-d4</em></p>
-        </div>
-
-    </body>
-</html>
+    {% endif %}
+{% endblock %}

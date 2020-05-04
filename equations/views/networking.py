@@ -78,7 +78,7 @@ def register_player(player_info):
 
     join_room(room)
     print(f"Client {socketid}: Player {name} joined room {room}")
-    emit("server_message", f"Player {name} has joined.", room=room)
+    emit("server_message", f"{name} has joined.", room=room)
 
     names = []
     for sid in rooms_info[room]['socketids']:

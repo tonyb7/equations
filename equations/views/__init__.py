@@ -1,6 +1,11 @@
 from equations.views.index import show_favicon
 from equations.views.index import show_index
 from equations.views.index import show_game
+
+from equations.views.accounts import show_login
+from equations.views.accounts import show_logout
+from equations.views.accounts import show_create
+
 from equations.views.networking import on_connect
 from equations.views.networking import on_disconnect
 from equations.views.networking import register_player

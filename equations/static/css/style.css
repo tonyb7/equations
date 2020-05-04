@@ -15,7 +15,7 @@ h1 {
     padding: 10px;
 }
 
-p, h1 {
+p, h1, h2, h3, form {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     color: white;
 }
@@ -32,4 +32,13 @@ input {
 
 .flashed {
     margin-bottom: 0px;
+}
+
+a {
+    color: white;
+}
+
+#logout-button {
+    margin-top: 15vh;
+    text-align: center;
 }
