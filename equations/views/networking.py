@@ -29,7 +29,7 @@ def can_join_room(room, name):
 
     # A user cannot join an existing room that is full.
     if rooms_info[room]['game_started'] \
-            or len(rooms_info[room]['usernames']) >= 3:
+            or len(rooms_info[room]['players']) >= 3:
         return False
 
     return True
@@ -155,7 +155,7 @@ def handle_start_game(player_info):
 
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
-    emit("server_message", f"{name} started the game! The cubes have been rolled!")
+    emit("server_message", f"{name} started the game! The cubes have been rolled!", room=room)
     emit("roll_cubes", {"cubes": rolled_cubes}, room=room)
 
 @equations.socketio.on('flip_timer')
