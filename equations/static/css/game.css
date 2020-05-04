@@ -487,3 +487,7 @@
 .hide-border {
     border: none !important;
 }
+
+.extra-cube {
+    transform: translate(0%, -100%);
+}
