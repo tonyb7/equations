@@ -149,14 +149,27 @@ def handle_start_game(player_info):
     room = player_info['room']
     print(f"{name} pressed start_game for room {room}!")
 
-    if len(rooms_info[room]['players']) < 2:
+    current_players = rooms_info[room]['players']
+
+    if len(current_players) < 2:
         emit('server_message', "You can only start a game with 2 or 3 players.", room=room)
         return
+    
+    assert name in current_players
+    assert len(current_players) <= 3
+    assert not rooms_info[room]['game_started']
+    rooms_info[room]['game_started'] = True
 
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
     emit("server_message", f"{name} started the game! The cubes have been rolled!", room=room)
-    emit("roll_cubes", {"cubes": rolled_cubes}, room=room)
+
+    game_begin_instructions = {
+        'cubes': rolled_cubes,
+        'players': current_players,
+        'firstmove': random.randint(0, len(current_players) - 1),
+    }
+    emit("begin_game", game_begin_instructions, room=room)
 
 @equations.socketio.on('flip_timer')
 def handle_flip_timer(player_info):

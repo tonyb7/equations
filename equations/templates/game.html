@@ -24,8 +24,8 @@
             <div class="main left">
                 <div class="main left top">
                     <h3>Equations Game Room</h3>
-                    <p>Share this Room ID for friends to join: <a id="room-nonce">{{ nonce }}</a></p>
                     <p>Welcome <a id="name">{{ name }}</a>!</p>
+                    <p>Share this Room ID for friends to join: <a id="room-nonce">{{ nonce }}</a></p>
                     <p id="note">Note: As of now, navigating away from or refreshing this page will forfeit the match.</p>
                 </div>
                 <div class="main left bot">
@@ -144,16 +144,11 @@
                                         <p>Time Elapsed: </p>
                                     </div>
                                     <div class="scores">
-                                        <table>
+                                        <table id="scoreboard">
                                             <tr>
-                                                <th>Player 1</th>
-                                                <th>Player 2</th>
-                                                <th>Player 3</th>
-                                            </tr>
-                                            <tr>
-                                                <th>-</th>
-                                                <th>-</th>
-                                                <th>-</th>
+                                                <th>-----</th>
+                                                <th>-----</th>
+                                                <th>-----</th>
                                             </tr>
                                         </table>
                                     </div>
