@@ -53,6 +53,12 @@ function registerSocketCallbacks(player_info) {
         appendMessage(name, message);
     });
     
+    socket.on("roll_cubes", (data) => {
+        let cubes = data['cubes']
+        console.log("Rolled cubes: ", cubes);
+
+        
+    });
 }
 
 function registerButtonCallbacks(player_info) {

@@ -3,6 +3,8 @@
 import flask
 import equations
 from flask_socketio import join_room, leave_room, emit
+import time
+import random
 
 # Map room nonce to: game_started, num_players, socketids
 rooms_info = {}
@@ -37,6 +39,13 @@ def on_disconnect():
     leave_room(room)
     emit("server_message", f"Player {socket_info[socketid]['name']} has left.", room=room);
     del socket_info[socketid]
+
+    rooms_info[room]['socketids'].remove(socketid)
+    if rooms_info[room]['num_players'] == 1:
+        del rooms_info[room]
+    else:
+        rooms_info[room]['num_players'] -= 1
+
     print(f"Client {socketid}: Player left room {room}")
 
 @equations.socketio.on('register_player')
@@ -74,6 +83,7 @@ def register_player(player_info):
     names = []
     for sid in rooms_info[room]['socketids']:
         names.append(socket_info[sid]['name'])
+
     message = "Players in this room: "
     names_message = ", ".join(names)
     emit("server_message", message + names_message, room=room)
@@ -83,7 +93,7 @@ def receive_message(message_info):
     """Receive a chat message from client."""
     name = message_info['name']
     message = message_info['message']
-    print(f"I got a message from {name}: {message}")
+    print(f"{name} send the message: {message}")
 
     # Send the message to everyone in the room
     emit('message', message_info, room = socket_info[flask.request.sid]['room'])
@@ -92,7 +102,17 @@ def receive_message(message_info):
 def handle_start_game(player_info):
     """Player pressed start_game."""
     name = player_info['name']
-    print(f"{name} pressed start_game!")
+    room = player_info['room']
+    print(f"{name} pressed start_game for room {room}!")
+
+    if rooms_info[room]['num_players'] < 2:
+        emit('server_message', "You can only start a game with 2 or 3 players.", room=room)
+        return
+
+    random.seed(time.time())
+    rolled_cubes = [random.randint(0, 5) for _ in range(24)]
+    emit("server_message", f"{name} started the game! The cubes have been rolled!")
+    emit("roll_cubes", {"cubes": rolled_cubes}, room=room)
 
 @equations.socketio.on('flip_timer')
 def handle_flip_timer(player_info):
