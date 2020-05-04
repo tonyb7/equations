@@ -34,7 +34,8 @@ def create_game():
         return flask.redirect(flask.url_for('show_index'))
 
     name = flask.session['username']
-    
+
+    # Redundant because of usernames now
     if len(name) < 1:
         flask.flash("Your name cannot be empty!")
         return flask.redirect(flask.url_for('show_index'))
@@ -52,6 +53,10 @@ def create_game():
 
         if game_nonce_dict is None:
             game_nonce = proposed_nonce
+
+    if not can_join_room(game_nonce, name):
+        flask.flash("If you are already in a game, you cannot join another.")
+        return flask.redirect(flask.url_for('show_index'))
 
     connection.execute(
         "INSERT INTO games(nonce, started, players) "
@@ -86,6 +91,12 @@ def join_game():
         flask.flash(f"The Room ID you entered ({room_id}) does not exist!")
         return flask.redirect(flask.url_for('show_index'))
 
+    if not can_join_room(room_id, name):
+        flask.flash("That game has already started or is full. \
+            Spectator mode is not supported at the moment")
+        flask.flash("If you are already in a game, you cannot join another.")
+        return flask.redirect(flask.url_for('show_index'))
+
     return flask.redirect(flask.url_for('show_game', nonce=room_id, name=name))
 
 @equations.app.route("/game/<nonce>/", methods=['GET'])
@@ -98,10 +109,6 @@ def show_game(nonce):
     # Also redundant
     if 'username' not in flask.session:
         flask.flash("Please log in before joining a game.")
-        return flask.redirect(flask.url_for('show_index'))
-
-    if not can_join_room(nonce):
-        flask.flash("That game has already started or is full. Spectator mode is not supported at the moment")
         return flask.redirect(flask.url_for('show_index'))
 
     base_url = equations.app.config["BASE_URL"]
