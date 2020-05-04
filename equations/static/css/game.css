@@ -284,8 +284,8 @@
 }
 
 .resources.cubes.playable-area {
-    border: dotted;
-    border-color: white;
+    /* border: dotted;
+    border-color: white; */
 
     height: 88%;
     width: 97%;
@@ -293,7 +293,41 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-49%, -48%);
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.resources.cubes.playable-area table {
+    height: 100%;
+    width: 97%;
+    transform: translate(0%, -6%);
+}
+
+.resources.cubes.playable-area th {
+    /* border: dotted;
+    border-color: white; */
+
+    width: 8.3%;
+
+}
+
+.resources.cubes.playable-area th img {
+    width: 3vw;
+    height: 3vw;
+}
+
+.show-border {
+    border: dotted !important;
+    border-color: white !important;
+    border-width: 0.2vw !important;
+}
+
+.highlight-img {
+    border: 0.3vw inset yellow !important;
+    border-radius: 0.2vw;
 }
 
 .board-outer {
@@ -367,6 +401,21 @@
     transform: translate(-50%, -50%);
 }
 
+.goal-area.goal-cubes.playable-area th {
+    /* border: dotted;
+    border-color: white; */
+
+    width: 4vw;
+    height: 4vw;
+
+    transform: translateY(10%);
+}
+
+.goal-area.goal-cubes.playable-area th img {
+    width: 3vw;
+    height: 3vw;
+}
+
 .cube-area {    
     height: 65%;
 
@@ -391,7 +440,7 @@
 }
 
 .play-sector.heading {
-    height: 20%;
+    height: 15%;
     width: 100%;
 }
 
@@ -400,12 +449,11 @@
     text-align: center;
     font-size: 1.5vw;
     font-family: monospace;
-    transform: translateY(-25%);
+    transform: translateY(-70%);
 }
 
 .play-sector.cubes {
-
-    height: 80%;
+    height: 90%;
     width: 100%;
 
     position: relative;
@@ -415,13 +463,25 @@
     border: dotted;
     border-color: white;
 
-    width: 88%;
-    height: 84%;
+    width: 90%;
+    height: 93%;
 
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -53%);
+}
+
+.play-sector.cubes.playable-area table th {
+    /* border: dotted;
+    border-color: white; */
+    height: 3vw;
+    width: 3vw;
+}
+
+.play-sector.cubes.playable-area table th img {
+    height: 3vw;
+    width: 3vw;
 }
 
 .hide-border {

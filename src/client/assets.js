@@ -20,6 +20,7 @@ function downloadAsset(assetName) {
             resolve();
         };
         asset.src = `/static/cubes/${assetName}`;
+        asset.className = "res-cube";
     });
 }
 

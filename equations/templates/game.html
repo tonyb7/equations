@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>Equations</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/game.css">
-        <!-- <link rel="stylesheet" type="text/css" href="../static/css/game.css"> -->
+        <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
+        <link rel="stylesheet" type="text/css" href="../static/css/game.css">
         <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script>
             $(function () {
@@ -14,6 +14,15 @@
                     function () {
                         $(this).addClass("hide-border");
                     }
+                );
+
+                $(".res-cube").hover(
+                    function() {
+                        $(this).addClass("show-border");
+                    },
+                    function() {
+                        $(this).removeClass("show-border");
+                    } 
                 );
             });
         </script>
@@ -38,7 +47,22 @@
                                             <p><b>Forbidden</b></p>
                                         </div>
                                         <div class="play-sector cubes">
-                                            <div class="play-sector cubes playable-area hide-border"></div>
+                                            <div class="play-sector cubes playable-area hide-border">
+                                                <table>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="play-sector">
@@ -46,7 +70,22 @@
                                             <p><b>Permitted</b></p>
                                         </div>
                                         <div class="play-sector cubes">
-                                            <div class="play-sector cubes playable-area hide-border"></div>
+                                            <div class="play-sector cubes playable-area hide-border">
+                                                <table>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="play-sector">
@@ -54,7 +93,22 @@
                                             <p><b>Required</b></p>
                                         </div>
                                         <div class="play-sector cubes">
-                                            <div class="play-sector cubes playable-area hide-border"></div>
+                                            <div class="play-sector cubes playable-area hide-border">
+                                                <table>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th><th></th><th></th><th></th>
+                                                    </tr>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -63,7 +117,13 @@
                                         <p><b>Goal:</b></p>
                                     </div>
                                     <div class="goal-area goal-cubes">
-                                        <div class="goal-area goal-cubes playable-area hide-border"></div>
+                                        <div class="goal-area goal-cubes playable-area hide-border">
+                                            <table>
+                                                <tr>
+                                                    <th></th><th></th><th></th><th></th><th></th><th></th>
+                                                </tr>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +133,18 @@
                                 <p>Resources</p>
                             </div>
                             <div class="resources cubes">
-                                <div class="resources cubes playable-area hide-border" id="resources-cubes"></div>
+                                <div class="resources cubes playable-area" id="resources-cubes">
+                                    <table>
+                                        <tr>
+                                            <th></th><th></th><th></th><th></th><th></th><th></th>
+                                            <th></th><th></th><th></th><th></th><th></th><th></th>
+                                        </tr>
+                                        <tr>
+                                            <th></th><th></th><th></th><th></th><th></th><th></th>
+                                            <th></th><th></th><th></th><th></th><th></th><th></th>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
