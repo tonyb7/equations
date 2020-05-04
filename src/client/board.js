@@ -1,13 +1,15 @@
 // Functions related to moving cubes around the board
 import { getAsset } from './assets';
+import { emitCubeClicked } from './networking';
+
+const cube_color_map = new Map([
+    [0, 'r'],
+    [1, 'b'],
+    [2, 'g'],
+    [3, 'bk'],
+]);
 
 export function rollCubes(cubes) {
-
-    const cube_color_map = new Map();
-    cube_color_map.set(0, 'r');
-    cube_color_map.set(1, 'b');
-    cube_color_map.set(2, 'g');
-    cube_color_map.set(3, 'bk');
     
     console.log("Rolling cubes!");
     let resources_div = document.getElementById("resources-cubes");
@@ -22,10 +24,7 @@ export function rollCubes(cubes) {
         image_clone.onmouseout = () => {
             image_clone.classList.remove("show-border");
         };
-        image_clone.onclick = () => {
-            // TODO if my turn and other cube has not been selected!!!
-            image_clone.classList.add("highlight-img");
-        };
+        image_clone.onclick = () => emitCubeClicked(i);
 
         relevant_th.appendChild(image_clone);
     }

@@ -70,11 +70,18 @@ function registerSocketCallbacks(player_info) {
 
         console.log(data['firstmove']);
         console.log(players[data['firstmove']]);
-        
+
         let firstmover = players[data['firstmove']];
         let turn_elt = document.getElementById("turn");
         console.log("turn_elt: ", turn_elt);
         turn_elt.innerHTML = `Turn: ${firstmover}`;
+    });
+
+    socket.on("highlight_cube", (pos) => {
+        // TODO dehighlight once moved
+        let surrounding_th = document.getElementById(`r${pos}`);
+        let image = surrounding_th.querySelector("img");
+        image.classList.add("highlight-img");
     });
 }
 
@@ -116,3 +123,5 @@ export function handleChatEnter() {
         }
     });
 }
+
+export const emitCubeClicked = (pos) => socket.emit("cube_clicked", pos);

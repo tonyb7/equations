@@ -207,5 +207,14 @@ def handle_force_out(player_info):
     name = player_info['name']
     print(f"{name} pressed force_out!")
 
+@equations.socketio.on("cube_clicked")
+def handleClickCube(pos):
+    """Highlight cube if it's clicker's turn and clicker hasn't clicked yet."""
+    socketid = flask.request.sid
+    user = socket_info[socketid]
+    room = user_info[user]['room']
 
+    # TODO
+    
+    emit("highlight_cube", pos, room=room)
 
