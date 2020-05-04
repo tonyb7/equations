@@ -44,13 +44,13 @@ function registerSocketCallbacks(player_info) {
     socket.on('message', (message_info) => {
         let name = message_info['name']
         let message = message_info['message']
-        console.log(`Received message ${message} from ${name}`);
+        // console.log(`Received message ${message} from ${name}`);
         appendMessage(name, message);
     });
 
     socket.on("server_message", (message) => {
         let name = "Server";
-        console.log(`Server sending message ${message}`);
+        // console.log(`Server sending message ${message}`);
         appendMessage(name, message);
     });
     
@@ -119,7 +119,7 @@ export function handleChatEnter() {
 
             $inputMessage.val('');
             socket.emit('new_message', {'name': name, 'message': message});
-            console.log(`Sent message ${message} from user ${name}`);
+            // console.log(`Sent message ${message} from user ${name}`);
         }
     });
 }
