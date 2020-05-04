@@ -470,6 +470,8 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -53%);
+
+    overflow-y: scroll;
 }
 
 .play-sector.cubes.playable-area table th {
