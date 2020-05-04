@@ -56,6 +56,7 @@ function registerSocketCallbacks(player_info) {
     
     socket.on("roll_cubes", (data) => {
         let cubes = data['cubes']
+        
         console.log("Rolled cubes: ", cubes);
         document.getElementById("start-game").onclick = () => {
             console.log("Game has already started!")

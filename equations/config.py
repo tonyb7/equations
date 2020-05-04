@@ -6,9 +6,9 @@ import os
 APPLICATION_ROOT = '/'
 
 # Secret key for encrypting cookies
-PART1 = b"t\xad\xf8\x1d'\xa1\x1e\xb7|b\xe4*\x1f"
-PART2 = b"\x8e\xae\xa9\xc0B>\x82\xaa\xc7M\x1f"
-SECRET_KEY = PART1 + PART2
+PART1 = b'\xceSY\xf6#\x10:\xef\xd3\x84I\xa707k'
+PART2 = b'\x7f\xe1\x9c\x9d\xf7\xd3\xb2\\$'
+SECRET_KEY = PART1 + PART2  # split into 2 parts to pass style tests
 SESSION_COOKIE_NAME = 'login'
 
 # File Upload to var/uploads/
