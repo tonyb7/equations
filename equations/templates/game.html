@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>Equations</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/game.css">
-        <!-- <link rel="stylesheet" type="text/css" href="../static/css/game.css"> -->
+        <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
+        <link rel="stylesheet" type="text/css" href="../static/css/game.css">
         <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script>
             $(function () {
@@ -141,14 +141,15 @@
                             <div class="stats the-stats-outer">
                                 <div class="stats the-stats-inner">
                                     <div class="time-elapsed">
-                                        <p>Time Elapsed: </p>
+                                        <div id="text">Time Elapsed: </div>
+                                        <div id="elapsed">00:00</div>
                                     </div>
                                     <div class="scores">
                                         <table id="scoreboard">
                                             <tr>
-                                                <th>-----</th>
-                                                <th>-----</th>
-                                                <th>-----</th>
+                                                <th>--------</th>
+                                                <th>--------</th>
+                                                <th>--------</th>
                                             </tr>
                                         </table>
                                     </div>
@@ -158,10 +159,12 @@
                         <div class="time">
                             <div class="time inner">
                                 <div class="time-inner-first">
-                                    <p id="turn">Turn: </p>
+                                    <div id="text"><p>Turn: </p></div>
+                                    <div id="turn"><p>--------</p></div>
                                 </div>
                                 <div class="time-inner-second">
-                                    <p id="timer">Time: </p>
+                                    <div id="text"><p>Time: </p></div>
+                                    <div id="time"><p>00:00</p></div>
                                 </div>
                             </div>
                         </div>
