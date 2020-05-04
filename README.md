@@ -14,7 +14,9 @@ git clone https://github.com/tonyb7/equations.git
 
 2. Set up a Python virtual environment (https://eecs485staff.github.io/p1-insta485-static/setup_virtual_env.html)
 ```
-cd equations python3 -m venv env source env/bin/activate
+cd equations 
+python3 -m venv env 
+source env/bin/activate
 ```
 
 3. Install Equations package
