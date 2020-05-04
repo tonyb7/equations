@@ -189,6 +189,8 @@
     background-color: pink;
     height: 20%;
     position: relative;
+
+    overflow: scroll;
 }
 
 .time.inner {
