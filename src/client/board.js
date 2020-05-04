@@ -14,6 +14,10 @@ export function rollCubes(cubes) {
     console.log("Rolling cubes!");
     let resources_div = document.getElementById("resources-cubes");
     for (let i = 0; i < cubes.length; ++i) {
+        if (cubes[i] === -1) { // TODO -1 is a magic number...
+            continue;
+        }
+
         let relevant_th = resources_div.querySelector(`#r${i}`);
         let image_name = `${cube_color_map.get(Math.floor(i/6))}${cubes[i]}.png`;
         let image_clone = getAsset(image_name).cloneNode(true);

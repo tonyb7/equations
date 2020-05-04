@@ -6,7 +6,7 @@ from flask_socketio import join_room, leave_room, emit
 import time
 import random
 
-# Map room nonce to: game_started, players
+# Map room nonce to: game_started, players, game info
 rooms_info = {}
 # Map username to latest socketid, and room
 user_info = {}
@@ -169,6 +169,20 @@ def handle_start_game(player_info):
         'players': current_players,
         'firstmove': random.randint(0, len(current_players) - 1),
     }
+
+    # TODO now that this info is avaialble, send on "rejoin" in on_connect
+    rooms_info[room]['game_info'] = {
+        "cube_index": rolled_cubes,  # fixed length of 24, index is cube's id
+        "resources": rolled_cubes,  # fixed length of 24
+        "goal": [],  # stores cube ids (based on cube_index); same for 3 below
+        "required": [],
+        "permitted": [],
+        "forbidden": [],
+        "turn": game_begin_instructions['firstmove'],
+        "state": "goalset",  # enum?
+        "starttime": time.time(),
+    }
+
     emit("begin_game", game_begin_instructions, room=room)
 
 @equations.socketio.on('flip_timer')
