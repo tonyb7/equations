@@ -96,7 +96,7 @@ body {
 }
 
 .main.left.top p, h3 {
-    margin-bottom: 0;
+    margin-bottom: 1vh;
     margin-top: 0;
     font-size: 1.4vw;
     transform: translateY(50%);
