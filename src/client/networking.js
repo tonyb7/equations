@@ -2,7 +2,8 @@
 
 import io from 'socket.io-client';
 import { cleanInput, appendMessage } from './message_utils';
-import { renderResources, initializeScoreboard, updateTurn } from './board';
+import { renderResources, initializeScoreboard, 
+    updateTurn } from './board';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -25,8 +26,8 @@ export const connect = () => {
         };
 
         // Register callbacks
-        registerSocketCallbacks(player_info);
-        registerButtonCallbacks(player_info);
+        registerSocketCallbacks();
+        registerButtonCallbacks(["start_game"]);
 
         // Tell server wanna join
         console.log(`Connecting as ${name} in room ${room_nonce}`);
@@ -35,9 +36,9 @@ export const connect = () => {
     .catch((error) => console.log("Error: ", error));
 }
 
-function registerSocketCallbacks(player_info) {
+function registerSocketCallbacks() {
     socket.on('disconnect', () => {
-        console.log(`${name} disconnected from room ${player_info['room']}`);
+        console.log(`disconnected from room`);
         // socket.emit("deregister_player", player_info);
     });
 
@@ -59,18 +60,20 @@ function registerSocketCallbacks(player_info) {
         renderResources(game['resources']);
         initializeScoreboard(game['players']);
         updateTurn(game['players'][game['turn']]);
+        initializeBoardCallbacks();
     });
     
     socket.on("begin_game", (data) => {
         let cubes = data['cubes']
         console.log("Rolled cubes: ", cubes);
-        document.getElementById("start-game").onclick = () => {
+        document.getElementById("start_game").onclick = () => {
             console.log("Game has already started!")
         };
 
         renderResources(cubes);
         initializeScoreboard(data['players']);
         updateTurn(data['players'][data['firstmove']]);
+        initializeBoardCallbacks();
     });
 
     socket.on("highlight_cube", (pos) => {
@@ -81,26 +84,41 @@ function registerSocketCallbacks(player_info) {
     });
 }
 
-function registerButtonCallbacks(player_info) {
-    var buttons = document.getElementById("buttons-div");
+function registerButtonCallbacks(button_ids) {
+    let buttons = document.getElementById("buttons-div");
     if (buttons.length === 0) {
         throw Error("Error finding buttons on page!?");
     }
 
-    registerButton(buttons.querySelector("#start-game"), 'start_game', player_info);
-    registerButton(buttons.querySelector('#flip-timer'), 'flip_timer', player_info);
-    registerButton(buttons.querySelector('#claim-warning'), 'claim_warning', player_info);
-    registerButton(buttons.querySelector('#claim-minus-one'), 'claim_minus_one', player_info);
-    registerButton(buttons.querySelector('#a-flub'), 'a_flub', player_info);
-    registerButton(buttons.querySelector('#p-flub'), 'p_flub', player_info);
-    registerButton(buttons.querySelector('#force-out'), 'force_out', player_info);
+    for (const button_id of button_ids) {
+        registerButton(buttons.querySelector(`#${button_id}`), button_id);
+    }
 }
 
-function registerButton(button, socket_label, player_info) {
+function registerButton(button, socket_label) {
     button.onclick = () => {
-        console.log(`Button for ${socket_label} clicked by ${player_info['name']}!`);
-        socket.emit(socket_label, player_info);
+        console.log(`Button for ${socket_label} clicked!`);
+        socket.emit(socket_label);
     };
+}
+
+function initializeBoardCallbacks() {
+    let board_sectors = ["forbidden-sector", "permitted-sector", "required-sector", "goal-sector"];
+    for (const id of board_sectors) {
+        document.getElementById(id).onclick = () => {
+            console.log(`${id} clicked`);
+            socket.emit("sector_clicked", id);
+        };
+    }
+
+    let buttons = document.getElementById("buttons-div");
+    if (buttons.length === 0) {
+        throw Error("Error finding buttons on page!?");
+    }
+
+    let button_ids = ["flip_timer", "claim_warning", "claim_minus_one",
+                      "a_flub", "p_flub", "force_out"];
+    registerButtonCallbacks(button_ids);
 }
 
 export function handleChatEnter() {

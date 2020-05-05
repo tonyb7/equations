@@ -34,6 +34,16 @@ def can_join_room(room, name):
 
     return True
 
+def get_name_and_room(socketid):
+    """Get the username and room associated with a socketid."""
+    assert socketid in socket_info
+    name = socket_info[socketid]
+
+    assert name in user_info
+    room = user_info[name]['room']
+
+    return [name, room]
+
 @equations.socketio.on('connect')
 def on_connect():
     """Handle request to connect to server."""
@@ -144,10 +154,9 @@ def receive_message(message_info):
     emit('message', message_info, room=user_info[name]['room'])
 
 @equations.socketio.on('start_game')
-def handle_start_game(player_info):
+def handle_start_game():
     """Player pressed start_game."""
-    name = player_info['name']
-    room = player_info['room']
+    [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed start_game for room {room}!")
 
     if room not in rooms_info or rooms_info[room]['game_started']:
@@ -194,43 +203,43 @@ def handle_start_game(player_info):
     emit("begin_game", game_begin_instructions, room=room)
 
 @equations.socketio.on('flip_timer')
-def handle_flip_timer(player_info):
+def handle_flip_timer():
     """Player pressed flip_timer."""
-    name = player_info['name']
+    [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed flip_timer!")
 
 @equations.socketio.on('claim_warning')
-def handle_claim_warning(player_info):
+def handle_claim_warning():
     """Player pressed claim_warning."""
-    name = player_info['name']
+    [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed claim_warning!")
 
 @equations.socketio.on('claim_minus_one')
-def handle_claim_minus_one(player_info):
+def handle_claim_minus_one():
     """Player pressed claim_minus_one."""
-    name = player_info['name']
+    [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed claim_minus_one!")
 
 @equations.socketio.on('a_flub')
-def handle_a_flub(player_info):
+def handle_a_flub():
     """Player pressed a_flub."""
-    name = player_info['name']
+    [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed a_flub!")
 
 @equations.socketio.on('p_flub')
-def handle_p_flub(player_info):
+def handle_p_flub():
     """Player pressed p_flub."""
-    name = player_info['name']
+    [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed p_flub!")
 
 @equations.socketio.on('force_out')
-def handle_force_out(player_info):
+def handle_force_out():
     """Player pressed force_out."""
-    name = player_info['name']
+    [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed force_out!")
 
 @equations.socketio.on("cube_clicked")
-def handleClickCube(pos):
+def handle_cube_click(pos):
     """Highlight cube if it's clicker's turn and clicker hasn't clicked yet."""
     socketid = flask.request.sid
     user = socket_info[socketid]
@@ -247,3 +256,8 @@ def handleClickCube(pos):
         rooms_info[room]['touched_cube'] = True
         emit("highlight_cube", pos, room=room)
 
+@equations.socketio.on("sector_clicked")
+def handle_sector_click(sectorid):
+    """Receive a click action on a playable area of the board."""
+    [name, room] = get_name_and_room(flask.request.sid)
+    print(f"{name} clicked {sectorid} in room {room}")
