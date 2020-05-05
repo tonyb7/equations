@@ -26,7 +26,7 @@ export const connect = () => {
         };
 
         // Register callbacks
-        registerSocketCallbacks();
+        registerSocketCallbacks(name);
         registerButtonCallbacks(["start_game"]);
 
         // Tell server wanna join
@@ -36,7 +36,7 @@ export const connect = () => {
     .catch((error) => console.log("Error: ", error));
 }
 
-function registerSocketCallbacks() {
+function registerSocketCallbacks(name) {
     socket.on('disconnect', () => {
         console.log(`disconnected from room`);
         // socket.emit("deregister_player", player_info);
@@ -56,11 +56,13 @@ function registerSocketCallbacks() {
     });
 
     socket.on("render_game_state", (game) => {
-        // TODO Remember to expand upon once more game features are added
         renderResources(game['resources']);
         initializeScoreboard(game['players']);
         updateTurn(game['players'][game['turn']]);
         initializeBoardCallbacks();
+
+        // TODO Remember to expand upon once more game features are added
+
     });
     
     socket.on("begin_game", (data) => {
@@ -72,8 +74,20 @@ function registerSocketCallbacks() {
 
         renderResources(cubes);
         initializeScoreboard(data['players']);
-        updateTurn(data['players'][data['firstmove']]);
         initializeBoardCallbacks();
+
+        let firstmover = data['players'][data['firstmove']];
+        updateTurn(firstmover);
+        if (firstmover === name) {
+            let set_goal_button = document.getElementById("set-goal-button");
+            set_goal_button.classList.remove("hidden");
+            set_goal_button.onclick = () => {
+                socket.emit("set_goal");
+                set_goal_button.classList.add("hidden");
+                set_goal_button.onclick = () => 
+                    console.log("Set goal button somehow clicked...");
+            };
+        }
     });
 
     socket.on("highlight_cube", (pos) => {

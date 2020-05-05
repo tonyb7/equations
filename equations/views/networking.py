@@ -44,6 +44,13 @@ def get_name_and_room(socketid):
 
     return [name, room]
 
+def get_current_mover(room):
+    """Return who the current mover is in a room."""
+    assert room in rooms_info
+    assert rooms_info[room]['game_started']
+    turn_idx = rooms_info[room]['turn']
+    return rooms_info[room]['players'][turn_idx]
+
 @equations.socketio.on('connect')
 def on_connect():
     """Handle request to connect to server."""
@@ -175,7 +182,6 @@ def handle_start_game():
 
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
-    emit("server_message", f"{name} started the game! The cubes have been rolled!", room=room)
 
     rooms_info[room] = {
         "game_started": True,
@@ -188,7 +194,8 @@ def handle_start_game():
         "permitted": [],
         "forbidden": [],
         "turn": random.randint(0, len(current_players) - 1),
-        "touched_cube": False,
+        "touched_cube": None,
+        "goalset": False,
         "state": "goalset",  # enum?
         "num_timer_flips": 0,
         "10s_warning_called": False,
@@ -201,6 +208,8 @@ def handle_start_game():
     }
 
     emit("begin_game", game_begin_instructions, room=room)
+    emit("server_message", f"{name} started the game! The cubes have been rolled!", room=room)
+    emit("server_message", f"{get_current_mover(room)} is chosen to be the goal setter. Please set the goal!", room=room)
 
 @equations.socketio.on('flip_timer')
 def handle_flip_timer():
@@ -246,14 +255,14 @@ def handle_cube_click(pos):
     room = user_info[user]['room']
 
     # TODO: state later for goal setting, bonus moves, etc
-    if rooms_info[room]['touched_cube']:
+    if rooms_info[room]['touched_cube'] is not None:
         return
 
     turn_idx = rooms_info[room]['turn']
     turn_user = rooms_info[room]['players'][turn_idx]
 
     if turn_user == user:
-        rooms_info[room]['touched_cube'] = True
+        rooms_info[room]['touched_cube'] = pos
         emit("highlight_cube", pos, room=room)
 
 @equations.socketio.on("sector_clicked")
@@ -261,3 +270,13 @@ def handle_sector_click(sectorid):
     """Receive a click action on a playable area of the board."""
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} clicked {sectorid} in room {room}")
+
+    if name != get_current_mover(room):
+        print(f"Not {name}'s turn. Do nothing.'")
+        return
+
+@equations.socketio.on("set_goal")
+def handle_set_goal():
+    """Handle goal set."""
+    print("Goal set!")
+    
