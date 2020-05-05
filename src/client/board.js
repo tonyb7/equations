@@ -23,13 +23,7 @@ let sector_cube_count = {
     "goal-sector": 0,
 };
 
-let cube_idx = [];
-
 export function renderResources(cubes) {
-
-    if (cube_idx.length === 0) {
-        cube_idx = cubes;
-    }
     
     console.log("Rolling cubes!");
     let resources_div = document.getElementById("resources-cubes");
@@ -56,15 +50,16 @@ export function renderResources(cubes) {
     console.log("Finished rolling cubes");
 }
 
-export function renderGoal(cubes) {
+export function renderGoal(cubes, cube_idx) {
     if (cubes.length > 6) {
         console.log("Something is wrong! Server stored more than 6 cubes in goal!");
     }
 
-    fillSector(cubes, "goal-sector");
+    sector_cube_count["goal-sector"] = cubes.length;
+    fillSector(cubes, "goal-sector", cube_idx);
 }
 
-export function renderSector(cubes, sectorid) {
+export function renderSector(cubes, sectorid, cube_idx) {
     let length_limits = [12, 16, 20];
     for (const length of length_limits) {
         if (cubes.length > length) {
@@ -72,15 +67,21 @@ export function renderSector(cubes, sectorid) {
         }
     }
 
-    fillSector(cubes, sectorid);
+    sector_cube_count[sectorid] = cubes.length;
+    fillSector(cubes, sectorid, cube_idx);
 }
 
-function fillSector(cubes, sectorid) {
+function fillSector(cubes, sectorid, cube_idx) {
     for (let i = 0; i < cubes.length; ++i) {
         let relevant_th = document.getElementById(`${sector_code_map.get(sectorid)}${i}`);
         let idx = cubes[i]; // idx is the position that cube was in resources originally
+
         let image_name = `${cube_color_map.get(Math.floor(idx/6))}${cube_idx[idx]}.png`;
         let image_clone = getAsset(image_name).cloneNode(true);
+        if (sectorid === 'goal-sector') {
+            image_clone.classList.add("goal-highlight");
+        }
+
         relevant_th.appendChild(image_clone);
     }
 }
@@ -101,10 +102,6 @@ export function updateTurn(name) {
 export function moveCube(directions) {
     let from_idx = directions['from'];
 
-    // console.log("sector cube count: ", sector_cube_count);
-    // console.log(directions['to']);
-    // console.log(sector_cube_count[directions['to']]);
-
     let num_cubes_in_sector = sector_cube_count[directions['to']];
     let to_id = `${sector_code_map.get(directions['to'])}${num_cubes_in_sector}`;
 
@@ -124,9 +121,6 @@ export function moveCube(directions) {
         img_in_resources.classList.add("goal-highlight");
     }
     
-    // console.log(to_id);
-    // console.log(document.getElementById(to_id));
-
     document.getElementById(to_id).appendChild(img_in_resources);
 }
 

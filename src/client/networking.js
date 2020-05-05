@@ -55,16 +55,33 @@ function registerSocketCallbacks(name) {
         appendMessage(name, message);
     });
 
+    const checkIfGoalSetter = (firstmover, firstmove) => {
+        if (!firstmove)
+            return;
+
+        if (firstmover === name) {
+            let set_goal_button = document.getElementById("set-goal-button");
+            set_goal_button.classList.remove("hidden");
+            set_goal_button.onclick = () => {
+                socket.emit("set_goal");
+                set_goal_button.classList.add("hidden");
+                set_goal_button.onclick = () => 
+                    console.log("Set goal button somehow clicked...");
+            };
+        }
+    };
+
     socket.on("render_game_state", (game) => {
         initializeBoardCallbacks();
         initializeScoreboard(game['players']);
         updateTurn(game['players'][game['turn']]);
+        checkIfGoalSetter(game['players'][game['turn']], !game["goalset"]);
 
         renderResources(game['resources']);
-        renderGoal(game['goal']);
-        renderSector(game['forbidden'], "forbidden-sector"); // magic constant bad
-        renderSector(game['permitted'], "permitted-sector");
-        renderSector(game['required'], "required-sector"); 
+        renderGoal(game['goal'], game['cube_index']);
+        renderSector(game['forbidden'], "forbidden-sector", game['cube_index']); // magic constant bad
+        renderSector(game['permitted'], "permitted-sector", game['cube_index']);
+        renderSector(game['required'], "required-sector", game['cube_index']); 
 
         // TODO Remember to expand upon once more game features are added
         // TODO time, scores
@@ -84,16 +101,7 @@ function registerSocketCallbacks(name) {
 
         let firstmover = data['players'][data['firstmove']];
         updateTurn(firstmover);
-        if (firstmover === name) {
-            let set_goal_button = document.getElementById("set-goal-button");
-            set_goal_button.classList.remove("hidden");
-            set_goal_button.onclick = () => {
-                socket.emit("set_goal");
-                set_goal_button.classList.add("hidden");
-                set_goal_button.onclick = () => 
-                    console.log("Set goal button somehow clicked...");
-            };
-        }
+        checkIfGoalSetter(firstmover, true);
     });
 
     socket.on("highlight_cube", (pos) => {

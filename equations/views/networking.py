@@ -190,7 +190,7 @@ def handle_start_game():
         "p2scores": [],
         "p3scores": [],
         "starttime": time.time(),
-        "cube_index": rolled_cubes,  # fixed length of 24, index is cube's id
+        "cube_index": rolled_cubes[:],  # fixed length of 24, index is cube's id
         "resources": rolled_cubes,  # fixed length of 24
         "goal": [],  # stores cube ids (based on cube_index); same for 3 below
         "required": [],
