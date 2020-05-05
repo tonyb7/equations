@@ -9,7 +9,7 @@ const cube_color_map = new Map([
     [3, 'bk'],
 ]);
 
-export function rollCubes(cubes) {
+export function renderResources(cubes) {
     
     console.log("Rolling cubes!");
     let resources_div = document.getElementById("resources-cubes");
@@ -34,4 +34,17 @@ export function rollCubes(cubes) {
     }
 
     console.log("Finished rolling cubes");
+}
+
+export function initializeScoreboard(players) {
+    let scoreboard = document.getElementById("scoreboard");
+    for (let i = 0; i < players.length; ++i) {
+        scoreboard.rows[0].cells.item(i).innerHTML = players[i];
+    }
+}
+
+// Future TODO: next turn can be smarter if players stored
+export function updateTurn(name) {
+    let turn_elt = document.getElementById("actual-turn-text");
+    turn_elt.innerHTML = `${name}`;
 }

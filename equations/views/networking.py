@@ -6,7 +6,7 @@ from flask_socketio import join_room, leave_room, emit
 import time
 import random
 
-# Map room nonce to: game_started, players, game info
+# Map room nonce to game info
 rooms_info = {}
 # Map username to latest socketid, and room
 user_info = {}
@@ -46,11 +46,9 @@ def on_disconnect():
     socketid = flask.request.sid
 
     username = None
-    if socketid in socket_info and socket_info[socketid] in user_info:
-        username = socket_info[socketid]
-    else: 
-        print(f"Client {socketid} not attached to any user!?")
-        return
+    assert socketid in socket_info
+    assert socket_info[socketid] in user_info
+    username = socket_info[socketid]
     
     room = user_info[username]['room']
     leave_room(room)
@@ -83,6 +81,9 @@ def register_player(player_info):
     room = player_info['room']
 
     print(f"Socket {socketid} associated with {name} wants to join room {room}")
+    assert socketid not in socket_info
+    socket_info[socketid] = name
+
     rejoin = False
 
     if name in user_info:
@@ -92,22 +93,18 @@ def register_player(player_info):
         old_socketid = user_info[name]['latest_socket']
         if old_socketid in socket_info:
             assert socket_info[old_socketid] == name
-            del socket_info[old_socketid]
         else:
-            print(f"Old socket id mapping not found for socket {old_socketid}, user {name}")
-        assert user_info[name]['room'] == room
-    
-    if socketid in socket_info:
-        print("This socket is somehow connected to another room...")
-    socket_info[socketid] = name
+            print(f"Old socket id for socket {old_socketid}, \
+                user {name} disconnected already")
 
-    if name not in user_info:
+        assert user_info[name]['room'] == room
+        user_info[name]['latest_socket'] = socketid
+
+    else:
         user_info[name] = {
             'latest_socket': socketid,
             'room': room
         }
-    else:
-        user_info[name]['latest_socket'] = socketid
 
     # Save room nonce -> room info mapping
     if room not in rooms_info:
@@ -121,6 +118,10 @@ def register_player(player_info):
             rooms_info[room]['players'].append(name)
 
     join_room(room)
+
+    if rejoin and rooms_info[room]['game_started']:
+        # Send current game state to just-rejoined player so he/she is up to date
+        emit("render_game_state", rooms_info[room])
 
     rejoin_str = "rejoined" if rejoin else "joined"
     print(f"Client {socketid}: Player {name} {rejoin_str} room {room}")
@@ -162,32 +163,30 @@ def handle_start_game(player_info):
     assert name in current_players
     assert len(current_players) <= 3
     assert not rooms_info[room]['game_started']
-    rooms_info[room]['game_started'] = True
 
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
     emit("server_message", f"{name} started the game! The cubes have been rolled!", room=room)
 
-    game_begin_instructions = {
-        'cubes': rolled_cubes,
-        'players': current_players,
-        'firstmove': random.randint(0, len(current_players) - 1),
-    }
-
-    # TODO now that this info is avaialble, send on "rejoin" in on_connect
-    # TODO replace game_begin_instructions
-    # TODO move players in here
-    rooms_info[room]['game_info'] = {
+    rooms_info[room] = {
+        "game_started": True,
+        "players": current_players,
         "cube_index": rolled_cubes,  # fixed length of 24, index is cube's id
         "resources": rolled_cubes,  # fixed length of 24
         "goal": [],  # stores cube ids (based on cube_index); same for 3 below
         "required": [],
         "permitted": [],
         "forbidden": [],
-        "turn": game_begin_instructions['firstmove'],
+        "turn": random.randint(0, len(current_players) - 1),
         "state": "goalset",  # enum?
         "starttime": time.time(),
         "touched_cube": False,
+    }
+
+    game_begin_instructions = {
+        'cubes': rolled_cubes,
+        'players': current_players,
+        'firstmove': rooms_info[room]['turn'],
     }
 
     emit("begin_game", game_begin_instructions, room=room)
@@ -235,13 +234,14 @@ def handleClickCube(pos):
     user = socket_info[socketid]
     room = user_info[user]['room']
 
-    if rooms_info[room]['game_info']['touched_cube']:
+    # TODO: state later for goal setting, bonus moves, etc
+    if rooms_info[room]['touched_cube']:
         return
 
-    turn_idx = rooms_info[room]['game_info']['turn']
+    turn_idx = rooms_info[room]['turn']
     turn_user = rooms_info[room]['players'][turn_idx]
 
     if turn_user == user:
-        rooms_info[room]['game_info']['touched_cube'] = True
+        rooms_info[room]['touched_cube'] = True
         emit("highlight_cube", pos, room=room)
 

@@ -5,10 +5,7 @@ import { downloadAssets } from './assets';
 
 $(document).ready(handleChatEnter);
 
-Promise.all([
-    connect(),
-    downloadAssets(),
-]).then(() => {
-    console.log("Connected and downloaded assets");
-}).catch((error) => console.log(error));
-
+downloadAssets()
+.then(connect)
+.then(() => console.log("Connected and downloaded assets"))
+.catch((error) => console.log(error));

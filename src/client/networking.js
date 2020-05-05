@@ -2,7 +2,7 @@
 
 import io from 'socket.io-client';
 import { cleanInput, appendMessage } from './message_utils';
-import { rollCubes } from './board';
+import { renderResources, initializeScoreboard, updateTurn } from './board';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -53,6 +53,13 @@ function registerSocketCallbacks(player_info) {
         // console.log(`Server sending message ${message}`);
         appendMessage(name, message);
     });
+
+    socket.on("render_game_state", (game) => {
+        // TODO Remember to expand upon once more game features are added
+        renderResources(game['resources']);
+        initializeScoreboard(game['players']);
+        updateTurn(game['players'][game['turn']]);
+    });
     
     socket.on("begin_game", (data) => {
         let cubes = data['cubes']
@@ -60,20 +67,10 @@ function registerSocketCallbacks(player_info) {
         document.getElementById("start-game").onclick = () => {
             console.log("Game has already started!")
         };
-        rollCubes(cubes);
 
-        let players = data['players'];
-        let scoreboard = document.getElementById("scoreboard");
-        for (let i = 0; i < players.length; ++i) {
-            scoreboard.rows[0].cells.item(i).innerHTML = players[i];
-        }
-
-        console.log(data['firstmove']);
-        console.log(players[data['firstmove']]);
-
-        let firstmover = players[data['firstmove']];
-        let turn_elt = document.getElementById("actual-turn-text");
-        turn_elt.innerHTML = `${firstmover}`;
+        renderResources(cubes);
+        initializeScoreboard(data['players']);
+        updateTurn(data['players'][data['firstmove']]);
     });
 
     socket.on("highlight_cube", (pos) => {
