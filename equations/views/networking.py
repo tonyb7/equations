@@ -171,6 +171,7 @@ def handle_start_game(player_info):
     rooms_info[room] = {
         "game_started": True,
         "players": current_players,
+        "starttime": time.time(),
         "cube_index": rolled_cubes,  # fixed length of 24, index is cube's id
         "resources": rolled_cubes,  # fixed length of 24
         "goal": [],  # stores cube ids (based on cube_index); same for 3 below
@@ -178,9 +179,10 @@ def handle_start_game(player_info):
         "permitted": [],
         "forbidden": [],
         "turn": random.randint(0, len(current_players) - 1),
-        "state": "goalset",  # enum?
-        "starttime": time.time(),
         "touched_cube": False,
+        "state": "goalset",  # enum?
+        "num_timer_flips": 0,
+        "10s_warning_called": False,
     }
 
     game_begin_instructions = {
