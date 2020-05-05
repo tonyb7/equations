@@ -1,4 +1,8 @@
 
+body {
+    background: lightcyan;
+}
+
 #main {
     display: flex;
     flex-direction: row;
@@ -20,8 +24,6 @@
 }
 
 .main.right.top {
-    background: rgb(0, 195, 255);
-
     height: 10%;
     width: auto;
 }
@@ -39,8 +41,6 @@
 }
 
 .main.right.mid {
-    background: rgb(0, 195, 255);
-
     height: 80%;
     width: auto;
 
@@ -63,7 +63,8 @@
 
 .main.right.bot {
     height: 10%;
-    width: auto;
+    width: 93%;
+    transform: translate(3.5%, -5%);
 }
 
 .inputMessage {
@@ -88,8 +89,6 @@
 }
 
 .main.left.top {
-    background-color: lightcyan;
-
     width: auto;
     height: 17%;
 
@@ -111,6 +110,9 @@
     display: flex;
     flex-direction: row;
     align-items: stretch;
+
+    border: ridge;
+    border-width: 1vw;
 }
 
 .info {
@@ -123,7 +125,7 @@
 }
 
 .stats {
-    background-color: green;
+    background-color: lightcoral;
 
     height: 30%;
 
