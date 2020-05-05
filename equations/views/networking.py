@@ -186,6 +186,9 @@ def handle_start_game():
     rooms_info[room] = {
         "game_started": True,
         "players": current_players,
+        "p1scores": [],
+        "p2scores": [],
+        "p3scores": [],
         "starttime": time.time(),
         "cube_index": rolled_cubes,  # fixed length of 24, index is cube's id
         "resources": rolled_cubes,  # fixed length of 24
@@ -196,7 +199,6 @@ def handle_start_game():
         "turn": random.randint(0, len(current_players) - 1),
         "touched_cube": None,
         "goalset": False,
-        "state": "goalset",  # enum?
         "num_timer_flips": 0,
         "10s_warning_called": False,
     }
@@ -255,15 +257,51 @@ def handle_cube_click(pos):
     room = user_info[user]['room']
 
     # TODO: state later for goal setting, bonus moves, etc
+
+    # Reject if a cube has already been clicked. You touch it you move it!
     if rooms_info[room]['touched_cube'] is not None:
+        return
+
+    if rooms_info[room]["resources"][pos] == -1:  # magic bad
         return
 
     turn_idx = rooms_info[room]['turn']
     turn_user = rooms_info[room]['players'][turn_idx]
 
     if turn_user == user:
-        rooms_info[room]['touched_cube'] = pos
-        emit("highlight_cube", pos, room=room)
+        if not rooms_info[room]["goalset"] and len(rooms_info[room]["goal"]) >= 6:
+            emit("server_message", "Max number of cubes on goal set! Please press \"Goal Set!\"", room=room)
+            return
+        else:
+            rooms_info[room]['touched_cube'] = pos
+            emit("highlight_cube", pos, room=room)
+
+def move_cube(room, sectorid):
+    """Update data structures and generate message to send to client upon moving a cube."""
+    [sector_str, _] = sectorid.split('-')
+
+    touched_cube_idx = rooms_info[room]['touched_cube']
+    assert touched_cube_idx is not None
+    rooms_info[room][sector_str].append(touched_cube_idx)
+    rooms_info[room]['touched_cube'] = None
+    rooms_info[room]["resources"][touched_cube_idx] = -1  # magic bad
+
+    move_command = {
+        "from": touched_cube_idx,
+        "to": sectorid,
+    }
+    return move_command
+
+def next_turn(room):
+    """Move to next turn in a room."""
+    next_turn_idx = (rooms_info[room]["turn"] + 1) % \
+        len(rooms_info[room]["players"])
+    rooms_info[room]["turn"] = next_turn_idx
+
+    # TODO timer logic
+    # TODO ability to challenge
+
+    return rooms_info[room]["players"][next_turn_idx]
 
 @equations.socketio.on("sector_clicked")
 def handle_sector_click(sectorid):
@@ -272,11 +310,28 @@ def handle_sector_click(sectorid):
     print(f"{name} clicked {sectorid} in room {room}")
 
     if name != get_current_mover(room):
-        print(f"Not {name}'s turn. Do nothing.'")
+        print(f"Not {name}'s turn. Do nothing.")
         return
+
+    if not rooms_info[room]["goalset"]:
+        if sectorid != "goal-sector":
+            print(f"Goalsetter clicked on a non-goal area.")
+            return
+    elif sectorid == "goal-sector":
+        print(f"Someone clicked on goal area but goal is already set")
+        return
+
+    emit("move_cube", move_cube(room, sectorid), room=room)
+    
+    if rooms_info[room]["goalset"]:
+        emit("next_turn", next_turn(room), room=room)
 
 @equations.socketio.on("set_goal")
 def handle_set_goal():
     """Handle goal set."""
-    print("Goal set!")
+    [name, room] = get_name_and_room(flask.request.sid)
+    assert name == get_current_mover(room)
+    rooms_info[room]["goalset"] = True
+
+    emit("next_turn", next_turn(room), room=room)
     

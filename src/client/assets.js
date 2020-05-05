@@ -20,6 +20,7 @@ function downloadAsset(assetName) {
             resolve();
         };
         asset.src = `/static/cubes/${assetName}`;
+        asset.classList.add("rounded-corners");
     });
 }
 

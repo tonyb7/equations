@@ -212,7 +212,7 @@ body {
 
 }
 
-.scores table th {
+.scores table th, td {
     /* border: dotted;
     border-color: white; */
 
@@ -575,14 +575,14 @@ body {
     overflow-y: scroll;
 }
 
-.play-sector.cubes.playable-area table th {
+.play-sector.cubes.playable-area table td {
     /* border: dotted;
     border-color: white; */
     height: 3vw;
     width: 3vw;
 }
 
-.play-sector.cubes.playable-area table th img {
+.play-sector.cubes.playable-area table td img {
     height: 3vw;
     width: 3vw;
 }
@@ -597,4 +597,15 @@ body {
 
 .hidden {
     display: none;
+}
+
+.goal-highlight {
+    border: solid;
+    border-width: 0.15vw;
+    border-color: white;
+    border-radius: 0.5vw;
+}
+
+.rounded-corners {
+    border-radius: 0.5vw;
 }

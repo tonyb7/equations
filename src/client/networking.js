@@ -3,7 +3,7 @@
 import io from 'socket.io-client';
 import { cleanInput, appendMessage } from './message_utils';
 import { renderResources, initializeScoreboard, 
-    updateTurn } from './board';
+    updateTurn, moveCube, renderGoal, renderSector } from './board';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -56,12 +56,18 @@ function registerSocketCallbacks(name) {
     });
 
     socket.on("render_game_state", (game) => {
-        renderResources(game['resources']);
+        initializeBoardCallbacks();
         initializeScoreboard(game['players']);
         updateTurn(game['players'][game['turn']]);
-        initializeBoardCallbacks();
+
+        renderResources(game['resources']);
+        renderGoal(game['goal']);
+        renderSector(game['forbidden'], "forbidden-sector"); // magic constant bad
+        renderSector(game['permitted'], "permitted-sector");
+        renderSector(game['required'], "required-sector"); 
 
         // TODO Remember to expand upon once more game features are added
+        // TODO time, scores
 
     });
     
@@ -91,10 +97,20 @@ function registerSocketCallbacks(name) {
     });
 
     socket.on("highlight_cube", (pos) => {
-        // TODO dehighlight once moved
+        // Should never receive highlight_cube on an invalid pos 
+        // Server checks that pos in resources is valid
         let surrounding_th = document.getElementById(`r${pos}`);
         let image = surrounding_th.querySelector("img");
         image.classList.add("highlight-img");
+    });
+
+    socket.on("move_cube", (directions) => moveCube(directions));
+
+    socket.on("next_turn", (player) => {
+        updateTurn(player);
+
+        // TODO timer stuff potentially
+
     });
 }
 
