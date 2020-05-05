@@ -468,7 +468,7 @@ body {
     position: relative;
 }
 
-.goal-area.goal-cubes.playable-area {
+.goal-area.goal-cubes.play-area {
     border: dotted;
     border-color: white;
 
@@ -479,21 +479,42 @@ body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
 }
 
-.goal-area.goal-cubes.playable-area th {
-    /* border: dotted;
-    border-color: white; */
+.goal-area.goal-cubes.play-area table {
+    border: dotted;
+    border-color: white;
+}
 
+.goal-area.goal-cubes.play-area th {
     width: 4vw;
     height: 4vw;
 
-    transform: translateY(10%);
+    transform: translateY(0%);
 }
 
-.goal-area.goal-cubes.playable-area th img {
+.goal-area.goal-cubes.play-area th img {
     width: 3vw;
     height: 3vw;
+}
+
+.goal-area.goal-cubes.play-area #btn-div {
+    margin-right: 6vw;
+}
+
+.goal-area.goal-cubes.play-area button {
+    font-family: monospace;
+    font-size: 1vw;
+    width: 7vw;
+
+    border-radius: 2vw;
+    height: 35%;
+    transform: translate(15%, 90%);
 }
 
 .cube-area {    
@@ -572,4 +593,8 @@ body {
 
 .extra-cube {
     transform: translate(0%, -100%);
+}
+
+.hidden {
+    display: none;
 }
