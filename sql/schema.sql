@@ -8,31 +8,19 @@ CREATE TABLE users(
 );
 
 CREATE TABLE games(
-    nonce VARCHAR(20) NOT NULL, 
+    nonce VARCHAR(20) NOT NULL,
     ended INTEGER,
     players TEXT, 
-    spectators TEXT,
+    p1scores TEXT,
+    p2scores TEXT,
+    p3scores TEXT,
+    cube_index TEXT,
+    resources TEXT,
+    goal TEXT,
+    required TEXT,
+    permitted TEXT,
+    forbidden TEXT,
+    turn TEXT,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(nonce)
-);
-
-CREATE TABLE states(
-    nonce VARCHAR(20) NOT NULL, 
-    goal TEXT, 
-    variations TEXT, 
-    resources TEXT, 
-    required TEXT, 
-    permitted TEXT, 
-    forbidden TEXT, 
-    challenge INTEGER,
-    turn INTEGER,
-    FOREIGN KEY(nonce) REFERENCES games(nonce) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE scores(
-    nonce VARCHAR(20) NOT NULL,
-    p1score INTEGER,
-    p2score INTEGER,
-    p3score INTEGER,
-    FOREIGN KEY(nonce) REFERENCES games(nonce) ON DELETE CASCADE ON UPDATE CASCADE
 );

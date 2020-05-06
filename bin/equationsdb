@@ -48,9 +48,8 @@ dump() {
 	# sqlite3 var/equations.sqlite3 ".tables" 2>/dev/null | read tables
 	# $tables
 	set -x
+	sqlite3 -batch -line var/equations.sqlite3 'SELECT * FROM users'
 	sqlite3 -batch -line var/equations.sqlite3 'SELECT * FROM games'
-	sqlite3 -batch -line var/equations.sqlite3 'SELECT * FROM states'
-	sqlite3 -batch -line var/equations.sqlite3 'SELECT * FROM scores'
 	{ set +x; } 2>/dev/null
 }
 

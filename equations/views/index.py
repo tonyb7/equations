@@ -3,6 +3,7 @@
 import os
 import flask
 import equations
+from equations.data import can_create_room, rooms_info
 import uuid
 from equations.views.networking import can_create_room
 
@@ -34,12 +35,6 @@ def create_game():
         return flask.redirect(flask.url_for('show_index'))
 
     name = flask.session['username']
-
-    # Redundant because of usernames now
-    if len(name) < 1:
-        flask.flash("Your name cannot be empty!")
-        return flask.redirect(flask.url_for('show_index'))
-
     connection = equations.model.get_db()
 
     # This is ugly and might break if enough games are played
@@ -59,8 +54,8 @@ def create_game():
         return flask.redirect(flask.url_for('show_index'))
 
     connection.execute(
-        "INSERT INTO games(nonce, ended, players) "
-        f"VALUES(\'{game_nonce}\', 0, \'{name}\');"
+        "INSERT INTO games(nonce, ended) "
+        f"VALUES(\'{game_nonce}\', 0);"
     )
 
     return flask.redirect(flask.url_for('show_game', nonce=game_nonce, name=name))
@@ -73,12 +68,6 @@ def join_game():
         return flask.redirect(flask.url_for('show_index'))
         
     name = flask.session['username']
-
-    # Redundant now
-    if len(name) < 1:
-        flask.flash("Your name cannot be empty!")
-        return flask.redirect(flask.url_for('show_index'))
-    
     room_id = flask.request.form['room']
     connection = equations.model.get_db()
 
@@ -91,9 +80,10 @@ def join_game():
         flask.flash(f"The Room ID you entered ({room_id}) does not exist!")
         return flask.redirect(flask.url_for('show_index'))
 
-    if game_info['ended']:
-        flask.flash(f"The game with Room ID of {room_id} has ended already!")
-        return flask.redirect(flask.url_for('show_index'))
+    if game_info['ended'] and room_id not in rooms_info:
+        rooms_info[room_id] = { 
+            # TODO parse game_info
+        }
 
     return flask.redirect(flask.url_for('show_game', nonce=room_id, name=name))
 
@@ -102,11 +92,6 @@ def show_game(nonce):
     """Show the game with nonce nonce."""
     if not flask.request.referrer:
         flask.flash("Please join a game by clicking \"Join Existing Game\"")
-        return flask.redirect(flask.url_for('show_index'))
-
-    # Also redundant
-    if 'username' not in flask.session:
-        flask.flash("Please log in before joining a game.")
         return flask.redirect(flask.url_for('show_index'))
 
     base_url = equations.app.config["BASE_URL"]
