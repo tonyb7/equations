@@ -15,12 +15,6 @@ def on_connect():
 @equations.socketio.on('register_player')
 def register_player(player_info):
     """Register a player."""
-
-    print("register_player begin")
-    print(rooms_info)
-    print(user_info)
-    print(socket_info)
-
     socketid = flask.request.sid
     name = player_info['name']
     room = player_info['room']
@@ -65,8 +59,8 @@ def register_player(player_info):
         # See Issue #17 on Github
         if name in rooms_info[room]["players"]:
             # join as existing player
-            assert name in user_info
-            assert user_info[name]["gameroom"] == room
+            # assert name in user_info game coulda ended
+            # assert user_info[name]["gameroom"] == room game coulda ended
             rejoin = True
             print(f"{name} rejoined room {room}")
         elif rooms_info[room]["game_started"] or len(rooms_info[room]["players"]) >= 3 \
@@ -110,31 +104,20 @@ def register_player(player_info):
     spectator_str = "" if joined_as_player else " as spectator"
     emit("server_message", f"{name} has {rejoin_str}{spectator_str}.", room=room)
 
-    players_message = "Players in this room: "
+    players_message = "Players of this game: "
     player_names_message = ", ".join(rooms_info[room]['players'])
     emit("server_message", players_message + player_names_message, room=room)
 
-    if len(rooms_info[room]['spectators']) > 0:
-        spectator_message = "Spectators in this room: "
-        spectator_names_message = ", ".join(rooms_info[room]['spectators'])
-        emit("server_message", spectator_message + spectator_names_message, room=room)
+    people_message = "People in this room: "
+    people = ", ".join([socket_info[x]['name'] for x in rooms_info[room]["sockets"]])
+    emit("server_message", people_message + people, room=room)
 
-    print("register_player end")
-    print(rooms_info)
-    print(user_info)
-    print(socket_info)
-
+    if rooms_info[room]["game_finished"]:
+        emit("server_message", "This game has finished.", room=room)
 
 @equations.socketio.on('disconnect')
 def on_disconnect():
     """Handle disconnect."""
-
-    print("on_disconnect begin")
-    print(rooms_info)
-    print(user_info)
-    print(socket_info)
-
-
     print(f"Client {flask.request.sid} disconnected!")
     socketid = flask.request.sid
 
@@ -178,10 +161,11 @@ def on_disconnect():
         # If a player leaves before a game is started, then remove him/her as a player
         current_game = user_info[username]["gameroom"]
         if current_game is not None:
-            assert current_game in rooms_info
-            if not rooms_info[current_game]["game_started"]:
+            if current_game not in rooms_info:
+                user_info[username]["gameroom"] = None
+            elif not rooms_info[current_game]["game_started"]:
+                user_info[username]["gameroom"] = None
                 rooms_info[current_game]["players"].remove(username)
-                user_info[user_name]["gameroom"] = None
 
         # Unmap user if he/she is not in any rooms and he/she is not playing a game
         if len(user_info[username]["latest_socketids"]) == 0 and \
@@ -194,8 +178,3 @@ def on_disconnect():
     else:
         # User made a new connection to the room, so current socket is outdated
         print(f"Outdated socket {socketid} for user {username} disconnected")
-
-    print("on_disconnect end")
-    print(rooms_info)
-    print(user_info)
-    print(socket_info)

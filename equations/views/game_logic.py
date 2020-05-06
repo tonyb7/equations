@@ -28,6 +28,9 @@ def handle_start_game():
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed start_game for room {room}!")
 
+    if rooms_info[room]["game_finished"]:  # TODO in case where non started game was "finished"...pls check
+        return
+
     if room not in rooms_info or rooms_info[room]['game_started']:
         print("Game start rejected")
         return
@@ -125,6 +128,9 @@ def handle_cube_click(pos):
     """Highlight cube if it's clicker's turn and clicker hasn't clicked yet."""
     [user, room] = get_name_and_room(flask.request.sid)
 
+    if rooms_info[room]["game_finished"]:
+        return
+
     # TODO: state later for goal setting, bonus moves, etc
 
     # Reject if a cube has already been clicked. You touch it you move it!
@@ -178,6 +184,9 @@ def handle_sector_click(sectorid):
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} clicked {sectorid} in room {room}")
 
+    if rooms_info[room]["game_finished"]:
+        return
+
     if name != get_current_mover(room):
         print(f"Not {name}'s turn. Do nothing.")
         return
@@ -200,6 +209,10 @@ def handle_set_goal():
     """Handle goal set."""
     [name, room] = get_name_and_room(flask.request.sid)
     assert name == get_current_mover(room)
+
+    if rooms_info[room]["game_finished"]:
+        return
+
     rooms_info[room]["goalset"] = True
 
     emit("next_turn", next_turn(room), room=room)
