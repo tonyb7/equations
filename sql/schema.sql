@@ -9,7 +9,7 @@ CREATE TABLE users(
 
 CREATE TABLE games(
     nonce VARCHAR(20) NOT NULL, 
-    started INTEGER, 
+    ended INTEGER,
     players TEXT, 
     spectators TEXT,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

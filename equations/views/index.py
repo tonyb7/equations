@@ -4,7 +4,7 @@ import os
 import flask
 import equations
 import uuid
-from equations.views.networking import can_join_room
+from equations.views.networking import can_create_room
 
 @equations.app.route("/favicon.ico")
 def show_favicon():
@@ -54,12 +54,12 @@ def create_game():
         if game_nonce_dict is None:
             game_nonce = proposed_nonce
 
-    if not can_join_room(game_nonce, name):
-        flask.flash("If you are already in a game, you cannot join another.")
+    if not can_create_room(name):
+        flask.flash("You are already in a game, so you cannot create another.")
         return flask.redirect(flask.url_for('show_index'))
 
     connection.execute(
-        "INSERT INTO games(nonce, started, players) "
+        "INSERT INTO games(nonce, ended, players) "
         f"VALUES(\'{game_nonce}\', 0, \'{name}\');"
     )
 
@@ -91,10 +91,8 @@ def join_game():
         flask.flash(f"The Room ID you entered ({room_id}) does not exist!")
         return flask.redirect(flask.url_for('show_index'))
 
-    if not can_join_room(room_id, name):
-        flask.flash("That game has already started or is full. \
-            Spectator mode is not supported at the moment")
-        flask.flash("If you are already in a game, you cannot join another.")
+    if game_info['ended']:
+        flask.flash(f"The game with Room ID of {room_id} has ended already!")
         return flask.redirect(flask.url_for('show_index'))
 
     return flask.redirect(flask.url_for('show_game', nonce=room_id, name=name))
