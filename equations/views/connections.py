@@ -3,6 +3,7 @@
 import flask
 import equations
 from equations.data import rooms_info, user_info, socket_info, MapsLock, get_name_and_room
+from equations.db_serialize import db_insert
 from flask_socketio import join_room, leave_room, emit
 
 
@@ -14,6 +15,12 @@ def on_connect():
 @equations.socketio.on('register_player')
 def register_player(player_info):
     """Register a player."""
+
+    print("register_player begin")
+    print(rooms_info)
+    print(user_info)
+    print(socket_info)
+
     socketid = flask.request.sid
     name = player_info['name']
     room = player_info['room']
@@ -81,10 +88,8 @@ def register_player(player_info):
     
     if name not in user_info:
         user_info[name] = {
-            "gameroom": room if joined_as_player else None
-        }
-        user_info[name] = {
-            "latest_socketids": {}
+            "latest_socketids": {},
+            "gameroom": room if joined_as_player else None,
         }
         user_info[name]["latest_socketids"][room] = socketid
     else:
@@ -107,14 +112,29 @@ def register_player(player_info):
 
     players_message = "Players in this room: "
     player_names_message = ", ".join(rooms_info[room]['players'])
-    spectator_message = ". Spectators in this room: "
-    spectator_names_message = ", ".join(rooms_info[room]['spectators'])
-    full_message = players_message + player_names_message + spectator_message + spectator_names_message
-    emit("server_message", full_message, room=room)
+    emit("server_message", players_message + player_names_message, room=room)
+
+    if len(rooms_info[room]['spectators']) > 0:
+        spectator_message = "Spectators in this room: "
+        spectator_names_message = ", ".join(rooms_info[room]['spectators'])
+        emit("server_message", spectator_message + spectator_names_message, room=room)
+
+    print("register_player end")
+    print(rooms_info)
+    print(user_info)
+    print(socket_info)
+
 
 @equations.socketio.on('disconnect')
 def on_disconnect():
     """Handle disconnect."""
+
+    print("on_disconnect begin")
+    print(rooms_info)
+    print(user_info)
+    print(socket_info)
+
+
     print(f"Client {flask.request.sid} disconnected!")
     socketid = flask.request.sid
 
@@ -137,13 +157,10 @@ def on_disconnect():
     rooms_info[room]["sockets"].remove(socketid)
     if len(rooms_info[room]["sockets"]) == 0:
         # If all players leave, then game is considered finished even if it's not.
-        if not rooms_info[room]["game_finished"]:
+        if rooms_info[room]["game_started"] and not rooms_info[room]["game_finished"]:
             rooms_info[room]["game_finished"] = True
 
-            connection = equations.model.get_db()
-            connection.execute(
-                # TODO serialize and put in database
-            )
+            db_insert(room, rooms_info[room])
 
             for player in rooms_info[room]["players"]:
                 assert player in user_info
@@ -177,3 +194,8 @@ def on_disconnect():
     else:
         # User made a new connection to the room, so current socket is outdated
         print(f"Outdated socket {socketid} for user {username} disconnected")
+
+    print("on_disconnect end")
+    print(rooms_info)
+    print(user_info)
+    print(socket_info)

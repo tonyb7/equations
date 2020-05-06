@@ -20,7 +20,7 @@ CREATE TABLE games(
     required TEXT,
     permitted TEXT,
     forbidden TEXT,
-    turn TEXT,
+    turn INTEGER,
     created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(nonce)
 );

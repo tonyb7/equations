@@ -1,11 +1,11 @@
 """Show the homepage."""
 
 import os
+import uuid
 import flask
 import equations
 from equations.data import can_create_room, rooms_info
-import uuid
-from equations.views.networking import can_create_room
+from equations.db_serialize import db_deserialize
 
 @equations.app.route("/favicon.ico")
 def show_favicon():
@@ -81,9 +81,7 @@ def join_game():
         return flask.redirect(flask.url_for('show_index'))
 
     if game_info['ended'] and room_id not in rooms_info:
-        rooms_info[room_id] = { 
-            # TODO parse game_info
-        }
+        rooms_info[room_id] = db_deserialize(game_info)
 
     return flask.redirect(flask.url_for('show_game', nonce=room_id, name=name))
 

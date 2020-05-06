@@ -123,9 +123,7 @@ def handle_force_out():
 @equations.socketio.on("cube_clicked")
 def handle_cube_click(pos):
     """Highlight cube if it's clicker's turn and clicker hasn't clicked yet."""
-    socketid = flask.request.sid
-    user = socket_info[socketid]
-    room = user_info[user]['room']
+    [user, room] = get_name_and_room(flask.request.sid)
 
     # TODO: state later for goal setting, bonus moves, etc
 
