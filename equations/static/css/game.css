@@ -182,7 +182,7 @@ body {
     flex-direction: row;
     align-items: stretch;
 
-    margin-bottom: 0.3vh;
+    margin-bottom: 1vh;
 }
 
 .time-elapsed #elapsed-text {

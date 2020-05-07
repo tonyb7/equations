@@ -60,17 +60,9 @@ def create_game():
 
     return flask.redirect(flask.url_for('show_game', nonce=game_nonce, name=name))
 
-@equations.app.route("/join/", methods=['POST'])
-def join_game():
-    """Join an existing game."""
-    if 'username' not in flask.session:
-        flask.flash("Please log in before creating a game.")
-        return flask.redirect(flask.url_for('show_index'))
-        
-    name = flask.session['username']
-    room_id = flask.request.form['room']
+def get_game_from_db(room_id):
+    """Helper function to get a game from the DB and do checks on it."""
     connection = equations.model.get_db()
-
     game_info = connection.execute(
         "SELECT * FROM games "
         f"WHERE nonce=\'{room_id}\'"
@@ -83,6 +75,18 @@ def join_game():
     if game_info['ended'] and room_id not in rooms_info:
         rooms_info[room_id] = db_deserialize(game_info)
 
+@equations.app.route("/join/", methods=['POST'])
+def join_game():
+    """Join an existing game."""
+    if 'username' not in flask.session:
+        flask.flash("Please log in before creating a game.")
+        return flask.redirect(flask.url_for('show_index'))
+        
+    name = flask.session['username']
+    room_id = flask.request.form['room']
+
+    get_game_from_db(room_id)
+
     return flask.redirect(flask.url_for('show_game', nonce=room_id, name=name))
 
 @equations.app.route("/game/<nonce>/", methods=['GET'])
@@ -91,6 +95,13 @@ def show_game(nonce):
     if not flask.request.referrer:
         flask.flash("Please join a game by clicking \"Join Existing Game\"")
         return flask.redirect(flask.url_for('show_index'))
+
+    # When a spectator spectates a finished game and the last socket connection 
+    # disconnects, on_disconnect in connections.py deletes the room from the room_info,
+    # and then a refresh bypasses join_game in index.py and goes directly to show_game
+    # See Issue #18 on GitHub
+    if nonce not in rooms_info:
+        get_game_from_db(nonce)
 
     base_url = equations.app.config["BASE_URL"]
     context = {
