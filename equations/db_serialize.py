@@ -34,7 +34,7 @@ def db_insert(room, game_info):
 def split_string_by_comma(string):
     """Split a string by commas."""
     l = None
-    if len(string) == 0:
+    if string is None:
         l = []
     else:
         l = string.split(",")
@@ -43,7 +43,7 @@ def split_string_by_comma(string):
 def db_deserialize(db_result):
     """Translate db result to game_info dict. Kinda dupe down there."""
     game_info = {
-        "game_started": len(db_result["cube_index"]) > 0,
+        "game_started": db_result["cube_index"] is not None,
         "game_finished": db_result["ended"],
         "players": split_string_by_comma(db_result["players"]),
         "spectators": [],
@@ -67,5 +67,7 @@ def db_deserialize(db_result):
 
     game_info["players"].append("Game Ended")
     game_info["turn"] = len(game_info["players"]) - 1
+
+    print(game_info)
 
     return game_info

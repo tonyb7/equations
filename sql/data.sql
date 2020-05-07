@@ -7,3 +7,7 @@ VALUES ('Server', 'sha512$bc01cc83f48a4f9692d79b7a7a2e3eae$a2cadd82b348fc1516da2
 	
 INSERT INTO games(nonce, ended, players) 
 VALUES('example', 1, "Kern,Danny,Brian");
+
+INSERT INTO games(nonce, ended, players, p1scores, p2scores, p3scores, cube_index, resources, goal, required, turn)  
+VALUES('example2', 1, "Kern,Danny,Brian", "4,2,6", "2,6,4", "6,4,2", "4,3,5,1,4,2,4,5,1,2,1,4,1,5,0,0,0,2,4,2,0,1,4,1", 
+"4,3,5,1,4,2,4,5,1,2,1,4,1,5,0,0,0,2,4,2,0,1,-1,-1", "23", "22", 0);

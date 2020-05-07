@@ -91,26 +91,23 @@ def register_player(player_info):
             user_info[name]['gameroom'] = room
         user_info[name]["latest_socketids"][room] = socketid
     
-    if rooms_info[room]['game_started']:
-        # Send current game state to just-joined player so he/she is up to date
-        # De-register start button callback; register board callbacks if is a player TODO
-        emit("render_game_state", rooms_info[room])  # TODO race condition with above...
-    elif joined_as_player:
-        # Joined as player on a not-yet-started game TODO
-        # Allow players to press start button as appropriate (ONLY IF game hasnt started)
-        emit("register_player_callbacks", room=room)  # TODO 
+    if rooms_info[room]['game_started'] and not joined_as_player:
+        # Render every visual aspect of the board correctly for a spectator.
+        # Required only if game has started
+        emit("render_spectator_state", rooms_info[room])  # TODO
+    if joined_as_player:
+        # Joined as player. Clientside should render visuals as well as register
+        # callbacks as appropriate (according to whether game has started)
+        emit("render_player_state", rooms_info[room])  # TODO 
 
     rejoin_str = "rejoined" if rejoin else "joined"
     spectator_str = "" if joined_as_player else " as spectator"
     emit("server_message", f"{name} has {rejoin_str}{spectator_str}.", room=room)
-
-    players_message = "Players of this game: "
-    player_names_message = ", ".join(rooms_info[room]['players'])
-    emit("server_message", players_message + player_names_message, room=room)
-
-    people_message = "People in this room: "
-    people = ", ".join([socket_info[x]['name'] for x in rooms_info[room]["sockets"]])
-    emit("server_message", people_message + people, room=room)
+    
+    if len(rooms_info[room]["spectators"]) > 0:
+        people_message = "People in this room: "
+        people = ", ".join([socket_info[x]['name'] for x in rooms_info[room]["sockets"]])
+        emit("server_message", people_message + people, room=room)
 
     if rooms_info[room]["game_finished"]:
         emit("server_message", "This game has finished.", room=room)
@@ -137,6 +134,7 @@ def on_disconnect():
     del socket_info[socketid]
 
     # Update room info
+    filter(lambda x: x != username, rooms_info[room]["spectators"])
     rooms_info[room]["sockets"].remove(socketid)
     if len(rooms_info[room]["sockets"]) == 0:
         # If all players leave, then game is considered finished even if it's not.

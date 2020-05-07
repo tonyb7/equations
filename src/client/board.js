@@ -88,9 +88,17 @@ function fillSector(cubes, sectorid, cube_idx) {
 
 export function initializeScoreboard(players) {
     let scoreboard = document.getElementById("scoreboard");
-    for (let i = 0; i < players.length; ++i) {
+    for (let i = 0; i < Math.min(players.length, 3); ++i) {
         scoreboard.rows[0].cells.item(i).innerHTML = players[i];
     }
+}
+
+export function highlightResourcesCube(position) {
+    // Should never receive highlight_cube on an invalid pos 
+    // Server checks that pos in resources is valid
+    let surrounding_th = document.getElementById(`r${position}`);
+    let image = surrounding_th.querySelector("img");
+    image.classList.add("highlight-img");
 }
 
 // Future TODO: next turn can be smarter if players stored
@@ -134,3 +142,19 @@ function addRowsToSector(sectorid, begin_idx) {
         new_cell.id = `${sector_code_map.get(sectorid)}${begin_idx + i}`;
     }
 }
+
+// Render all visuals, including the board, resources/cubes, and scoreboard
+export const renderGameVisuals = (game) => {
+    initializeScoreboard(game['players']);  // players in room will always be shown on scoreboard
+    updateTurn(game['players'][game['turn']]);
+
+    renderResources(game['resources']);
+    renderGoal(game['goal'], game['cube_index']);
+    renderSector(game['forbidden'], "forbidden-sector", game['cube_index']); // magic constant bad
+    renderSector(game['permitted'], "permitted-sector", game['cube_index']);
+    renderSector(game['required'], "required-sector", game['cube_index']); 
+
+    // TODO Remember to expand upon once more game features are added
+    // TODO time, scores
+}
+
