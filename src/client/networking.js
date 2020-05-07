@@ -3,7 +3,8 @@
 import io from 'socket.io-client';
 import { cleanInput, appendMessage } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
-    highlightResourcesCube, updateTurn, moveCube, renderGameVisuals } from './board';
+    highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
+    updateBonusButton } from './board';
 import { initializeBoardCallbacks, registerGoalSetButton, registerStartButton } from './callbacks';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
@@ -23,7 +24,7 @@ export const connect = () => {
 
         let player_info = {
             'room': room_nonce, 
-            'name': name
+            'name': name,
         };
 
         // Register callbacks
@@ -52,7 +53,7 @@ function registerSocketCallbacks(name) {
     socket.on("render_player_state", (game) => {
         renderGameVisuals(game);
         if (game['game_started']) {
-            initializeBoardCallbacks(socket);
+            initializeBoardCallbacks(socket, game['players'][game['turn']], name);
             registerGoalSetButton(socket, name, game['players'][game['turn']], !game["goalset"]);
         }
         else {
@@ -69,10 +70,10 @@ function registerSocketCallbacks(name) {
 
         renderResources(cubes);
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
-        initializeBoardCallbacks(socket);
 
         let firstmover = data['players'][data['firstmove']];
-        updateTurn(firstmover);
+        initializeBoardCallbacks(socket, firstmover, name);
+        updateTurnText(firstmover);
         registerGoalSetButton(socket, name, firstmover, true);
     });
 
@@ -81,7 +82,9 @@ function registerSocketCallbacks(name) {
     socket.on("move_cube", (directions) => moveCube(directions));
 
     socket.on("next_turn", (player) => {
-        updateTurn(player);
+        updateTurnText(player);
+        updateBonusButton(player, name);
+        
         // TODO timer stuff potentially
     });
 }

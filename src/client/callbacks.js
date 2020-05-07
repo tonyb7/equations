@@ -1,6 +1,8 @@
 // Module for holding helper functions that register and deregister 
 // callbacks on the board and for buttons
 
+import { updateBonusButton } from './board';
+
 export function registerStartButton(socket) {
     let buttons = getButtonsDiv();
     let start_button = buttons.querySelector("#start_game");
@@ -27,7 +29,7 @@ export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
     }
 };
 
-export function initializeBoardCallbacks(socket) {
+export function initializeBoardCallbacks(socket, turn_name, my_name) {
     let board_sectors = ["forbidden-sector", "permitted-sector", 
                          "required-sector", "goal-sector"];
     for (const id of board_sectors) {
@@ -38,6 +40,8 @@ export function initializeBoardCallbacks(socket) {
     }
 
     registerGameStartCallbacks(socket);
+    registerBonusButtonCallback(socket);
+    updateBonusButton(turn_name, my_name);
 }
 
 function getButtonsDiv() {
@@ -66,5 +70,19 @@ function registerButton(socket, button, socket_label) {
     button.onclick = () => {
         console.log(`Button for ${socket_label} clicked!`);
         socket.emit(socket_label);
+    };
+}
+
+function registerBonusButtonCallback(socket) {
+    let bonus_button = document.getElementById("bonus-button");
+    bonus_button.onclick = () => {
+        if (bonus_button.classList.contains("button-clicked")) {
+            bonus_button.classList.remove("button-clicked");
+            socket.emit("bonus_unclicked");
+        }
+        else {
+            bonus_button.classList.add("button-clicked");
+            socket.emit("bonus_clicked");
+        }
     };
 }

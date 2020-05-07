@@ -165,7 +165,7 @@ def move_cube(room, sectorid):
         "from": touched_cube_idx,
         "to": sectorid,
     }
-    return move_command
+    emit("move_cube", move_command, room=room)
 
 def next_turn(room):
     """Move to next turn in a room."""
@@ -173,10 +173,10 @@ def next_turn(room):
         len(rooms_info[room]["players"])
     rooms_info[room]["turn"] = next_turn_idx
 
+    emit("next_turn", rooms_info[room]["players"][next_turn_idx], room=room)
+
     # TODO timer logic
     # TODO ability to challenge
-
-    return rooms_info[room]["players"][next_turn_idx]
 
 @equations.socketio.on("sector_clicked")
 def handle_sector_click(sectorid):
@@ -199,10 +199,10 @@ def handle_sector_click(sectorid):
         print(f"Someone clicked on goal area but goal is already set")
         return
 
-    emit("move_cube", move_cube(room, sectorid), room=room)
+    move_cube(room, sectorid)
     
     if rooms_info[room]["goalset"]:
-        emit("next_turn", next_turn(room), room=room)
+        next_turn(room)
 
 @equations.socketio.on("set_goal")
 def handle_set_goal():
@@ -214,6 +214,15 @@ def handle_set_goal():
         return
 
     rooms_info[room]["goalset"] = True
-
-    emit("next_turn", next_turn(room), room=room)
+    next_turn(room)
     
+@equations.socketio.on("bonus_clicked")
+def handle_bonus_click():
+    """Bonus button was clicked."""
+    pass
+
+@equations.socketio.on("bonus_unclicked")
+def handle_bonus_unclick():
+    """Bonus button was unclicked."""
+    pass
+

@@ -123,8 +123,7 @@ export function highlightResourcesCube(position) {
     image.classList.add("highlight-img");
 }
 
-// Future TODO: next turn can be smarter if players stored
-export function updateTurn(name) {
+export function updateTurnText(name) {
     let turn_elt = document.getElementById("actual-turn-text");
     turn_elt.innerHTML = `${name}`;
 }
@@ -172,7 +171,6 @@ function addRowsToSector(sectorid, begin_idx) {
 
 // Render all visuals, including the board, resources/cubes, and scoreboard
 export const renderGameVisuals = (game) => {
-     // players in room will always be shown on scoreboard
     fillScoreboardScores(initializeScoreboard(game['players']), 
         game["p1scores"], game["p2scores"], game["p3scores"]);
     
@@ -180,13 +178,13 @@ export const renderGameVisuals = (game) => {
         updateTurnFinished();
     }
     else {
-        updateTurn(game['players'][game['turn']]);
+        updateTurnText(game['players'][game['turn']]);
     }
 
     if (game["game_started"]) {
         renderResources(game['resources']);
         renderGoal(game['goal'], game['cube_index']);
-        renderSector(game['forbidden'], "forbidden-sector", game['cube_index']); // magic constant bad
+        renderSector(game['forbidden'], "forbidden-sector", game['cube_index']);
         renderSector(game['permitted'], "permitted-sector", game['cube_index']);
         renderSector(game['required'], "required-sector", game['cube_index']);
     } 
@@ -195,3 +193,13 @@ export const renderGameVisuals = (game) => {
     // TODO time, scores
 }
 
+export function updateBonusButton(player, name) {
+    let bonus_button = document.getElementById("bonus-button");
+    if (player === name) {
+        bonus_button.classList.remove("hidden");
+    }
+    else {
+        bonus_button.classList.remove("button_clicked");
+        bonus_button.classList.add("hidden");
+    }
+}
