@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>Equations</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/game.css">
-        <!-- <link rel="stylesheet" type="text/css" href="../static/css/game.css"> -->
+        <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
+        <link rel="stylesheet" type="text/css" href="../static/css/game.css">
         <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script>
             $(function () {
@@ -150,7 +150,13 @@
                         </div>
                         <div class="resources">
                             <div class="resources heading">
-                                <p>Resources</p>
+                                <div id="res-text">
+                                    <p>Resources</p>
+                                </div>
+                                <div id="res-button">
+                                    <button id="bonus-button" class="hidden">Bonus</button>
+                                    <!-- add class "button-clicked" to make button look like it's clicked -->
+                                </div>
                             </div>
                             <div class="resources cubes">
                                 <div class="resources cubes playable-area" id="resources-cubes">

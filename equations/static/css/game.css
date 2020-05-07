@@ -320,7 +320,7 @@ body {
 }
 
 .buttons-inner button {
-    margin-bottom: 0.7vw;
+    margin-bottom: 1.3vh;
     border-radius: 2.1vw;
     width: 90%;
 
@@ -348,6 +348,15 @@ body {
 
 .resources.heading {
     height: 20%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+}
+
+#res-text {
+    width: 30%;
 }
 
 .resources.heading p {
@@ -355,7 +364,22 @@ body {
     text-align: left;
     font-size: 1.7vw;
     font-family: monospace;
-    transform: translate(1%, -60%);
+    transform: translate(6%, -60%);
+}
+
+#res-button {
+    width: 15%;
+}
+
+.resources.heading button {
+    font-size: 1vw;
+    font-family: monospace;
+    transform: translate(50%, 50%);
+    border-radius: 2vw;
+}
+
+.button-clicked {
+    background-color: #d6d6d6;
 }
 
 .resources.cubes {
