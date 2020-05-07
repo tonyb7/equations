@@ -1,3 +1,9 @@
+Rules of Equations
+==================
+https://www.agloa.org/eq-docs/
+
+https://agloa.org/wp-content/uploads/EqsTourRules19-20.pdf
+
 Technology Stack
 ================
 Server Side
