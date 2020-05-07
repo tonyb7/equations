@@ -65,9 +65,4 @@ def db_deserialize(db_result):
         "10s_warning_called": False,
     }
 
-    game_info["players"].append("Game Ended")
-    game_info["turn"] = len(game_info["players"]) - 1
-
-    print(game_info)
-
     return game_info

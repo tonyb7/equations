@@ -88,7 +88,7 @@ function fillSector(cubes, sectorid, cube_idx) {
 
 export function initializeScoreboard(players) {
     let scoreboard = document.getElementById("scoreboard");
-    for (let i = 0; i < Math.min(players.length, 3); ++i) {
+    for (let i = 0; i < players.length; ++i) {
         scoreboard.rows[0].cells.item(i).innerHTML = players[i];
     }
 }
@@ -105,6 +105,11 @@ export function highlightResourcesCube(position) {
 export function updateTurn(name) {
     let turn_elt = document.getElementById("actual-turn-text");
     turn_elt.innerHTML = `${name}`;
+}
+
+function updateTurnFinished() {
+    let turn_elt = document.getElementById("actual-turn-text");
+    turn_elt.innerHTML = "Game Ended";
 }
 
 export function moveCube(directions) {
@@ -146,7 +151,13 @@ function addRowsToSector(sectorid, begin_idx) {
 // Render all visuals, including the board, resources/cubes, and scoreboard
 export const renderGameVisuals = (game) => {
     initializeScoreboard(game['players']);  // players in room will always be shown on scoreboard
-    updateTurn(game['players'][game['turn']]);
+    
+    if (game["game_finished"]) {
+        updateTurnFinished();
+    }
+    else {
+        updateTurn(game['players'][game['turn']]);
+    }
 
     renderResources(game['resources']);
     renderGoal(game['goal'], game['cube_index']);
