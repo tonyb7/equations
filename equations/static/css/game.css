@@ -381,7 +381,7 @@ body {
 .resources.heading button {
     font-size: 1vw;
     font-family: monospace;
-    transform: translate(50%, 50%);
+    transform: translate(50%, 40%);
     border-radius: 2vw;
 }
 
