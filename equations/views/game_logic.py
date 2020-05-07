@@ -54,9 +54,9 @@ def handle_start_game():
         "players": current_players,
         "spectators": rooms_info[room]["spectators"],
         "sockets": rooms_info[room]["sockets"],
-        "p1scores": [],
-        "p2scores": [],
-        "p3scores": [],
+        "p1scores": [0],
+        "p2scores": [0],
+        "p3scores": [0],
         "starttime": time.time(),
         "cube_index": rolled_cubes[:],  # fixed length of 24, index is cube's id
         "resources": rolled_cubes,  # fixed length of 24

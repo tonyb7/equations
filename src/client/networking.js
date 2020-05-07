@@ -2,8 +2,8 @@
 
 import io from 'socket.io-client';
 import { cleanInput, appendMessage } from './message_utils';
-import { renderResources, initializeScoreboard, highlightResourcesCube,
-    updateTurn, moveCube, renderGameVisuals } from './board';
+import { renderResources, initializeScoreboard, addScoreboardScore,
+    highlightResourcesCube, updateTurn, moveCube, renderGameVisuals } from './board';
 import { initializeBoardCallbacks, registerGoalSetButton, registerStartButton } from './callbacks';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
@@ -68,7 +68,7 @@ function registerSocketCallbacks(name) {
         };
 
         renderResources(cubes);
-        initializeScoreboard(data['players']);
+        addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
         initializeBoardCallbacks(socket);
 
         let firstmover = data['players'][data['firstmove']];

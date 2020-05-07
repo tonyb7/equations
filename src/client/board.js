@@ -91,6 +91,28 @@ export function initializeScoreboard(players) {
     for (let i = 0; i < players.length; ++i) {
         scoreboard.rows[0].cells.item(i).innerHTML = players[i];
     }
+    return scoreboard;
+}
+
+function fillScoreboardScores(scoreboard, p1scores, p2scores, p3scores) {
+    if (typeof p1scores === "undefined") {
+        return;
+    }
+
+    if (p1scores.length !== p2scores.length || p2scores.length != p3scores.length) {
+        console.log("Something is messed up with the scores! Not of same length!");
+    }
+
+    for (let i = 0; i < p1scores.length; ++i) {
+        addScoreboardScore(scoreboard, p1scores[i], p2scores[i], p3scores[i]);
+    }
+}
+
+export function addScoreboardScore(scoreboard, p1score, p2score, p3score) {
+    let new_row = scoreboard.insertRow();
+    new_row.insertCell().innerHTML = p1score;
+    new_row.insertCell().innerHTML = p2score;
+    new_row.insertCell().innerHTML = p3score;
 }
 
 export function highlightResourcesCube(position) {
@@ -150,7 +172,9 @@ function addRowsToSector(sectorid, begin_idx) {
 
 // Render all visuals, including the board, resources/cubes, and scoreboard
 export const renderGameVisuals = (game) => {
-    initializeScoreboard(game['players']);  // players in room will always be shown on scoreboard
+     // players in room will always be shown on scoreboard
+    fillScoreboardScores(initializeScoreboard(game['players']), 
+        game["p1scores"], game["p2scores"], game["p3scores"]);
     
     if (game["game_finished"]) {
         updateTurnFinished();
@@ -159,11 +183,13 @@ export const renderGameVisuals = (game) => {
         updateTurn(game['players'][game['turn']]);
     }
 
-    renderResources(game['resources']);
-    renderGoal(game['goal'], game['cube_index']);
-    renderSector(game['forbidden'], "forbidden-sector", game['cube_index']); // magic constant bad
-    renderSector(game['permitted'], "permitted-sector", game['cube_index']);
-    renderSector(game['required'], "required-sector", game['cube_index']); 
+    if (game["game_started"]) {
+        renderResources(game['resources']);
+        renderGoal(game['goal'], game['cube_index']);
+        renderSector(game['forbidden'], "forbidden-sector", game['cube_index']); // magic constant bad
+        renderSector(game['permitted'], "permitted-sector", game['cube_index']);
+        renderSector(game['required'], "required-sector", game['cube_index']);
+    } 
 
     // TODO Remember to expand upon once more game features are added
     // TODO time, scores

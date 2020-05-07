@@ -181,6 +181,8 @@ body {
     display: flex;
     flex-direction: row;
     align-items: stretch;
+
+    margin-bottom: 0.3vh;
 }
 
 .time-elapsed #elapsed-text {
@@ -205,14 +207,14 @@ body {
     overflow-y: scroll;
 
     table-layout: fixed;
-    transform: translate(2.5%, -50%);
+    transform: translate(2.5%, -27%);
 
     /* border: dotted;
     border-color: white; */
 
 }
 
-.scores table th, td {
+.scores table th {
     /* border: dotted;
     border-color: white; */
 
@@ -220,6 +222,11 @@ body {
     /* overflow-wrap: break-word; */
     overflow-x: scroll;
     font-size: 0.7vw;
+}
+
+.scores table td {
+    text-align: center;
+    font-size: 1.7vh;
 }
 
 .time {
