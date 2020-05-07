@@ -221,8 +221,3 @@ def handle_bonus_click():
     """Bonus button was clicked."""
     pass
 
-@equations.socketio.on("bonus_unclicked")
-def handle_bonus_unclick():
-    """Bonus button was unclicked."""
-    pass
-

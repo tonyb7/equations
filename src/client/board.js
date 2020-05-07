@@ -195,11 +195,11 @@ export const renderGameVisuals = (game) => {
 
 export function updateBonusButton(player, name) {
     let bonus_button = document.getElementById("bonus-button");
+    bonus_button.classList.remove("button_clicked");
     if (player === name) {
         bonus_button.classList.remove("hidden");
     }
     else {
-        bonus_button.classList.remove("button_clicked");
         bonus_button.classList.add("hidden");
     }
 }

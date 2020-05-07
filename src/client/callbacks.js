@@ -76,13 +76,7 @@ function registerButton(socket, button, socket_label) {
 function registerBonusButtonCallback(socket) {
     let bonus_button = document.getElementById("bonus-button");
     bonus_button.onclick = () => {
-        if (bonus_button.classList.contains("button-clicked")) {
-            bonus_button.classList.remove("button-clicked");
-            socket.emit("bonus_unclicked");
-        }
-        else {
-            bonus_button.classList.add("button-clicked");
-            socket.emit("bonus_clicked");
-        }
+        bonus_button.classList.add("button-clicked");
+        socket.emit("bonus_clicked");
     };
 }
