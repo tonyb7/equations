@@ -66,6 +66,7 @@ def handle_start_game():
         "forbidden": [],
         "turn": random.randint(0, len(current_players) - 1),
         "touched_cube": None,
+        "bonus_clicked": False,
         "goalset": False,
         "num_timer_flips": 0,
         "10s_warning_called": False,
@@ -170,13 +171,18 @@ def move_cube(room, sectorid):
 def is_leading(room, player):
     """Determines if player is leading the match."""
     player_num = rooms_info[room]["players"].index(player)
-    player_score = sum(rooms_info[room][f"p{player_num}scores"])
+    player_score = sum(rooms_info[room][f"p{player_num+1}scores"])
 
-    max_score = max(sum(rooms_info[room]["p1scores"]), 
-                    sum(rooms_info[room]["p2scores"]), 
-                    sum(rooms_info[room]["p3scores"]))
-    if player_score == 0 or player_score == max_score:
+    p1score = sum(rooms_info[room]["p1scores"])
+    p2score = sum(rooms_info[room]["p2scores"])
+    p3score = sum(rooms_info[room]["p3scores"])
+    
+    max_score = max(p1score, p2score, p3score)
+    min_score = min(p2score, p2score, p3score)
+
+    if player_score != 0 and player_score == max_score and max_score != min_score:
         return True
+
     return False
 
 def next_turn(room):
@@ -209,6 +215,15 @@ def handle_sector_click(sectorid):
         print(f"Not {name}'s turn. Do nothing.")
         return
 
+    if rooms_info[room]["bonus_clicked"]:
+        if sectorid != "forbidden-sector":
+            emit("server_message", "To bonus you must first place a cube in forbidden!", room=room)
+            return
+        else:
+            move_cube(room, sectorid)
+            rooms_info[room]["bonus_clicked"] = False
+            return
+
     if not rooms_info[room]["goalset"]:
         if sectorid != "goal-sector":
             print(f"Goalsetter clicked on a non-goal area.")
@@ -237,5 +252,10 @@ def handle_set_goal():
 @equations.socketio.on("bonus_clicked")
 def handle_bonus_click():
     """Bonus button was clicked."""
-    pass
+    [name, room] = get_name_and_room(flask.request.sid)
+    if get_current_mover(room) != name:
+        print("non mover somehow clicked the bonus button. hacker")
+        return
+    assert not rooms_info[room]["bonus_clicked"]
+    rooms_info[room]["bonus_clicked"] = True
 

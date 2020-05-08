@@ -128,11 +128,6 @@ export function updateTurnText(name) {
     turn_elt.innerHTML = `${name}`;
 }
 
-function updateTurnFinished() {
-    let turn_elt = document.getElementById("actual-turn-text");
-    turn_elt.innerHTML = "Game Ended";
-}
-
 export function moveCube(directions) {
     let from_idx = directions['from'];
 
@@ -156,6 +151,7 @@ export function moveCube(directions) {
     }
     
     document.getElementById(to_id).appendChild(img_in_resources);
+    updateBonusButton(false);
 }
 
 function addRowsToSector(sectorid, begin_idx) {
@@ -175,7 +171,10 @@ export const renderGameVisuals = (game) => {
         game["p1scores"], game["p2scores"], game["p3scores"]);
     
     if (game["game_finished"]) {
-        updateTurnFinished();
+        updateTurnText("Game Ended");
+    }
+    else if (!game["game_started"]) {
+        updateTurnText("Not Started");
     }
     else {
         updateTurnText(game['players'][game['turn']]);

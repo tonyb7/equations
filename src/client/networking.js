@@ -72,7 +72,7 @@ function registerSocketCallbacks(name) {
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
 
         let firstmover = data['players'][data['firstmove']];
-        initializeBoardCallbacks(socket, true);
+        initializeBoardCallbacks(socket, firstmover === name);
         updateTurnText(firstmover);
         registerGoalSetButton(socket, name, firstmover, true);
     });
@@ -123,7 +123,7 @@ function show_bonus_for(game, player) {
     }
     
     const adder = (acc, curr) => acc + curr;
-    const player_score = game[`p${idx}scores`].reduce(adder);
+    const player_score = game[`p${idx+1}scores`].reduce(adder);
     let max_score = Math.max(game['p1scores'].reduce(adder),
                              game['p2scores'].reduce(adder),
                              game['p3scores'].reduce(adder));
