@@ -4,7 +4,7 @@ import os
 import uuid
 import flask
 import equations
-from equations.data import can_create_room, rooms_info
+from equations.data import can_create_room, rooms_info, user_info
 from equations.db_serialize import db_deserialize
 
 @equations.app.route("/favicon.ico")
@@ -19,11 +19,17 @@ def show_index():
     context = {
         "logged_in": False,
         "username": '',
+        "room_id": None,
     }
 
     if "username" in flask.session:
         context['logged_in'] = True
         context['username'] = flask.session['username']
+
+    if context['username'] in user_info:
+        room_id = user_info[context['username']]["gameroom"]
+        if room_id is not None:
+            context["room_id"] = room_id
 
     return flask.render_template("index.html", **context)
 
@@ -81,7 +87,7 @@ def join_game():
     if 'username' not in flask.session:
         flask.flash("Please log in before creating a game.")
         return flask.redirect(flask.url_for('show_index'))
-        
+
     name = flask.session['username']
     room_id = flask.request.form['room']
 
