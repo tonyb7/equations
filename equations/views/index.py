@@ -28,7 +28,9 @@ def show_index():
 
     if context['username'] in user_info:
         room_id = user_info[context['username']]["gameroom"]
-        if room_id is not None:
+        if room_id is not None and room_id in rooms_info \
+                and rooms_info[room_id]["game_started"] and \
+                not rooms_info[room_id]["game_finished"]:
             context["room_id"] = room_id
 
     return flask.render_template("index.html", **context)

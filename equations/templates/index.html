@@ -34,6 +34,12 @@
                 then the Room ID is a1b2c3-d4</em></p>
             </div>
         {% else %}
+            <!-- If game hasn't started and user sees this button and user was
+            last user in room, then game will not end but on clicking this, DB
+            holds this game as ended=0 so game can still be started as normal upon
+            rejoin. If this was seen after last user of a started game but unfinished 
+            game left, then  game will be marked as finished but user will still 
+            see this button due to delay in socket disconnect... -->
             <div id="join-options">
                 <form action="/join/" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="room" value="{{ room_id }}"/>
