@@ -1,34 +1,27 @@
-"""Server side networking module."""
+"""
+Functions to support actions that control the flow of the game such as
+game start, goal setting, and moving cubes.
+"""
 
 import flask
 import equations
+import random
+import time
 from equations.data import rooms_info, user_info, socket_info, MapsLock
 from equations.data import get_name_and_room, get_current_mover
-from flask_socketio import join_room, leave_room, emit
-import time
-import random
+from flask_socketio import emit
 
-
-@equations.socketio.on('new_message')
-def receive_message(message_info):
-    """Receive a chat message from client."""
-    name = message_info['name']
-    message = message_info['message']
-    print(f"{name} send the message: {message}")
-
-    [stored_name, room] = get_name_and_room(flask.request.sid)
-    assert name == stored_name
-
-    # Send the message to everyone in the room
-    emit('message', message_info, room=room)
+# Constant to represent index of a moved cube in resources list
+MOVED_CUBE_IDX = -1
 
 @equations.socketio.on('start_game')
 def handle_start_game():
     """Player pressed start_game."""
+    MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed start_game for room {room}!")
 
-    if rooms_info[room]["game_finished"]:  # TODO in case where non started game was "finished"...pls check
+    if rooms_info[room]["game_finished"]:
         return
 
     if room not in rooms_info or rooms_info[room]['game_started']:
@@ -38,7 +31,9 @@ def handle_start_game():
     current_players = rooms_info[room]['players']
 
     if len(current_players) < 2:
-        emit('server_message', "You can only start a game with 2 or 3 players.", room=room)
+        emit('server_message', 
+             "You can only start a game with 2 or 3 players.", 
+             room=room)
         return
     
     assert name in current_players
@@ -88,57 +83,20 @@ def handle_start_game():
                     Press \"Goal Set!\" when you're done!"
     emit("server_message", start_instruction, room=room)
 
-@equations.socketio.on('flip_timer')
-def handle_flip_timer():
-    """Player pressed flip_timer."""
-    [name, room] = get_name_and_room(flask.request.sid)
-    print(f"{name} pressed flip_timer!")
-
-@equations.socketio.on('claim_warning')
-def handle_claim_warning():
-    """Player pressed claim_warning."""
-    [name, room] = get_name_and_room(flask.request.sid)
-    print(f"{name} pressed claim_warning!")
-
-@equations.socketio.on('claim_minus_one')
-def handle_claim_minus_one():
-    """Player pressed claim_minus_one."""
-    [name, room] = get_name_and_room(flask.request.sid)
-    print(f"{name} pressed claim_minus_one!")
-
-@equations.socketio.on('a_flub')
-def handle_a_flub():
-    """Player pressed a_flub."""
-    [name, room] = get_name_and_room(flask.request.sid)
-    print(f"{name} pressed a_flub!")
-
-@equations.socketio.on('p_flub')
-def handle_p_flub():
-    """Player pressed p_flub."""
-    [name, room] = get_name_and_room(flask.request.sid)
-    print(f"{name} pressed p_flub!")
-
-@equations.socketio.on('force_out')
-def handle_force_out():
-    """Player pressed force_out."""
-    [name, room] = get_name_and_room(flask.request.sid)
-    print(f"{name} pressed force_out!")
-
 @equations.socketio.on("cube_clicked")
 def handle_cube_click(pos):
     """Highlight cube if it's clicker's turn and clicker hasn't clicked yet."""
+    MapsLock()
     [user, room] = get_name_and_room(flask.request.sid)
 
     if rooms_info[room]["game_finished"]:
         return
 
-    # TODO: state later for goal setting, bonus moves, etc
-
     # Reject if a cube has already been clicked. You touch it you move it!
     if rooms_info[room]['touched_cube'] is not None:
         return
 
-    if rooms_info[room]["resources"][pos] == -1:  # magic bad
+    if rooms_info[room]["resources"][pos] == MOVED_CUBE_IDX:
         return
 
     turn_idx = rooms_info[room]['turn']
@@ -146,7 +104,9 @@ def handle_cube_click(pos):
 
     if turn_user == user:
         if not rooms_info[room]["goalset"] and len(rooms_info[room]["goal"]) >= 6:
-            emit("server_message", "Max number of cubes on goal set! Please press \"Goal Set!\"", room=room)
+            emit("server_message", 
+                 "Max number of cubes on goal set! Please press \"Goal Set!\"", 
+                 room=room)
             return
         else:
             rooms_info[room]['touched_cube'] = pos
@@ -160,7 +120,7 @@ def move_cube(room, sectorid):
     assert touched_cube_idx is not None
     rooms_info[room][sector_str].append(touched_cube_idx)
     rooms_info[room]['touched_cube'] = None
-    rooms_info[room]["resources"][touched_cube_idx] = -1  # magic bad
+    rooms_info[room]["resources"][touched_cube_idx] = MOVED_CUBE_IDX
 
     move_command = {
         "from": touched_cube_idx,
@@ -180,7 +140,7 @@ def is_leading(room, player):
     max_score = max(p1score, p2score, p3score)
     min_score = min(p2score, p2score, p3score)
 
-    if player_score != 0 and player_score == max_score and max_score != min_score:
+    if player_score != 0 and max_score != min_score and player_score == max_score:
         return True
 
     return False
@@ -205,6 +165,7 @@ def next_turn(room):
 @equations.socketio.on("sector_clicked")
 def handle_sector_click(sectorid):
     """Receive a click action on a playable area of the board."""
+    MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} clicked {sectorid} in room {room}")
 
@@ -217,7 +178,9 @@ def handle_sector_click(sectorid):
 
     if rooms_info[room]["bonus_clicked"]:
         if sectorid != "forbidden-sector":
-            emit("server_message", "To bonus you must first place a cube in forbidden!", room=room)
+            emit("server_message", 
+                 "To bonus you must first place a cube in forbidden!", 
+                 room=room)
             return
         else:
             move_cube(room, sectorid)
@@ -240,6 +203,7 @@ def handle_sector_click(sectorid):
 @equations.socketio.on("set_goal")
 def handle_set_goal():
     """Handle goal set."""
+    MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     assert name == get_current_mover(room)
 
@@ -252,10 +216,10 @@ def handle_set_goal():
 @equations.socketio.on("bonus_clicked")
 def handle_bonus_click():
     """Bonus button was clicked."""
+    MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     if get_current_mover(room) != name:
         print("non mover somehow clicked the bonus button. hacker")
         return
     assert not rooms_info[room]["bonus_clicked"]
     rooms_info[room]["bonus_clicked"] = True
-

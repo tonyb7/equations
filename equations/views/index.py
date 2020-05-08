@@ -4,7 +4,7 @@ import os
 import uuid
 import flask
 import equations
-from equations.data import can_create_room, rooms_info, user_info
+from equations.data import can_create_room, rooms_info, user_info, MapsLock
 from equations.db_serialize import db_deserialize
 
 @equations.app.route("/favicon.ico")
@@ -26,6 +26,7 @@ def show_index():
         context['logged_in'] = True
         context['username'] = flask.session['username']
 
+    MapsLock()
     if context['username'] in user_info:
         room_id = user_info[context['username']]["gameroom"]
         if room_id is not None and room_id in rooms_info \
@@ -57,6 +58,7 @@ def create_game():
         if game_nonce_dict is None:
             game_nonce = proposed_nonce
 
+    MapsLock()
     if not can_create_room(name):
         flask.flash("You are already in a game, so you cannot create another.")
         return flask.redirect(flask.url_for('show_index'))
@@ -93,6 +95,7 @@ def join_game():
     name = flask.session['username']
     room_id = flask.request.form['room']
 
+    MapsLock()
     get_game_from_db(room_id)
 
     return flask.redirect(flask.url_for('show_game', nonce=room_id, name=name))
@@ -108,6 +111,7 @@ def show_game(nonce):
     # disconnects, on_disconnect in connections.py deletes the room from the room_info,
     # and then a refresh bypasses join_game in index.py and goes directly to show_game
     # See Issue #18 on GitHub
+    MapsLock()
     if nonce not in rooms_info:
         get_game_from_db(nonce)
 

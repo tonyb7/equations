@@ -47,17 +47,18 @@ class MapsLock():
     def __del__(self):
         maps_lock.release()
 
+"""
+Caller's responsibility to grab maps lock before calling functions below.
+"""
 
 def can_create_room(name):
     """Ensure that a user is only playing in one match at a time."""
-    MapsLock()
     if name in user_info and user_info[name]["gameroom"] is not None:
         return False
     return True
 
 def get_name_and_room(socketid):
     """Get the username and room associated with a socketid."""
-    MapsLock()
     assert socketid in socket_info
     name = socket_info[socketid]['name']
     assert name in user_info
@@ -66,7 +67,6 @@ def get_name_and_room(socketid):
 
 def get_current_mover(room):
     """Return who the current mover is in a room."""
-    MapsLock()
     assert room in rooms_info
     assert rooms_info[room]['game_started']
     turn_idx = rooms_info[room]['turn']

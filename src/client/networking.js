@@ -124,10 +124,15 @@ function show_bonus_for(game, player) {
     
     const adder = (acc, curr) => acc + curr;
     const player_score = game[`p${idx+1}scores`].reduce(adder);
-    let max_score = Math.max(game['p1scores'].reduce(adder),
-                             game['p2scores'].reduce(adder),
-                             game['p3scores'].reduce(adder));
-    if (max_score === player_score) {
+
+    let p1score = game['p1scores'].reduce(adder);
+    let p2score = game['p2scores'].reduce(adder);
+    let p3score = game['p3scores'].reduce(adder);
+
+    let max_score = Math.max(p1score, p2score, p3score);
+    let min_score = Math.min(p1score, p2score, p3score);
+
+    if (player_score !== 0 && max_score !== min_score && max_score === player_score) {
         return false;
     }
 

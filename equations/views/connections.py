@@ -94,11 +94,11 @@ def register_player(player_info):
     if rooms_info[room]['game_started'] and not joined_as_player:
         # Render every visual aspect of the board correctly for a spectator.
         # Required only if game has started
-        emit("render_spectator_state", rooms_info[room])  # TODO
+        emit("render_spectator_state", rooms_info[room])
     if joined_as_player:
         # Joined as player. Clientside should render visuals as well as register
         # callbacks as appropriate (according to whether game has started)
-        emit("render_player_state", rooms_info[room])  # TODO 
+        emit("render_player_state", rooms_info[room])
 
     rejoin_str = "rejoined" if rejoin else "joined"
     spectator_str = "" if joined_as_player else " as spectator"

@@ -194,7 +194,7 @@ export const renderGameVisuals = (game) => {
 
 export function updateBonusButton(show) {
     let bonus_button = document.getElementById("bonus-button");
-    bonus_button.classList.remove("button_clicked");
+    bonus_button.classList.remove("button-clicked");
     if (show) {
         bonus_button.classList.remove("hidden");
     }
