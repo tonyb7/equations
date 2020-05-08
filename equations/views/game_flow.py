@@ -138,7 +138,7 @@ def is_leading(room, player):
     p3score = sum(rooms_info[room]["p3scores"])
     
     max_score = max(p1score, p2score, p3score)
-    min_score = min(p2score, p2score, p3score)
+    min_score = min(p1score, p2score) if p3score == 0 else min(p2score, p2score, p3score)
 
     if player_score != 0 and max_score != min_score and player_score == max_score:
         return True

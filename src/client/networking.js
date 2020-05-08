@@ -130,7 +130,13 @@ function show_bonus_for(game, player) {
     let p3score = game['p3scores'].reduce(adder);
 
     let max_score = Math.max(p1score, p2score, p3score);
-    let min_score = Math.min(p1score, p2score, p3score);
+    let min_score = 0;
+    if (p3score === 0) {
+        min_score = Math.min(p1score, p2score);
+    }
+    else {
+        min_score = Math.min(p1score, p2score, p3score);
+    }
 
     if (player_score !== 0 && max_score !== min_score && max_score === player_score) {
         return false;
