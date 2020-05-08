@@ -53,7 +53,7 @@ function registerSocketCallbacks(name) {
     socket.on("render_player_state", (game) => {
         renderGameVisuals(game);
         if (game['game_started']) {
-            initializeBoardCallbacks(socket, game['players'][game['turn']], name);
+            initializeBoardCallbacks(socket, show_bonus_for(game, name));
             registerGoalSetButton(socket, name, game['players'][game['turn']], !game["goalset"]);
         }
         else {
@@ -72,7 +72,7 @@ function registerSocketCallbacks(name) {
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
 
         let firstmover = data['players'][data['firstmove']];
-        initializeBoardCallbacks(socket, firstmover, name);
+        initializeBoardCallbacks(socket, true);
         updateTurnText(firstmover);
         registerGoalSetButton(socket, name, firstmover, true);
     });
@@ -81,9 +81,12 @@ function registerSocketCallbacks(name) {
 
     socket.on("move_cube", (directions) => moveCube(directions));
 
-    socket.on("next_turn", (player) => {
+    socket.on("next_turn", (command) => {
+        let player = command["player"];
+        let show_bonus = command["show_bonus"];
+
         updateTurnText(player);
-        updateBonusButton(player, name);
+        updateBonusButton((player === name) && show_bonus);
         
         // TODO timer stuff potentially
     });
@@ -106,3 +109,27 @@ export function handleChatEnter() {
 }
 
 export const emitCubeClicked = (pos) => socket.emit("cube_clicked", pos);
+
+// Determine whether bonus button should be rendered for player in game
+function show_bonus_for(game, player) {
+    if (game['players'][game['turn']] != player) {
+        return false;
+    }
+
+    const idx = game['players'].findIndex((name) => name === player);
+    if (idx === -1) {
+        console.log("Error! Player not in game in render_player_state");
+        return false;
+    }
+    
+    const adder = (acc, curr) => acc + curr;
+    const player_score = game[`p${idx}scores`].reduce(adder);
+    let max_score = Math.max(game['p1scores'].reduce(adder),
+                             game['p2scores'].reduce(adder),
+                             game['p3scores'].reduce(adder));
+    if (max_score === player_score) {
+        return false;
+    }
+
+    return true;
+}

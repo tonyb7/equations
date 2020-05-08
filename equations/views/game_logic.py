@@ -167,13 +167,31 @@ def move_cube(room, sectorid):
     }
     emit("move_cube", move_command, room=room)
 
+def is_leading(room, player):
+    """Determines if player is leading the match."""
+    player_num = rooms_info[room]["players"].index(player)
+    player_score = sum(rooms_info[room][f"p{player_num}scores"])
+
+    max_score = max(sum(rooms_info[room]["p1scores"]), 
+                    sum(rooms_info[room]["p2scores"]), 
+                    sum(rooms_info[room]["p3scores"]))
+    if player_score == 0 or player_score == max_score:
+        return True
+    return False
+
 def next_turn(room):
     """Move to next turn in a room."""
     next_turn_idx = (rooms_info[room]["turn"] + 1) % \
         len(rooms_info[room]["players"])
     rooms_info[room]["turn"] = next_turn_idx
 
-    emit("next_turn", rooms_info[room]["players"][next_turn_idx], room=room)
+    turn_player = rooms_info[room]["players"][next_turn_idx]
+    next_turn_command = {
+        "player": turn_player,
+        "show_bonus": not is_leading(room, turn_player),
+    }
+
+    emit("next_turn", next_turn_command, room=room)
 
     # TODO timer logic
     # TODO ability to challenge

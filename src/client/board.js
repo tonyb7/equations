@@ -193,10 +193,10 @@ export const renderGameVisuals = (game) => {
     // TODO time, scores
 }
 
-export function updateBonusButton(player, name) {
+export function updateBonusButton(show) {
     let bonus_button = document.getElementById("bonus-button");
     bonus_button.classList.remove("button_clicked");
-    if (player === name) {
+    if (show) {
         bonus_button.classList.remove("hidden");
     }
     else {

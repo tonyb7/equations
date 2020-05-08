@@ -29,7 +29,7 @@ export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
     }
 };
 
-export function initializeBoardCallbacks(socket, turn_name, my_name) {
+export function initializeBoardCallbacks(socket, show_bonus) {
     let board_sectors = ["forbidden-sector", "permitted-sector", 
                          "required-sector", "goal-sector"];
     for (const id of board_sectors) {
@@ -41,7 +41,7 @@ export function initializeBoardCallbacks(socket, turn_name, my_name) {
 
     registerGameStartCallbacks(socket);
     registerBonusButtonCallback(socket);
-    updateBonusButton(turn_name, my_name);
+    updateBonusButton(show_bonus);
 }
 
 function getButtonsDiv() {
