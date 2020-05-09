@@ -64,6 +64,7 @@ def db_deserialize(db_result):
         "goalset": len(db_result["goal"]) > 0,
         "num_timer_flips": 0,
         "10s_warning_called": False,
+        "challenge": None,
     }
 
     return game_info

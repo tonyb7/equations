@@ -65,6 +65,7 @@ def handle_start_game():
         "goalset": False,
         "num_timer_flips": 0,
         "10s_warning_called": False,
+        "challenge": None,
     }
 
     game_begin_instructions = {
@@ -90,6 +91,9 @@ def handle_cube_click(pos):
     [user, room] = get_name_and_room(flask.request.sid)
 
     if rooms_info[room]["game_finished"]:
+        return
+
+    if rooms_info[room]["challenge"]:
         return
 
     # Reject if a cube has already been clicked. You touch it you move it!
@@ -212,7 +216,7 @@ def handle_set_goal():
 
     rooms_info[room]["goalset"] = True
     next_turn(room)
-    
+
 @equations.socketio.on("bonus_clicked")
 def handle_bonus_click():
     """Bonus button was clicked."""

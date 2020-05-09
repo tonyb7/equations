@@ -5,7 +5,8 @@ import { cleanInput, appendMessage } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
     updateBonusButton } from './board';
-import { initializeBoardCallbacks, registerGoalSetButton, registerStartButton } from './callbacks';
+import { initializeBoardCallbacks, registerGoalSetButton, 
+         registerStartButton, deregisterBoardCallbacks } from './callbacks';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -89,6 +90,17 @@ function registerSocketCallbacks(name) {
         updateBonusButton((player === name) && show_bonus);
         
         // TODO timer stuff potentially
+    });
+
+    socket.on("handle_challenge", (info) => {
+        let challenge = info["challenge"];
+        let defender = info["defender"];
+        let caller = info["caller"];
+        let sider = info["sider"];
+
+        console.log("handle_challenge", challenge, defender, caller, sider);
+        deregisterBoardCallbacks();
+        
     });
 }
 

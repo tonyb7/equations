@@ -71,3 +71,12 @@ def get_current_mover(room):
     assert rooms_info[room]['game_started']
     turn_idx = rooms_info[room]['turn']
     return rooms_info[room]['players'][turn_idx]
+
+def get_previous_mover(room):
+    """Return whoever just moved."""
+    assert room in rooms_info
+    if not rooms_info[room]["goalset"]:  # TODO
+        return None 
+    
+    previous_mover_index = (rooms_info[room]['turn'] - 1) % (len(rooms_info[room]["players"]))
+    return rooms_info[room]['players'][previous_mover_index]

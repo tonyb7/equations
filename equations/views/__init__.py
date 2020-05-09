@@ -20,7 +20,7 @@ from equations.views.game_flow import handle_bonus_click
 
 from equations.views.challenge import handle_a_flub
 from equations.views.challenge import handle_p_flub
-from equations.views.challenge import handle_force_out
+from equations.views.challenge import handle_no_goal
 
 from equations.views.timing import handle_flip_timer
 from equations.views.timing import handle_claim_warning

@@ -3,6 +3,12 @@
 
 import { updateBonusButton } from './board';
 
+const board_sectors = ["forbidden-sector", "permitted-sector", 
+                         "required-sector", "goal-sector"];
+
+const button_ids = ["flip_timer", "claim_warning", "claim_minus_one",
+                    "a_flub", "p_flub", "no_goal"];
+
 export function registerStartButton(socket) {
     let buttons = getButtonsDiv();
     let start_button = buttons.querySelector("#start_game");
@@ -11,7 +17,6 @@ export function registerStartButton(socket) {
         socket.emit("start_game");
     };
 }
-
 
 export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
     if (!firstmove)
@@ -30,8 +35,6 @@ export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
 };
 
 export function initializeBoardCallbacks(socket, show_bonus) {
-    let board_sectors = ["forbidden-sector", "permitted-sector", 
-                         "required-sector", "goal-sector"];
     for (const id of board_sectors) {
         document.getElementById(id).onclick = () => {
             console.log(`${id} clicked`);
@@ -55,8 +58,6 @@ function getButtonsDiv() {
 function registerGameStartCallbacks(socket) {
     let buttons = getButtonsDiv();
 
-    let button_ids = ["flip_timer", "claim_warning", "claim_minus_one",
-                      "a_flub", "p_flub", "force_out"];
     for (const button_id of button_ids) {
         registerButton(socket, buttons.querySelector(`#${button_id}`), 
                        button_id);
@@ -79,4 +80,25 @@ function registerBonusButtonCallback(socket) {
         bonus_button.classList.add("button-clicked");
         socket.emit("bonus_clicked");
     };
+}
+
+export function deregisterBoardCallbacks() {
+    for (const id of board_sectors) {
+        document.getElementById(id).onclick = () => {};
+    }
+
+    deregisterButtonCallbacks();
+    deregisterBonusButtonCallback();
+    updateBonusButton(false);
+}
+
+function deregisterButtonCallbacks() {
+    let buttons = getButtonsDiv();
+    for (const button_id of button_ids) {
+        buttons.querySelector(`#${button_id}`).onclick = () => {};
+    }
+}
+
+function deregisterBonusButtonCallback() {
+    document.getElementById("bonus-button").onclick = () => {};
 }
