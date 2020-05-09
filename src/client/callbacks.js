@@ -30,6 +30,11 @@ export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
             set_goal_button.classList.add("hidden");
             set_goal_button.onclick = () => 
                 console.log("Set goal button somehow clicked...");
+            
+            let no_goal_button = document.getElementById("no_goal");
+            no_goal_button.classList.add("hidden");
+            no_goal_button.onclick = () => 
+                console.log("No goal challenge somehow clicked...");
         };
     }
 };
