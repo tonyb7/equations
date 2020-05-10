@@ -59,12 +59,13 @@ def db_deserialize(db_result):
         "permitted":  [int(x) for x in split_string_by_comma(db_result["permitted"])],
         "forbidden":  [int(x) for x in split_string_by_comma(db_result["forbidden"])], 
         "turn":  db_result["turn"],
-        "touched_cube": None,
-        "bonus_clicked": False,
         "goalset": len(db_result["goal"]) > 0,
         "num_timer_flips": 0,
         "10s_warning_called": False,
         "challenge": None,
+        "touched_cube": None,
+        "bonus_clicked": False,
+        "started_move": False,
     }
 
     return game_info

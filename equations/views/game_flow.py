@@ -60,12 +60,13 @@ def handle_start_game():
         "permitted": [],
         "forbidden": [],
         "turn": random.randint(0, len(current_players) - 1),
-        "touched_cube": None,
-        "bonus_clicked": False,
         "goalset": False,
         "num_timer_flips": 0,
         "10s_warning_called": False,
         "challenge": None,
+        "touched_cube": None,
+        "bonus_clicked": False,
+        "started_move": False,
     }
 
     game_begin_instructions = {
@@ -102,6 +103,8 @@ def handle_cube_click(pos):
 
     if rooms_info[room]["resources"][pos] == MOVED_CUBE_IDX:
         return
+
+    rooms_info[room]["started_move"] = True
 
     turn_idx = rooms_info[room]['turn']
     turn_user = rooms_info[room]['players'][turn_idx]
@@ -161,6 +164,7 @@ def next_turn(room):
         "show_bonus": not is_leading(room, turn_player),
     }
 
+    rooms_info[room]["started_move"] = False
     emit("next_turn", next_turn_command, room=room)
 
     # TODO timer logic
@@ -227,3 +231,4 @@ def handle_bonus_click():
         return
     assert not rooms_info[room]["bonus_clicked"]
     rooms_info[room]["bonus_clicked"] = True
+    rooms_info[room]["started_move"] = True

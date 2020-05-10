@@ -2,7 +2,7 @@
 
 import flask
 import equations
-from equations.data import get_name_and_room, get_previous_mover, MapsLock, rooms_info
+from equations.data import get_name_and_room, get_current_mover, get_previous_mover, MapsLock, rooms_info
 from flask_socketio import emit
 
 
@@ -31,7 +31,12 @@ def handle_challenge(socketid, challenge):
         challenge_message += f" on {defender}!"
 
     sider = None
-    if defender == name:  # TODO minus 1?
+    if rooms_info[room]["started_move"]:  # TODO minus 1?
+        challenge_message += f" But {name} has started their move so {name} " \
+                             f"must finish the move and cannot challenge!"
+        emit("server_message", challenge_message, room=room)
+        return
+    elif defender == name:  # TODO minus 1?
         challenge_message += f" But {name} just moved so {name} cannot challenge!"
         emit("server_message", challenge_message, room=room)
         return
@@ -48,11 +53,17 @@ def handle_challenge(socketid, challenge):
             return
         else:
             assert defender is None
+            if name != get_current_mover(room):
+                no_goal_err_msg = f"{name} called Challenge No Goal but that is " \
+                                  f"not allowed because {name} is not setting the goal!"
+                emit("server_message", no_goal_err_msg, room=room)
+                return
     else:
-        assert defender is not None
         if not rooms_info[room]["goalset"]:
+            assert defender is None
             emit("server_message", "Goal has not been set yet! You cannot challenge.", room=room)  # TODO handle this
             return
+        assert defender is not None
 
     if challenge == "a_flub":
         cubes_left = len([x for x in rooms_info[room]["resources"] if x != -1])  # TODO magic bad

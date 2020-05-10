@@ -75,6 +75,10 @@ def show_create():
         if len(username) == 0:
             flask.flash("Username cannot be empty!")
             return flask.render_template("create.html")
+        
+        if ' ' in username:
+            flask.flash("Username cannot have spaces!")
+            return flask.render_template("create.html")
 
         password = flask.request.form['password']
 

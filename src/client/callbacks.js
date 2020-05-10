@@ -70,6 +70,7 @@ function registerGameStartCallbacks(socket) {
 
     let start_button = buttons.querySelector("#start_game");
     start_button.onclick = () => {};
+    start_button.classList.add("hidden");
 }
 
 function registerButton(socket, button, socket_label) {
@@ -94,6 +95,7 @@ export function deregisterBoardCallbacks() {
 
     deregisterButtonCallbacks();
     deregisterBonusButtonCallback();
+    deregisterGoalSetCallback();
     updateBonusButton(false);
 }
 
@@ -106,4 +108,10 @@ function deregisterButtonCallbacks() {
 
 function deregisterBonusButtonCallback() {
     document.getElementById("bonus-button").onclick = () => {};
+}
+
+function deregisterGoalSetCallback() {
+    let set_goal_button = document.getElementById("set-goal-button");
+    set_goal_button.classList.add("hidden");
+    set_goal_button.onclick = () => {};
 }

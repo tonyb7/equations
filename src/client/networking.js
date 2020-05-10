@@ -92,6 +92,13 @@ function registerSocketCallbacks(name) {
         // TODO timer stuff potentially
     });
 
+    // TODO move
+    const challengeTextMap = new Map([
+        ["a_flub", "Challenge Now"],
+        ["p_flub", "Challenge Never"],
+        ["no_goal", "Challenge No Goal"],
+    ]);
+
     socket.on("handle_challenge", (info) => {
         let challenge = info["challenge"];
         let defender = info["defender"];
@@ -99,8 +106,11 @@ function registerSocketCallbacks(name) {
         let sider = info["sider"];
 
         console.log("handle_challenge", challenge, defender, caller, sider);
+        console.log(challengeTextMap);
+        console.log(challengeTextMap.get(challenge));
+
         deregisterBoardCallbacks();
-        
+        updateTurnText(challengeTextMap.get(challenge));
     });
 }
 
