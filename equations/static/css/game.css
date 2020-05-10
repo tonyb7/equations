@@ -652,4 +652,6 @@ body {
     font-size: 0.9vw;
     font-family: monospace;
     margin: 0.5vw;
+
+    transform: translate(0%, -50%);
 }

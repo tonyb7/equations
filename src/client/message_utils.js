@@ -17,27 +17,27 @@ export function appendMessage(name, message) {
 }
 
 export function appendSidingOptions(socket) {
-    appendMessage("Server", "Who do you side with?");
+    appendMessage("Server", "Do you wish to write a solution?");
 
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let challenger_button = document.createElement("button");
-    challenger_button.innerHTML = "Challenger";
-    options.appendChild(challenger_button);
+    let yes_button = document.createElement("button");
+    yes_button.innerHTML = "Yes";
+    options.appendChild(yes_button);
 
-    let defender_button = document.createElement("button");
-    defender_button.innerHTML = "Defender";
-    options.appendChild(defender_button);
+    let no_button = document.createElement("button");
+    no_button.innerHTML = "No";
+    options.appendChild(no_button);
 
-    challenger_button.onclick = () => {
-        socket.emit("sided", "challenger");
-        deregisterChatButtons([challenger_button, defender_button]);
+    yes_button.onclick = () => {
+        socket.emit("sided", "write");
+        deregisterChatButtons([yes_button, no_button]);
     };
 
-    defender_button.onclick = () => {
-        socket.emit("sided", "defender");
-        deregisterChatButtons([challenger_button, defender_button]);
+    no_button.onclick = () => {
+        socket.emit("sided", "no_write");
+        deregisterChatButtons([yes_button, no_button]);
     };
 
     let messages = document.getElementById('message-list');
