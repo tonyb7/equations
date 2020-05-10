@@ -99,3 +99,8 @@ def handle_p_flub():
 def handle_no_goal():
     """Player pressed no_goal."""
     handle_challenge(flask.request.sid, "no_goal")
+
+@equations.socketio.on('sided')
+def handle_siding():
+    """Player sided."""
+    pass

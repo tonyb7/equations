@@ -640,3 +640,16 @@ body {
 .rounded-corners {
     border-radius: 0.5vw;
 }
+
+.chat-button {
+    text-align: center;
+}
+
+.chat-button button {
+    margin-bottom: 1.3vh;
+    border-radius: 2.1vw;
+
+    font-size: 0.9vw;
+    font-family: monospace;
+    margin: 0.5vw;
+}

@@ -1,7 +1,7 @@
 // Handle client networking.
 
 import io from 'socket.io-client';
-import { cleanInput, appendMessage } from './message_utils';
+import { cleanInput, appendMessage, appendSidingOptions } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
     updateBonusButton } from './board';
@@ -111,6 +111,20 @@ function registerSocketCallbacks(name) {
 
         deregisterBoardCallbacks();
         updateTurnText(challengeTextMap.get(challenge));
+
+        if (challenge === "no_goal") {
+            // TODO
+            return;
+        }
+
+        if (sider != null) {
+            if (sider === name) {
+                appendSidingOptions(socket);
+            }
+            else {
+                appendMessage("Server", `Waiting for ${sider} to side...`);
+            }
+        }
     });
 }
 
