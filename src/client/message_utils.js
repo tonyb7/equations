@@ -17,7 +17,7 @@ export function appendMessage(name, message) {
 }
 
 export function appendSidingOptions(socket) {
-    appendMessage("Server", "Do you wish to write a solution?");
+    appendMessage("Server", "Do you wish to write a solution? You have one minute to decide.");
 
     let options = document.createElement('li');
     options.classList.add("chat-button");
