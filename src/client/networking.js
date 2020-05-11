@@ -129,6 +129,9 @@ function registerSocketCallbacks(name) {
         if ((defender === name && challenge === "p_flub") || (caller === name && challenge === "a_flub")) {
             appendSolutionPrompt(socket);
         }
+        else {
+            appendMessage("Server", "Waiting for solutions to be submitted....");
+        }
     });
 }
 
