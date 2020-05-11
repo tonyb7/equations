@@ -126,7 +126,7 @@ function registerSocketCallbacks(name) {
             }
         }
 
-        if ((defender === name && challenge === "p_flub") || (caller === name && challenge === "a_flub") {
+        if ((defender === name && challenge === "p_flub") || (caller === name && challenge === "a_flub")) {
             appendSolutionPrompt(socket);
         }
     });
