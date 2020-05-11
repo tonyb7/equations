@@ -655,3 +655,29 @@ body {
 
     transform: translate(0%, -50%);
 }
+
+.solution_li {
+    width: 90%;
+
+}
+
+.solution_box {
+    font-family: monospace;
+    font-size: 0.8vw;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    width: 100%;
+
+    margin-bottom: 1vh;
+    border-radius: 2vw;
+}
+
+.solution_submit {
+    font-family: monospace !important;
+    font-size: 0.8vw;
+    border-radius: 2vw;
+    text-align: center;
+    transform: translateX(85%);
+}

@@ -17,6 +17,9 @@ export function appendMessage(name, message) {
 }
 
 export function appendSidingOptions(socket) {
+    // <li><b>Server: </b>Do you wish to write a solution?</li>
+    // <li class="chat-button"><button>Yes</button><button>No</button></li>
+
     appendMessage("Server", "Do you wish to write a solution? You have one minute to decide.");
 
     let options = document.createElement('li');
@@ -31,13 +34,16 @@ export function appendSidingOptions(socket) {
     options.appendChild(no_button);
 
     yes_button.onclick = () => {
-        socket.emit("sided", "write");
+        socket.emit("sided", true);
         deregisterChatButtons([yes_button, no_button]);
+        no_button.classList.add("hidden");
+        appendSolutionPrompt(socket);
     };
 
     no_button.onclick = () => {
-        socket.emit("sided", "no_write");
+        socket.emit("sided", false);
         deregisterChatButtons([yes_button, no_button]);
+        yes_button.classList.add("hidden");
     };
 
     let messages = document.getElementById('message-list');
@@ -46,7 +52,78 @@ export function appendSidingOptions(socket) {
 
 function deregisterChatButtons(buttons) {
     for (let button of buttons) {
-        button.classList.add("hidden");
         button.onclick = () => {};
     }
+}
+
+export function appendSolutionPrompt(socket) {
+    // <li><b>Server: </b>Please submit your solution here:</li>
+    // <li class="solution_li">
+    //     <input class="solution_box" placeholder="Type your solution here...">
+    //     <button class="solution_submit">Submit Solution</button>
+    // </li>
+    appendMessage("Server", "Please submit your solution here:");
+    let solution_area = document.createElement('li');
+    solution_area.classList.add("solution_li");
+
+    let input_area = document.createElement('input');
+    input_area.classList.add("solution_box");
+    input_area.placeholder = "Type your solution here...";
+
+    let submit_button = document.createElement('button');
+    submit_button.classList.add("solution_submit");
+    submit_button.innerHTML = "Submit Solution";
+
+    submit_button.onclick = () => {
+        socket.emit("solution_submitted", input_area.value);
+        input_area.disabled = true;
+        submit_button.onclick = () => {};
+        submit_button.classList.add("hidden");
+    };
+
+    solution_area.appendChild(input_area);
+    solution_area.appendChild(submit_button);
+
+    let messages = document.getElementById('message-list');
+    messages.appendChild(solution_area);
+}
+
+export function appendAcceptPrompt(socket, name, solution) {
+    // <li><b>Server: </b>Tony submitted the following solution. Do you accept?</li>
+    // <li class="chat-button">
+    //     <p>4+5=9</p>
+    //     <button>Yes</button><button>No</button>
+    // </li>
+
+    appendMessage("Server", name + " submitted the following solution. Do you accept?");
+    
+    let options = document.createElement('li');
+    options.classList.add("chat-button");
+
+    let solution_p = document.createElement('p');
+    solution_p.innerHTML = solution;
+    options.append(solution_p);
+
+    let yes_button = document.createElement("button");
+    yes_button.innerHTML = "Yes";
+    options.appendChild(yes_button);
+
+    let no_button = document.createElement("button");
+    no_button.innerHTML = "No";
+    options.appendChild(no_button);
+
+    yes_button.onclick = () => {
+        socket.emit("decided", true);
+        deregisterChatButtons([yes_button, no_button]);
+        no_button.classList.add("hidden");
+    };
+
+    no_button.onclick = () => {
+        socket.emit("decided", false);
+        deregisterChatButtons([yes_button, no_button]);
+        yes_button.classList.add("hidden");
+    };
+
+    let messages = document.getElementById('message-list');
+    messages.appendChild(options);
 }

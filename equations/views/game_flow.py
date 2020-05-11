@@ -232,3 +232,8 @@ def handle_bonus_click():
     assert not rooms_info[room]["bonus_clicked"]
     rooms_info[room]["bonus_clicked"] = True
     rooms_info[room]["started_move"] = True
+
+@equations.socketio.on("call_judge")
+def handle_call_judge():
+    """Player requested to call a judge."""
+    pass

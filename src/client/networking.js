@@ -1,7 +1,7 @@
 // Handle client networking.
 
 import io from 'socket.io-client';
-import { cleanInput, appendMessage, appendSidingOptions } from './message_utils';
+import { cleanInput, appendMessage, appendSidingOptions, appendSolutionPrompt } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
     updateBonusButton } from './board';
@@ -124,6 +124,10 @@ function registerSocketCallbacks(name) {
             else {
                 appendMessage("Server", `Waiting for ${sider} to side...`);
             }
+        }
+
+        if ((defender === name && challenge === "p_flub") || (caller === name && challenge === "a_flub") {
+            appendSolutionPrompt(socket);
         }
     });
 }

@@ -101,6 +101,16 @@ def handle_no_goal():
     handle_challenge(flask.request.sid, "no_goal")
 
 @equations.socketio.on('sided')
-def handle_siding():
+def handle_siding(writing):
     """Player sided."""
+    pass
+
+@equations.socketio.on('solution_submitted')
+def handle_solution_submit(solution):
+    """A player submitted a solution."""
+    pass
+
+@equations.socketio.on('decided')
+def handle_solution_decision(accepted):
+    """Handle when a player accepts or rejects a solution."""
     pass
