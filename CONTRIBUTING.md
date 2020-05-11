@@ -15,7 +15,7 @@ Server Side
 Client Side
 - Jinja for HTML templating (see [`/equations/templates/`](https://github.com/tonyb7/equations/tree/master/equations/templates))
 - CSS (see [`equations/static/css/`](https://github.com/tonyb7/equations/tree/master/equations/static/css))
-- JavaScript with [socket.io](https://socket.io) (`src/client/`)
+- JavaScript with [socket.io](https://socket.io) ([`src/client/`](https://github.com/tonyb7/equations/tree/master/src/client))
 - See [`package.json`](https://github.com/tonyb7/equations/blob/master/package.json) for full list of dependencies
 
 Running the server
