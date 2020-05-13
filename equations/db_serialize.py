@@ -40,6 +40,15 @@ def split_string_by_comma(string):
         l = string.split(",")
     return l
 
+def str_to_num_list(strarray):
+    """Convert list of strings to list of ints."""
+    ans = None
+    try:
+        ans = [int(x) for x in split_string_by_comma(strarray)]
+    except:
+        ans = []
+    return ans
+
 def db_deserialize(db_result):
     """Translate db result to game_info dict. Kinda dupe down there."""
     game_info = {
@@ -48,16 +57,16 @@ def db_deserialize(db_result):
         "players": split_string_by_comma(db_result["players"]),
         "spectators": [],
         "sockets": [],
-        "p1scores": [int(x) for x in split_string_by_comma(db_result["p1scores"])],
-        "p2scores": [int(x) for x in split_string_by_comma(db_result["p2scores"])],
-        "p3scores": [int(x) for x in split_string_by_comma(db_result["p3scores"])],
+        "p1scores": str_to_num_list(db_result["p1scores"]),
+        "p2scores": str_to_num_list(db_result["p2scores"]),
+        "p3scores": str_to_num_list(db_result["p3scores"]),
         "starttime": 0,  # TODO may need to change
-        "cube_index": [int(x) for x in split_string_by_comma(db_result["cube_index"])],
-        "resources":  [int(x) for x in split_string_by_comma(db_result["resources"])],
-        "goal":  [int(x) for x in split_string_by_comma(db_result["goal"])],
-        "required":  [int(x) for x in split_string_by_comma(db_result["required"])],
-        "permitted":  [int(x) for x in split_string_by_comma(db_result["permitted"])],
-        "forbidden":  [int(x) for x in split_string_by_comma(db_result["forbidden"])], 
+        "cube_index": str_to_num_list(db_result["cube_index"]),
+        "resources":  str_to_num_list(db_result["resources"]),
+        "goal":  str_to_num_list(db_result["goal"]),
+        "required":  str_to_num_list(db_result["required"]),
+        "permitted":  str_to_num_list(db_result["permitted"]),
+        "forbidden":  str_to_num_list(db_result["forbidden"]), 
         "turn":  db_result["turn"],
         "goalset": len(db_result["goal"]) > 0,
         "num_timer_flips": 0,
