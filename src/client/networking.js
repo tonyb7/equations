@@ -1,7 +1,8 @@
 // Handle client networking.
 
 import io from 'socket.io-client';
-import { cleanInput, appendMessage, appendSidingOptions, appendSolutionPrompt } from './message_utils';
+import { cleanInput, appendMessage, appendSidingOptions, 
+         appendSolutionPrompt, appendAcceptPrompt } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
     updateBonusButton } from './board';
@@ -131,6 +132,16 @@ function registerSocketCallbacks(name) {
         }
         else {
             appendMessage("Server", "Waiting for solutions to be submitted....");
+        }
+    });
+    
+    socket.on("review_solutions", (solutions) => {
+        //appendAcceptPrompt(socket, name, solution) 
+        for (let writer in solutions) {
+            if (writer === name) {
+                continue;
+            }
+            appendAcceptPrompt(socket, writer, solutions[writer]);
         }
     });
 }

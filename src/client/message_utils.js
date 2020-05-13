@@ -113,13 +113,13 @@ export function appendAcceptPrompt(socket, name, solution) {
     options.appendChild(no_button);
 
     yes_button.onclick = () => {
-        socket.emit("decided", true);
+        socket.emit("decided", {"name": name, "accepted": true});
         deregisterChatButtons([yes_button, no_button]);
         no_button.classList.add("hidden");
     };
 
     no_button.onclick = () => {
-        socket.emit("decided", false);
+        socket.emit("decided", {"name": name, "accepted": false});
         deregisterChatButtons([yes_button, no_button]);
         yes_button.classList.add("hidden");
     };

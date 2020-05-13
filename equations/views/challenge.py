@@ -6,6 +6,25 @@ from equations.data import get_name_and_room, get_current_mover, get_previous_mo
 from flask_socketio import emit
 
 
+def initialize_endgame(room, challenge, name, last_mover, sider):
+    """Set up rooms_info's endgame structure."""
+    if challenge == "a_flub":
+        rooms_info[room]['endgame'] = {
+            "writers": [name],
+            "solutions": {},
+            "sider": sider,
+        }
+    elif challenge == "p_flub":
+        rooms_info[room]['endgame'] = {
+            "writers": [last_mover],
+            "solutions": {},
+            "sider": sider,
+        }
+    elif challenge == "no_goal":
+        rooms_info[room]['endgame'] = {
+            # TODO
+        }
+
 challenge_translation = {
     "a_flub": "Challenge Now",
     "p_flub": "Challenge Never",
@@ -46,7 +65,7 @@ def handle_challenge(socketid, challenge):
         sider = sider_list[0]
         challenge_message += f" {sider} has one minute to side!"
 
-    if challenge == "no_goal":
+    if challenge == "no_goal":  # TODO gotta implement to goal -- both other players are siders
         if rooms_info[room]["goalset"]:
             no_goal_msg = f"{name} has called Challenge No Goal! But Goal has already been set, so challenge cannot be made!"  # TODO minus one?
             emit("server_message", no_goal_msg, room=room)
@@ -75,6 +94,7 @@ def handle_challenge(socketid, challenge):
         pass  # TODO Gotta make sure not called after first minute in a force out
 
     rooms_info[room]["challenge"] = challenge
+    initialize_endgame(room, challenge, name, defender, sider)
     emit("server_message", challenge_message, room=room)
 
     challenge_info = {
@@ -103,14 +123,34 @@ def handle_no_goal():
 @equations.socketio.on('sided')
 def handle_siding(writing):
     """Player sided."""
-    pass
+    MapsLock()
+    [name, room] = get_name_and_room(flask.request.sid)
+    if writing:
+        assert rooms_info[room]["endgame"]["sider"] == name
+        rooms_info[room]["endgame"]["sider"] = None
+        rooms_info[room]["endgame"]["writers"].append(name)
+    
+    msg_diff = "" if writing else "not "
+    emit("server_message", f"{name} has decided " + msg_diff + "to write a solution!", room=room)
 
 @equations.socketio.on('solution_submitted')
 def handle_solution_submit(solution):
     """A player submitted a solution."""
-    pass
+    MapsLock()
+    [name, room] = get_name_and_room(flask.request.sid)
+    rooms_info[room]["endgame"]["solutions"][name] = solution
+    if rooms_info[room]["endgame"]["sider"] is not None and \
+            len(rooms_info[room]["endgame"]["solutions"]) == len(rooms_info[room]["endgame"]["writers"]):
+        emit("review_solutions", rooms_info[room]["endgame"]["solutions"])
 
 @equations.socketio.on('decided')
-def handle_solution_decision(accepted):
+def handle_solution_decision(info):
     """Handle when a player accepts or rejects a solution."""
-    pass
+    writer = info['name']
+    accepted = info['accepted']
+
+    MapsLock()
+    [name, room] = get_name_and_room(flask.request.sid)
+
+    accepted_str = "accepted" if accepted else "rejected"
+    emit("server_message", f"{name} " + accepted_str + f" {writer}'s solution!")

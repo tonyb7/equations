@@ -66,6 +66,7 @@ def db_deserialize(db_result):
         "touched_cube": None,
         "bonus_clicked": False,
         "started_move": False,
+        "endgame": None,
     }
 
     return game_info

@@ -67,6 +67,7 @@ def handle_start_game():
         "touched_cube": None,
         "bonus_clicked": False,
         "started_move": False,
+        "endgame": None,
     }
 
     game_begin_instructions = {
