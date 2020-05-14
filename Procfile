@@ -1,1 +1,1 @@
-web: npm run run
+web: bash launch.sh 
