@@ -79,6 +79,13 @@ function registerSocketCallbacks(name) {
         registerGoalSetButton(socket, name, firstmover, true);
     });
 
+    socket.on("hide_no_goal", () => {
+        let no_goal_button = document.getElementById("no_goal");
+        no_goal_button.classList.add("hidden");
+        no_goal_button.onclick = () => 
+            console.log("No goal challenge somehow clicked...");
+    });
+
     socket.on("highlight_cube", (pos) => highlightResourcesCube(pos));
 
     socket.on("move_cube", (directions) => moveCube(directions));

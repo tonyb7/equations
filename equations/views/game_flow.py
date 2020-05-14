@@ -219,6 +219,7 @@ def handle_set_goal():
     if rooms_info[room]["game_finished"]:
         return
 
+    emit("hide_no_goal", room=room)
     rooms_info[room]["goalset"] = True
     next_turn(room)
 
