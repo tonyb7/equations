@@ -15,7 +15,7 @@ setup(
         'click==7.1.2',
         'Flask==1.1.1',     
         'Flask-SocketIO==4.3.0',
-        # 'gunicorn==20.0.4',
+        'gunicorn==20.0.4',
         'itsdangerous==1.1.0',
         'Jinja2==2.11.2',
         'MarkupSafe==1.1.1',

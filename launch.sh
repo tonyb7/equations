@@ -2,5 +2,4 @@
 # Launch script for Heroku
 
 bin/equationsdb create
-bin/run
-
+gunicorn -b localhost:8000 -w 2 -D equations:app
