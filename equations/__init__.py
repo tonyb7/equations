@@ -1,6 +1,7 @@
 """Equations package initializer."""
 import flask
 from flask_socketio import SocketIO
+# from flask_sqlalchemy import SQLAlchemy
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 socketio = SocketIO(app, ping_timeout=3, ping_interval=1)
@@ -12,6 +13,8 @@ app.config.from_object('equations.config')
 # useful for using different on development and production machines.
 # Reference: http://flask.pocoo.org/docs/config/
 app.config.from_envvar('EQ_SETTINGS', silent=True)
+
+# db = SQLAlchemy(app)
 
 import equations.views  # noqa: E402  pylint: disable=wrong-import-position
 import equations.model  # noqa: E402  pylint: disable=wrong-import-position
