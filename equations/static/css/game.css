@@ -46,6 +46,7 @@ body {
 
     font-family: monospace;
     overflow-y: scroll;
+    overflow-wrap: break-word;
 }
 
 .messages {
@@ -65,6 +66,7 @@ body {
     height: 10%;
     width: 93%;
     transform: translate(3.5%, -5%);
+    margin-top: 2vh;
 }
 
 .inputMessage {
