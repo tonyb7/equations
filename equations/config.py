@@ -25,4 +25,5 @@ DATABASE_FILENAME = os.path.join(
     'var', 'equations.sqlite3'
 )
 
-BASE_URL = "http://localhost:8000"
+#BASE_URL = "http://localhost:8000"
+BASE_URL = "https://equations-online.herokuapp.com/"
