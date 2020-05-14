@@ -31,7 +31,7 @@ export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
             set_goal_button.onclick = () => 
                 console.log("Set goal button somehow clicked...");
             
-            let no_goal_button = document.getElementById("no_goal");
+            let no_goal_button = document.getElementById("no_goal");  // TODO MAKE IT FOR ERYONE
             no_goal_button.classList.add("hidden");
             no_goal_button.onclick = () => 
                 console.log("No goal challenge somehow clicked...");
@@ -70,7 +70,7 @@ function registerGameStartCallbacks(socket) {
 
     let start_button = buttons.querySelector("#start_game");
     start_button.onclick = () => {};
-    start_button.classList.add("hidden");
+    start_button.classList.add("hidden");  // TODO GOTTA MAKE DISAPPEAR FOR ERYONE
 }
 
 function registerButton(socket, button, socket_label) {
