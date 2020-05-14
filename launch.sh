@@ -2,4 +2,5 @@
 # Launch script for Heroku
 
 bin/equationsdb create
-gunicorn -b localhost:8000 -w 2 -D equations:app
+gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 equations:app
+
