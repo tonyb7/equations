@@ -125,10 +125,11 @@ def handle_siding(writing):
     """Player sided."""
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
+
     if writing:
         assert rooms_info[room]["endgame"]["sider"] == name
-        rooms_info[room]["endgame"]["sider"] = None
         rooms_info[room]["endgame"]["writers"].append(name)
+    rooms_info[room]["endgame"]["sider"] = None
     
     msg_diff = "" if writing else "not "
     emit("server_message", f"{name} has decided " + msg_diff + "to write a solution!", room=room)
@@ -139,9 +140,9 @@ def handle_solution_submit(solution):
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     rooms_info[room]["endgame"]["solutions"][name] = solution
-    if rooms_info[room]["endgame"]["sider"] is not None and \
+    if rooms_info[room]["endgame"]["sider"] is None and \
             len(rooms_info[room]["endgame"]["solutions"]) == len(rooms_info[room]["endgame"]["writers"]):
-        emit("review_solutions", rooms_info[room]["endgame"]["solutions"])
+        emit("review_solutions", rooms_info[room]["endgame"]["solutions"], room=room)
 
 @equations.socketio.on('decided')
 def handle_solution_decision(info):
@@ -153,4 +154,4 @@ def handle_solution_decision(info):
     [name, room] = get_name_and_room(flask.request.sid)
 
     accepted_str = "accepted" if accepted else "rejected"
-    emit("server_message", f"{name} " + accepted_str + f" {writer}'s solution!")
+    emit("server_message", f"{name} " + accepted_str + f" {writer}'s solution!", room=room)
