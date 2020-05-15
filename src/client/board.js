@@ -121,14 +121,6 @@ function fillScoreboardScores(scoreboard, p1scores, p2scores, p3scores) {
 }
 
 export function addScoreboardScore(scoreboard, p1score, p2score, p3score) {
-    if (p1score !== 0) {
-        console.log(scoreboard);
-        console.log(scoreboard.rows);
-        console.log(scoreboard.rows.length);
-        console.log(scoreboard.rows[1].cells);
-        console.log(scoreboard.rows[1].cells[0]);    
-    }
-
     if (scoreboard.rows.length === 2 && scoreboard.rows[1].cells[0].innerHTML == 0) {
         scoreboard.deleteRow(1);
     }
