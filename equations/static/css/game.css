@@ -686,6 +686,6 @@ body {
     transform: translateX(85%);
 }
 
-.button {
+button {
     background-color: white !important;
 }

@@ -121,7 +121,7 @@ function fillScoreboardScores(scoreboard, p1scores, p2scores, p3scores) {
 }
 
 export function addScoreboardScore(scoreboard, p1score, p2score, p3score) {
-    if (scoreboard.rows.length === 2 && scoreboard.rows[1].cells[0].innerHTML == 0) {
+    if (scoreboard.rows.length === 2 && scoreboard.rows[1].cells[0].innerHTML == 0) { // hacky
         scoreboard.deleteRow(1);
     }
 
