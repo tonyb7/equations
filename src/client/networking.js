@@ -1,7 +1,7 @@
 // Handle client networking.
 
 import io from 'socket.io-client';
-import { cleanInput, appendMessage, appendSidingOptions, 
+import { cleanInput, appendMessage, appendServerMessage, appendSidingOptions, 
          appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
          appendStartNewShakeButton } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
@@ -45,7 +45,7 @@ function registerSocketCallbacks(name) {
 
     socket.on('message', (message_info) => appendMessage(message_info['name'], 
                                                          message_info['message']));
-    socket.on("server_message", (message) => appendMessage("Server", message));
+    socket.on("server_message", (message) => appendServerMessage(message));
 
     // Render every visual aspect of the board correctly for a spectator.
     // Required only if game has started
@@ -72,9 +72,9 @@ function registerSocketCallbacks(name) {
         let cubes = data['cubes']
         document.getElementById("start_game").remove();
         
-        appendMessage("Server", `${data['starter']} started the game! The cubes have been rolled!`);
-        appendMessage("Server", `${data['goalsetter']} is chosen to be the goalsetter.`);
-        appendMessage("Server", "Move cubes by clicking a cube in resources, then clicking the " +
+        appendServerMessage(`${data['starter']} started the game! The cubes have been rolled!`);
+        appendServerMessage(`${data['goalsetter']} is chosen to be the goalsetter.`);
+        appendServerMessage("Move cubes by clicking a cube in resources, then clicking the " +
                     "area on the mat you want to move it to. Press \"Goal Set!\" when you're done!");
 
         renderResources(cubes);
@@ -89,7 +89,7 @@ function registerSocketCallbacks(name) {
     socket.on("begin_shake", (data) => {
         document.getElementById("new_shake_button").remove();
 
-        appendMessage("Server", `A new shake has started! ${data['goalsetter']} is chosen to be the goalsetter.`);
+        appendServerMessage(`A new shake has started! ${data['goalsetter']} is chosen to be the goalsetter.`);
         clearBoard();
         renderResources(data['cubes']);
 
@@ -146,7 +146,7 @@ function registerSocketCallbacks(name) {
                 appendSidingOptions(socket);
             }
             else {
-                appendMessage("Server", `Waiting for ${sider} to side...`);
+                appendServerMessage(`Waiting for ${sider} to side...`);
             }
         }
 
@@ -154,12 +154,12 @@ function registerSocketCallbacks(name) {
             appendSolutionPrompt(socket);
         }
         else {
-            appendMessage("Server", "Waiting for solutions to be submitted....");
+            appendServerMessage("Waiting for solutions to be submitted....");
         }
     });
     
     socket.on("review_solutions", (solutions) => {
-        appendMessage("Server", "Time to review solutions!");
+        appendServerMessage("Time to review solutions!");
         
         let reviewing_one = false;
         for (let writer in solutions) {
@@ -172,7 +172,7 @@ function registerSocketCallbacks(name) {
         }
 
         if (!reviewing_one) {
-            appendMessage("Server", "Waiting for others to finish reviewing solutions...");
+            appendServerMessage("Waiting for others to finish reviewing solutions...");
         }
     });
 
@@ -181,7 +181,7 @@ function registerSocketCallbacks(name) {
         let writer = info['writer'];
 
         if (writer !== name) {
-            appendMessage("Server", `Waiting for ${writer} to accept the rejection...`);
+            appendServerMessage(`Waiting for ${writer} to accept the rejection...`);
             return;
         }
 
@@ -198,7 +198,7 @@ function registerSocketCallbacks(name) {
             let msg_pt2 = `is incorrect. Waiting for ${rejecter} to re-evaluate `;
             let msg_pt3 = "whether the solution is correct...";
 
-            appendMessage("Server", `${msg_pt1}${msg_pt2}${msg_pt3}`);
+            appendServerMessage(`${msg_pt1}${msg_pt2}${msg_pt3}`);
             return;
         }
 
@@ -210,7 +210,7 @@ function registerSocketCallbacks(name) {
         let p2score = scores['p2score'];
         let p3score = scores['p3score'];
 
-        appendMessage("Server", "This shake has finished! The scoreboard has been updated.");
+        appendServerMessage("This shake has finished! The scoreboard has been updated.");
         addScoreboardScore(document.getElementById("scoreboard"), p1score, p2score, p3score);
         appendStartNewShakeButton(socket);
     });

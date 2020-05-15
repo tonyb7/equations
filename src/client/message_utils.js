@@ -16,11 +16,15 @@ export function appendMessage(name, message) {
     messages_div.scrollTop = messages_div.scrollHeight;
 }
 
+export function appendServerMessage(message) {
+    appendServerMessage(message);
+}
+
 export function appendSidingOptions(socket) {
     // <li><b>Server: </b>Do you wish to write a solution?</li>
     // <li class="chat-button"><button>Yes</button><button>No</button></li>
 
-    appendMessage("Server", "Do you wish to write a solution? You have one minute to decide.");
+    appendServerMessage("Do you wish to write a solution? You have one minute to decide.");
 
     let options = document.createElement('li');
     options.classList.add("chat-button");
@@ -62,7 +66,7 @@ export function appendSolutionPrompt(socket) {
     //     <input class="solution_box" placeholder="Type your solution here...">
     //     <button class="solution_submit">Submit Solution</button>
     // </li>
-    appendMessage("Server", "Please submit your solution here:");
+    appendServerMessage("Please submit your solution here:");
     let solution_area = document.createElement('li');
     solution_area.classList.add("solution_li");
 
@@ -96,10 +100,10 @@ export function appendAcceptPrompt(socket, name, solution, reevaluate) {
     // </li>
 
     if (reevaluate) {
-        appendMessage("Server", name + " does not agree that the solution is incorrect. Please re-evaluate whether you accept.")
+        appendServerMessage(name + " does not agree that the solution is incorrect. Please re-evaluate whether you accept.")
     }
     else {
-        appendMessage("Server", name + " submitted the following solution. Do you accept?");
+        appendServerMessage(name + " submitted the following solution. Do you accept?");
     }
     
     let options = document.createElement('li');
@@ -138,7 +142,7 @@ export function appendAssentToRejectPrompt(socket, name) {
     // <li class="chat-button">
     //     <button>Yes</button><button>No</button>
     // </li>
-    appendMessage("Server", name + " rejected your solution. Do you agree?");
+    appendServerMessage(name + " rejected your solution. Do you agree?");
 
     let options = document.createElement('li');
     options.classList.add("chat-button");
