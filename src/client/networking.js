@@ -2,7 +2,8 @@
 
 import io from 'socket.io-client';
 import { cleanInput, appendMessage, appendSidingOptions, 
-         appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt } from './message_utils';
+         appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
+         appendStartNewShakeButton } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
     updateBonusButton } from './board';
@@ -187,6 +188,16 @@ function registerSocketCallbacks(name) {
         }
 
         appendAcceptPrompt(socket, writer, solution, true);
+    });
+
+    socket.on("finish_shake", (scores) => {
+        let p1score = scores['p1score'];
+        let p2score = scores['p2score'];
+        let p3score = scores['p3score'];
+
+        appendMessage("Server", "This shake has finished! The scoreboard has been updated.");
+        addScoreboardScore(document.getElementById("scoreboard"), p1score, p2score, p3score);
+        appendStartNewShakeButton(socket);
     });
 }
 

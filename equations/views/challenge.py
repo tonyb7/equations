@@ -10,14 +10,18 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
     """Set up rooms_info's endgame structure."""
     if challenge == "a_flub":
         rooms_info[room]['endgame'] = {
+            "challenger": name,
             "writers": [name],
             "solutions": {},
+            "solution_status": {},
             "sider": sider,
         }
     elif challenge == "p_flub":
         rooms_info[room]['endgame'] = {
+            "challenger": name,
             "writers": [last_mover],
             "solutions": {},
+            "solution_status": {},
             "sider": sider,
         }
     elif challenge == "no_goal":
@@ -60,7 +64,7 @@ def handle_challenge(socketid, challenge):
         emit("server_message", challenge_message, room=room)
         return
     elif challenge != "no_goal" and len(rooms_info[room]['players']) == 3:  # TODO handle no goals
-        sider_list = filter(lambda x: x != name and x != defender, rooms_info['players'])
+        sider_list = filter(lambda x: x != name and x != defender, rooms_info[room]['players'])
         assert len(sider_list) == 1
         sider = sider_list[0]
         challenge_message += f" {sider} has one minute to side!"
@@ -144,6 +148,57 @@ def handle_solution_submit(solution):
             len(rooms_info[room]["endgame"]["solutions"]) == len(rooms_info[room]["endgame"]["writers"]):
         emit("review_solutions", rooms_info[room]["endgame"]["solutions"], room=room)
 
+# TODO need handle: force out, no goal
+def finish_shake(room):
+    """Handle when all solutions have been reviewed."""
+    players = rooms_info[room]['players']
+    challenger = rooms_info[room]['challenger']
+
+    solution_statuses = rooms_info[room]['endgame']['solution_status']
+    one_writer_correct = True in solution_statuses.values()
+    solution_writers = solution_statuses.keys()
+
+    non_writers = [name for name in players if name not in set(solution_writers)]
+
+    shake_scores = {}
+    if one_writer_correct:
+        if challenger in solution_writers and solution_statuses[challenger]:
+            for writer in solution_writers:
+                shake_scores[writer] = 4 if solution_statuses[writer] else 2
+            shake_scores[challenger] = 6
+        else:
+            for writer in solution_writers:
+                shake_scores[writer] = 6 if solution_statuses[writer] else 2
+
+        for non_writer in non_writers:
+                shake_scores[non_writer] = 2
+    else:
+        if challenger in non_writers:
+            for non_writer in non_writers:
+                shake_scores[non_writer] = 4
+            shake_scores[challenger] = 6
+        else:
+            for non_writer in non_writers:
+                shake_scores[non_writer] = 6
+
+        for writer in solution_writers:
+                shake_scores[writer] = 2
+    
+    converted_shake_scores = {
+        "p1score": 0,
+        "p2score": 0,
+        'p3score': 0,
+    }
+
+    for player in shake_scores:
+        index = players.index(player)
+        converted_shake_scores[f"p{index+1}score"] = shake_scores[player]
+    
+    for i in range(3):
+        rooms_info[room][f"p{i+1}scores"].append(converted_shake_scores[f"p{i+1}score"])
+    
+    emit("finish_shake", converted_shake_scores, room=room)
+
 @equations.socketio.on('decided')
 def handle_solution_decision(info):
     """Handle when a player accepts or rejects a solution."""
@@ -159,8 +214,9 @@ def handle_solution_decision(info):
     if not accepted:
         emit("rejection_assent", {"rejecter": name, "writer": writer}, room=room)
     else:
-        pass
-        # TODO
+        rooms_info[room]['endgame']['solution_status'][name] = True
+        if len(rooms_info[room]['endgame']['solution_status']) == len(rooms_info[room]['endgame']['solutions']):
+            finish_shake(room)
 
 @equations.socketio.on('assented')
 def handle_rejection_assent(info):
@@ -174,7 +230,9 @@ def handle_rejection_assent(info):
     if assented:
         emit("server_message", f"{name} has accepted that his/her solution is incorrect.", room=room)
 
-        # TODO
+        rooms_info[room]['endgame']['solution_status'][name] = False
+        if len(rooms_info[room]['endgame']['solution_status']) == len(rooms_info[room]['endgame']['solutions']):
+            finish_shake(room)
 
         return
 

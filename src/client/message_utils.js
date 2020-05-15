@@ -166,3 +166,23 @@ export function appendAssentToRejectPrompt(socket, name) {
     let messages = document.getElementById('message-list');
     messages.appendChild(options);
 }
+
+export function appendStartNewShakeButton(socket) {
+    // <li class="chat-button">
+    //     <button>Start New Shake</button>
+    // </li>
+
+    let li = document.createElement('li');
+    li.classList.add("chat-button");
+
+    let start_button = document.createElement("button");
+    start_button.innerHTML = "Start New Shake";
+
+    li.appendChild(start_button);
+
+    start_button.onclick = () => {
+        socket.emit("new_shake");
+    };
+
+    document.getElementById('message-list').appendChild(li);
+}
