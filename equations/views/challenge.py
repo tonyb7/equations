@@ -13,6 +13,7 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
             "challenger": name,
             "writers": [name],
             "solutions": {},
+            "solution_decided_count": {},
             "solution_status": {},
             "sider": sider,
         }
@@ -21,6 +22,7 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
             "challenger": name,
             "writers": [last_mover],
             "solutions": {},
+            "solution_decided_count": {},
             "solution_status": {},
             "sider": sider,
         }
@@ -28,6 +30,9 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
         rooms_info[room]['endgame'] = {
             # TODO
         }
+
+    for writer in rooms_info[room]['endgame']['writers']:
+        rooms_info[room]['endgame']['solution_decided_count'][writer] = 0
 
 challenge_translation = {
     "a_flub": "Challenge Now",
@@ -51,6 +56,10 @@ def handle_challenge(socketid, challenge):
     if challenge == "no_goal":
         challenge_message += "!"
     else:
+        if not rooms_info[room]['goalset']:
+            emit("server_message", "You cannot challenge; the goal has not been set!")
+            return
+
         challenge_message += f" on {defender}!"
 
     sider = None
@@ -124,6 +133,12 @@ def handle_no_goal():
     """Player pressed no_goal."""
     handle_challenge(flask.request.sid, "no_goal")
 
+def check_if_ready_to_present(room):
+    """Check if solutions are ready to be presented."""
+    if rooms_info[room]["endgame"]["sider"] is None and \
+            len(rooms_info[room]["endgame"]["solutions"]) == len(rooms_info[room]["endgame"]["writers"]):
+        emit("review_solutions", rooms_info[room]["endgame"]["solutions"], room=room)
+
 @equations.socketio.on('sided')
 def handle_siding(writing):
     """Player sided."""
@@ -133,10 +148,12 @@ def handle_siding(writing):
     if writing:
         assert rooms_info[room]["endgame"]["sider"] == name
         rooms_info[room]["endgame"]["writers"].append(name)
+        rooms_info[room]["endgame"]["solution_decided_count"][name] = 0
     rooms_info[room]["endgame"]["sider"] = None
     
     msg_diff = "" if writing else "not "
     emit("server_message", f"{name} has decided " + msg_diff + "to write a solution!", room=room)
+    check_if_ready_to_present(room)
 
 @equations.socketio.on('solution_submitted')
 def handle_solution_submit(solution):
@@ -144,15 +161,13 @@ def handle_solution_submit(solution):
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     rooms_info[room]["endgame"]["solutions"][name] = solution
-    if rooms_info[room]["endgame"]["sider"] is None and \
-            len(rooms_info[room]["endgame"]["solutions"]) == len(rooms_info[room]["endgame"]["writers"]):
-        emit("review_solutions", rooms_info[room]["endgame"]["solutions"], room=room)
+    check_if_ready_to_present(room)
 
 # TODO need handle: force out, no goal
 def finish_shake(room):
     """Handle when all solutions have been reviewed."""
     players = rooms_info[room]['players']
-    challenger = rooms_info[room]['challenger']
+    challenger = rooms_info[room]['endgame']['challenger']
 
     solution_statuses = rooms_info[room]['endgame']['solution_status']
     one_writer_correct = True in solution_statuses.values()
@@ -199,6 +214,18 @@ def finish_shake(room):
     
     emit("finish_shake", converted_shake_scores, room=room)
 
+def check_if_shake_finished(room):
+    """Check if the shake is finished."""
+    if len(rooms_info[room]['endgame']['solution_status']) == len(rooms_info[room]['endgame']['solutions']):
+        finish_shake(room)
+
+def track_decided_solution(room, writer, accepted):
+    """Track that a solution has been accepted or rejected."""
+    rooms_info[room]['endgame']['solution_decided_count'][writer] += 1
+    if rooms_info[room]['endgame']['solution_decided_count'][writer] == len(rooms_info[room]['players']) - 1:
+        rooms_info[room]['endgame']['solution_status'][writer] = accepted
+        check_if_shake_finished(room)
+
 @equations.socketio.on('decided')
 def handle_solution_decision(info):
     """Handle when a player accepts or rejects a solution."""
@@ -214,9 +241,7 @@ def handle_solution_decision(info):
     if not accepted:
         emit("rejection_assent", {"rejecter": name, "writer": writer}, room=room)
     else:
-        rooms_info[room]['endgame']['solution_status'][name] = True
-        if len(rooms_info[room]['endgame']['solution_status']) == len(rooms_info[room]['endgame']['solutions']):
-            finish_shake(room)
+        track_decided_solution(room, writer, True)
 
 @equations.socketio.on('assented')
 def handle_rejection_assent(info):
@@ -229,11 +254,7 @@ def handle_rejection_assent(info):
 
     if assented:
         emit("server_message", f"{name} has accepted that his/her solution is incorrect.", room=room)
-
-        rooms_info[room]['endgame']['solution_status'][name] = False
-        if len(rooms_info[room]['endgame']['solution_status']) == len(rooms_info[room]['endgame']['solutions']):
-            finish_shake(room)
-
+        track_decided_solution(room, name, False)
         return
 
     assert name in rooms_info[room]['endgame']['solutions']

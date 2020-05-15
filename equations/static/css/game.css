@@ -47,7 +47,7 @@ body {
     font-family: monospace;
     overflow-y: scroll;
     overflow-wrap: break-word;
-    
+
 }
 
 .messages {
@@ -119,6 +119,7 @@ body {
 
     border: ridge;
     border-width: 1vw;
+    border-color: whitesmoke;
 }
 
 .info {
@@ -683,4 +684,8 @@ body {
     border-radius: 2vw;
     text-align: center;
     transform: translateX(85%);
+}
+
+.button {
+    background-color: white !important;
 }

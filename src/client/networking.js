@@ -6,7 +6,7 @@ import { cleanInput, appendMessage, appendSidingOptions,
          appendStartNewShakeButton } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
-    updateBonusButton } from './board';
+    updateBonusButton, hideNoGoalButton, clearBoard } from './board';
 import { initializeBoardCallbacks, registerGoalSetButton, 
          registerStartButton, deregisterBoardCallbacks } from './callbacks';
 
@@ -70,15 +70,12 @@ function registerSocketCallbacks(name) {
     
     socket.on("begin_game", (data) => {
         let cubes = data['cubes']
-        console.log("Rolled cubes: ", cubes);
-        document.getElementById("start_game").onclick = () => {
-            console.log("Game has already started!")
-        };
+        document.getElementById("start_game").remove();
         
         appendMessage("Server", `${data['starter']} started the game! The cubes have been rolled!`);
         appendMessage("Server", `${data['goalsetter']} is chosen to be the goalsetter.`);
         appendMessage("Server", "Move cubes by clicking a cube in resources, then clicking the " +
-                    "area on the mat you want to move it to. Press \"Goal Set!\" when you;re done!");
+                    "area on the mat you want to move it to. Press \"Goal Set!\" when you're done!");
 
         renderResources(cubes);
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
@@ -93,6 +90,7 @@ function registerSocketCallbacks(name) {
         document.getElementById("new_shake_button").remove();
 
         appendMessage("Server", `A new shake has started! ${data['goalsetter']} is chosen to be the goalsetter.`);
+        clearBoard();
         renderResources(data['cubes']);
 
         let firstmover = data['goalsetter'];
@@ -102,10 +100,7 @@ function registerSocketCallbacks(name) {
     });
 
     socket.on("hide_no_goal", () => {
-        let no_goal_button = document.getElementById("no_goal");
-        no_goal_button.classList.add("hidden");
-        no_goal_button.onclick = () => 
-            console.log("No goal challenge somehow clicked...");
+        hideNoGoalButton();
     });
 
     socket.on("highlight_cube", (pos) => highlightResourcesCube(pos));

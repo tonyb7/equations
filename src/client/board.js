@@ -86,6 +86,18 @@ function fillSector(cubes, sectorid, cube_idx) {
     }
 }
 
+function clearSector(sectorid) {
+    let sector_table = document.getElementById(sectorid).querySelector('table');
+    for (let i = 3; i < sector_table.rows.length; ++i) {
+        sector_table.deleteRow(i);
+    }
+
+    for (let i = 0; i < 12; ++i) { // magic bad
+        let th = sector_table.querySelector(`#${sector_code_map.get(sectorid)}${i}`);
+        th.innerHTML = '';
+    }
+}
+
 export function initializeScoreboard(players) {
     let scoreboard = document.getElementById("scoreboard");
     for (let i = 0; i < players.length; ++i) {
@@ -109,6 +121,18 @@ function fillScoreboardScores(scoreboard, p1scores, p2scores, p3scores) {
 }
 
 export function addScoreboardScore(scoreboard, p1score, p2score, p3score) {
+    if (p1score !== 0) {
+        console.log(scoreboard);
+        console.log(scoreboard.rows);
+        console.log(scoreboard.rows.length);
+        console.log(scoreboard.rows[1].cells);
+        console.log(scoreboard.rows[1].cells[0]);    
+    }
+
+    if (scoreboard.rows.length === 2 && scoreboard.rows[1].cells[0].innerHTML == 0) {
+        scoreboard.deleteRow(1);
+    }
+
     let new_row = scoreboard.insertRow();
     new_row.insertCell().innerHTML = p1score;
     new_row.insertCell().innerHTML = p2score;
@@ -181,6 +205,11 @@ export const renderGameVisuals = (game) => {
     }
 
     if (game["game_started"]) {
+        document.getElementById("start_game").remove();
+        if (game["goalset"]) {
+            hideNoGoalButton();
+        }
+
         renderResources(game['resources']);
         renderGoal(game['goal'], game['cube_index']);
         renderSector(game['forbidden'], "forbidden-sector", game['cube_index']);
@@ -200,5 +229,21 @@ export function updateBonusButton(show) {
     }
     else {
         bonus_button.classList.add("hidden");
+    }
+}
+
+export function hideNoGoalButton() {
+    let no_goal_button = document.getElementById("no_goal");
+    no_goal_button.classList.add("hidden");
+    no_goal_button.onclick = () => 
+        console.log("No goal challenge somehow clicked...");
+}
+
+// Clear everything on the mat
+export function clearBoard() {
+    let sectorids = ['goal-sector', 'forbidden-sector', 
+                     'permitted-sector', 'required-sector'];
+    for (let sectorid of sectorids) {
+        clearSector(sectorid);
     }
 }

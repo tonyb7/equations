@@ -62,8 +62,6 @@ function registerGameStartCallbacks(socket) {
         registerButton(socket, buttons.querySelector(`#${button_id}`), 
                        button_id);
     }
-
-    buttons.querySelector("#start_game").remove();
 }
 
 function registerButton(socket, button, socket_label) {
