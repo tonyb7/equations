@@ -40,7 +40,6 @@ export function initializeBoardCallbacks(socket, show_bonus) {
     }
 
     registerGameStartCallbacks(socket);
-    registerBonusButtonCallback(socket);
     updateBonusButton(show_bonus);
 }
 
@@ -68,21 +67,12 @@ function registerButton(socket, button, socket_label) {
     };
 }
 
-function registerBonusButtonCallback(socket) {
-    let bonus_button = document.getElementById("bonus-button");
-    bonus_button.onclick = () => {
-        bonus_button.classList.add("button-clicked");
-        socket.emit("bonus_clicked");
-    };
-}
-
 export function deregisterBoardCallbacks() {
     for (const id of board_sectors) {
         document.getElementById(id).onclick = () => {};
     }
 
     deregisterButtonCallbacks();
-    deregisterBonusButtonCallback();
     deregisterGoalSetCallback();
     updateBonusButton(false);
 }
@@ -92,10 +82,6 @@ function deregisterButtonCallbacks() {
     for (const button_id of button_ids) {
         buttons.querySelector(`#${button_id}`).onclick = () => {};
     }
-}
-
-function deregisterBonusButtonCallback() {
-    document.getElementById("bonus-button").onclick = () => {};
 }
 
 function deregisterGoalSetCallback() {

@@ -1,6 +1,6 @@
 // Functions related to moving cubes around the board
 import { getAsset } from './assets';
-import { emitCubeClicked } from './networking';
+import { emitCubeClicked, bonusButtonCallback } from './networking';
 
 const cube_color_map = new Map([
     [0, 'r'],
@@ -159,6 +159,12 @@ export function highlightResourcesCube(position) {
     image.classList.add("highlight-img");
 }
 
+export function unhighlightResourcesCube(position) {
+    let surrounding_th = document.getElementById(`r${position}`);
+    let image = surrounding_th.querySelector("img");
+    image.classList.remove("highlight-img");
+}
+
 export function updateTurnText(name) {
     let turn_elt = document.getElementById("actual-turn-text");
     turn_elt.innerHTML = `${name}`;
@@ -238,9 +244,11 @@ export function updateBonusButton(show) {
     bonus_button.classList.remove("button-clicked");
     if (show) {
         bonus_button.classList.remove("hidden");
+        bonus_button.onclick = bonusButtonCallback.bind(bonus_button);
     }
     else {
         bonus_button.classList.add("hidden");
+        bonus_button.onclick = () => {};
     }
 }
 

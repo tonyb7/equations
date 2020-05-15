@@ -5,8 +5,8 @@ import { cleanInput, appendMessage, appendSidingOptions,
          appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
          appendStartNewShakeButton } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
-    highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
-    updateBonusButton, hideGoalSettingButtons, clearBoard } from './board';
+    highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
+    renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard } from './board';
 import { initializeBoardCallbacks, registerGoalSetButton, 
          registerStartButton, deregisterBoardCallbacks } from './callbacks';
 
@@ -99,11 +99,10 @@ function registerSocketCallbacks(name) {
         registerGoalSetButton(socket, name, firstmover, true);
     });
 
-    socket.on("hide_goal_setting_buttons", () => {
-        hideGoalSettingButtons();
-    });
+    socket.on("hide_goal_setting_buttons", () => hideGoalSettingButtons());
 
     socket.on("highlight_cube", (pos) => highlightResourcesCube(pos));
+    socket.on("unhighlight_cube", (pos) => unhighlightResourcesCube(pos));
 
     socket.on("move_cube", (directions) => moveCube(directions));
 
@@ -268,4 +267,9 @@ function show_bonus_for(game, player) {
     }
 
     return true;
+}
+
+export function bonusButtonCallback() {
+    this.classList.toggle("button-clicked");
+    socket.emit("bonus_clicked");
 }

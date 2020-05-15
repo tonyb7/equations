@@ -129,17 +129,15 @@ def handle_cube_click(pos):
     if rooms_info[room]["challenge"]:
         return
 
-    # Reject if a cube has already been clicked. You touch it you move it!
     if rooms_info[room]['touched_cube'] is not None:
+        emit("unhighlight_cube", pos, room=room)
+        rooms_info[room]['touched_cube'] = None
         return
 
     if rooms_info[room]["resources"][pos] == MOVED_CUBE_IDX:
         return
 
-    rooms_info[room]["started_move"] = True
-
-    turn_idx = rooms_info[room]['turn']
-    turn_user = rooms_info[room]['players'][turn_idx]
+    turn_user = get_current_mover(room)
 
     if turn_user == user:
         if not rooms_info[room]["goalset"] and len(rooms_info[room]["goal"]) >= 6:
@@ -160,6 +158,7 @@ def move_cube(room, sectorid):
     rooms_info[room][sector_str].append(touched_cube_idx)
     rooms_info[room]['touched_cube'] = None
     rooms_info[room]["resources"][touched_cube_idx] = MOVED_CUBE_IDX
+    rooms_info[room]["started_move"] = True
 
     move_command = {
         "from": touched_cube_idx,
@@ -266,9 +265,13 @@ def handle_bonus_click():
     if get_current_mover(room) != name:
         print("non mover somehow clicked the bonus button. hacker")
         return
-    assert not rooms_info[room]["bonus_clicked"]
-    rooms_info[room]["bonus_clicked"] = True
-    rooms_info[room]["started_move"] = True
+
+    if rooms_info[room]["started_move"]:
+        print("started move but somehow clicked bonus button")
+        return
+
+    rooms_info[room]["bonus_clicked"] = not rooms_info[room]["bonus_clicked"]
+    print("bonus clicked set to ", rooms_info[room]["bonus_clicked"])
 
 @equations.socketio.on("call_judge")
 def handle_call_judge():
