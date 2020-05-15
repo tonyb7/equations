@@ -6,7 +6,7 @@ import { cleanInput, appendMessage, appendSidingOptions,
          appendStartNewShakeButton } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
-    updateBonusButton, hideNoGoalButton, clearBoard } from './board';
+    updateBonusButton, hideGoalSettingButtons, clearBoard } from './board';
 import { initializeBoardCallbacks, registerGoalSetButton, 
          registerStartButton, deregisterBoardCallbacks } from './callbacks';
 
@@ -99,8 +99,8 @@ function registerSocketCallbacks(name) {
         registerGoalSetButton(socket, name, firstmover, true);
     });
 
-    socket.on("hide_no_goal", () => {
-        hideNoGoalButton();
+    socket.on("hide_goal_setting_buttons", () => {
+        hideGoalSettingButtons();
     });
 
     socket.on("highlight_cube", (pos) => highlightResourcesCube(pos));

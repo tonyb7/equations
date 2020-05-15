@@ -24,7 +24,7 @@ def start_shake(new_game):
     if rooms_info[room]["game_finished"]:
         return
 
-    if room not in rooms_info or rooms_info[room]['game_started']:
+    if room not in rooms_info or (new_game and rooms_info[room]['game_started']):
         print("Game start rejected")
         return
 
@@ -38,7 +38,6 @@ def start_shake(new_game):
     
     assert name in current_players
     assert len(current_players) <= 3
-    assert not rooms_info[room]['game_started']
 
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
@@ -71,6 +70,8 @@ def start_shake(new_game):
             "endgame": None,
         }
 
+        rooms_info[room]['goalsetter_index'] = rooms_info[room]['turn']
+
         game_begin_instructions = {
             'cubes': rolled_cubes,
             'players': current_players,
@@ -86,7 +87,9 @@ def start_shake(new_game):
         rooms_info[room]["required"] = []
         rooms_info[room]["permitted"] = []
         rooms_info[room]["forbidden"] = []
-        rooms_info[room]["turn"] = random.randint(0, len(current_players) - 1)
+        rooms_info[room]['goalsetter_index'] = \
+            (rooms_info[room]['goalsetter_index'] + 1) % len(rooms_info[room]['players'])
+        rooms_info[room]["turn"] = rooms_info[room]['goalsetter_index']
         rooms_info[room]["goalset"] = False
         rooms_info[room]["num_timer_flips"] = 0
         rooms_info[room]["10s_warning_called"] = False
@@ -244,10 +247,14 @@ def handle_set_goal():
     [name, room] = get_name_and_room(flask.request.sid)
     assert name == get_current_mover(room)
 
+    if len(rooms_info[room]['goal']) == 0:
+        emit("server_message", "You must set at least one cube on the goal!")
+        return
+
     if rooms_info[room]["game_finished"]:
         return
 
-    emit("hide_no_goal", room=room)
+    emit("hide_goal_setting_buttons", room=room)
     rooms_info[room]["goalset"] = True
     next_turn(room)
 

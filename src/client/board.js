@@ -86,14 +86,34 @@ function fillSector(cubes, sectorid, cube_idx) {
     }
 }
 
+function clearGoal() {
+    let goal_cubes = document.getElementById("goal-sector");
+    for (let i = 0; i < 6; ++i) {
+        let th = goal_cubes.querySelector(`#g${i}`);
+        th.innerHTML = '';
+    }
+    sector_cube_count["goal-sector"] = 0;
+}
+
 function clearSector(sectorid) {
     let sector_table = document.getElementById(sectorid).querySelector('table');
+
     for (let i = 3; i < sector_table.rows.length; ++i) {
         sector_table.deleteRow(i);
     }
 
     for (let i = 0; i < 12; ++i) { // magic bad
         let th = sector_table.querySelector(`#${sector_code_map.get(sectorid)}${i}`);
+        th.innerHTML = '';
+    }
+
+    sector_cube_count[sectorid] = 0;
+}
+
+function clearResources() {
+    let resources_div = document.getElementById("resources-cubes");
+    for (let i = 0; i < 24; ++i) {
+        let th = resources_div.querySelector(`#r${i}`);
         th.innerHTML = '';
     }
 }
@@ -224,18 +244,26 @@ export function updateBonusButton(show) {
     }
 }
 
-export function hideNoGoalButton() {
+export function hideGoalSettingButtons() {
     let no_goal_button = document.getElementById("no_goal");
     no_goal_button.classList.add("hidden");
     no_goal_button.onclick = () => 
         console.log("No goal challenge somehow clicked...");
+
+    let set_goal_button = document.getElementById("set-goal-button");
+    set_goal_button.classList.add("hidden");
+    set_goal_button.onclick = () => 
+        console.log("Set goal button somehow clicked...");
 }
 
-// Clear everything on the mat
 export function clearBoard() {
-    let sectorids = ['goal-sector', 'forbidden-sector', 
-                     'permitted-sector', 'required-sector'];
+    let sectorids = ['forbidden-sector', 'permitted-sector', 'required-sector'];
+
+    console.log("Clearing board");
+    clearGoal();
     for (let sectorid of sectorids) {
         clearSector(sectorid);
     }
+
+    clearResources();
 }

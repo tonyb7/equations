@@ -27,9 +27,6 @@ export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
         set_goal_button.classList.remove("hidden");
         set_goal_button.onclick = () => {
             socket.emit("set_goal");
-            set_goal_button.classList.add("hidden");
-            set_goal_button.onclick = () => 
-                console.log("Set goal button somehow clicked...");
         };
     }
 };
