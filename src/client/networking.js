@@ -6,7 +6,8 @@ import { cleanInput, appendMessage, appendServerMessage, appendSidingOptions,
          appendStartNewShakeButton } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
-    renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard } from './board';
+    renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard,
+    num_resources_cubes } from './board';
 import { initializeBoardCallbacks, registerGoalSetButton, 
          registerStartButton, deregisterBoardCallbacks } from './callbacks';
 
@@ -55,6 +56,10 @@ function registerSocketCallbacks(name) {
     // appropriate (according to whether game has started)
     socket.on("render_player_state", (game) => {
         renderGameVisuals(game);
+        if (game['game_finished']) {
+            return;
+        }
+        
         if (game['game_started']) {
             initializeBoardCallbacks(socket, show_bonus_for(game, name));
             registerGoalSetButton(socket, name, game['players'][game['turn']], !game["goalset"]);
@@ -237,6 +242,11 @@ export const emitCubeClicked = (pos) => socket.emit("cube_clicked", pos);
 // Determine whether bonus button should be rendered for player in game
 function show_bonus_for(game, player) {
     if (game['players'][game['turn']] != player) {
+        return false;
+    }
+
+    if (num_resources_cubes() < 2) {
+        console.log("Can't bonus with less than 2 cubes in resources");
         return false;
     }
 

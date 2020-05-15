@@ -17,7 +17,7 @@ export function appendMessage(name, message) {
 }
 
 export function appendServerMessage(message) {
-    appendServerMessage(message);
+    appendMessage("Server", message);
 }
 
 export function appendSidingOptions(socket) {

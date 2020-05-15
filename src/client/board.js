@@ -275,3 +275,9 @@ export function clearBoard() {
 
     clearResources();
 }
+
+export function num_resources_cubes() {
+    let not_in_resources = Object.values(sector_cube_count).reduce((a, b) => a + b);
+    console.log("cubes not in resources: ", not_in_resources);
+    return 24 - not_in_resources;
+}
