@@ -177,6 +177,7 @@ export function appendStartNewShakeButton(socket) {
 
     let start_button = document.createElement("button");
     start_button.innerHTML = "Start New Shake";
+    start_button.id = "new_shake_button";
 
     li.appendChild(start_button);
 

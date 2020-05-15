@@ -74,6 +74,8 @@ def register_player(player_info):
             if name in user_info:
                 assert user_info[name]["gameroom"] is None
             rooms_info[room]["players"].append(name)
+
+            emit("new_player", rooms_info[room]["players"], room=room)
             print(f"{name} joined room {room} as new player")
 
         rooms_info[room]["sockets"].append(socketid)

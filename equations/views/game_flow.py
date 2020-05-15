@@ -14,9 +14,9 @@ from flask_socketio import emit
 # Constant to represent index of a moved cube in resources list
 MOVED_CUBE_IDX = -1
 
-@equations.socketio.on('start_game')
-def handle_start_game():
-    """Player pressed start_game."""
+def start_shake(new_game):
+    """Handle logic for starting a shake. new_game specifies if shake
+    is the first shake in a game."""
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed start_game for room {room}!")
@@ -43,120 +43,76 @@ def handle_start_game():
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
 
-    rooms_info[room] = {
-        "game_started": True,
-        "game_finished": False,
-        "players": current_players,
-        "spectators": rooms_info[room]["spectators"],
-        "sockets": rooms_info[room]["sockets"],
-        "p1scores": [0],
-        "p2scores": [0],
-        "p3scores": [0],
-        "starttime": time.time(),
-        "cube_index": rolled_cubes[:],  # fixed length of 24, index is cube's id
-        "resources": rolled_cubes,  # fixed length of 24
-        "goal": [],  # stores cube ids (based on cube_index); same for 3 below
-        "required": [],
-        "permitted": [],
-        "forbidden": [],
-        "turn": random.randint(0, len(current_players) - 1),
-        "goalset": False,
-        "num_timer_flips": 0,
-        "10s_warning_called": False,
-        "challenge": None,
-        "touched_cube": None,
-        "bonus_clicked": False,
-        "started_move": False,
-        "endgame": None,
-    }
+    if new_game:
+        rooms_info[room] = {
+            "game_started": True,
+            "game_finished": False,
+            "players": current_players,
+            "spectators": rooms_info[room]["spectators"],
+            "sockets": rooms_info[room]["sockets"],
+            "p1scores": [0],
+            "p2scores": [0],
+            "p3scores": [0],
+            "starttime": time.time(),
+            "cube_index": rolled_cubes[:],  # fixed length of 24, index is cube's id
+            "resources": rolled_cubes,  # fixed length of 24
+            "goal": [],  # stores cube ids (based on cube_index); same for 3 below
+            "required": [],
+            "permitted": [],
+            "forbidden": [],
+            "turn": random.randint(0, len(current_players) - 1),
+            "goalset": False,
+            "num_timer_flips": 0,
+            "10s_warning_called": False,
+            "challenge": None,
+            "touched_cube": None,
+            "bonus_clicked": False,
+            "started_move": False,
+            "endgame": None,
+        }
 
-    game_begin_instructions = {
-        'cubes': rolled_cubes,
-        'players': current_players,
-        'firstmove': rooms_info[room]['turn'],
-    }
+        game_begin_instructions = {
+            'cubes': rolled_cubes,
+            'players': current_players,
+            'starter': name,
+            'goalsetter': get_current_mover(room),
+        }
 
-    emit("begin_game", game_begin_instructions, room=room)
+        emit("begin_game", game_begin_instructions, room=room)
+    else:
+        rooms_info[room]["cube_index"] = rolled_cubes[:]
+        rooms_info[room]["resources"] = rolled_cubes
+        rooms_info[room]["goal"] = []
+        rooms_info[room]["required"] = []
+        rooms_info[room]["permitted"] = []
+        rooms_info[room]["forbidden"] = []
+        rooms_info[room]["turn"] = random.randint(0, len(current_players) - 1)
+        rooms_info[room]["goalset"] = False
+        rooms_info[room]["num_timer_flips"] = 0
+        rooms_info[room]["10s_warning_called"] = False
+        rooms_info[room]["challenge"] = None
+        rooms_info[room]["touched_cube"] = None
+        rooms_info[room]["bonus_clicked"] = False
+        rooms_info[room]["started_move"] = False
+        rooms_info[room]["endgame"] = None
 
-    start_instruction = f"{name} started the game! The cubes have been rolled! \
-        {get_current_mover(room)} is chosen to be the goal setter. \
-            Move cubes by clicking a cube in resources, \
-                then clicking the area on the mat you want to move it to. \
-                    If you touch a cube you must move it! \
-                    Press \"Goal Set!\" when you're done!"
-    emit("server_message", start_instruction, room=room)
+        shake_begin_instructions = {
+            'cubes': rolled_cubes,
+            'players': current_players,
+            'goalsetter': get_current_mover(room),
+        }
+
+        emit("begin_shake", shake_begin_instructions, room=room)
+
+@equations.socketio.on('start_game')
+def handle_start_game():
+    """Player pressed start_game."""
+    start_shake(True)
 
 @equations.socketio.on('new_shake')
 def handle_new_shake():
     """Handle start of new shake."""
-    MapsLock()
-    [name, room] = get_name_and_room(flask.request.sid)
-    print(f"{name} pressed start new shake for room {room}!")
-
-    if rooms_info[room]["game_finished"]:
-        return
-
-    if room not in rooms_info or rooms_info[room]['game_started']:
-        print("Game start rejected")
-        return
-
-    current_players = rooms_info[room]['players']
-
-    if len(current_players) < 2:
-        emit('server_message', 
-             "You can only start a game with 2 or 3 players.", 
-             room=room)
-        return
-    
-    assert name in current_players
-    assert len(current_players) <= 3
-    assert not rooms_info[room]['game_started']
-
-    random.seed(time.time())
-    rolled_cubes = [random.randint(0, 5) for _ in range(24)]
-
-    rooms_info[room] = {
-        "game_started": True,
-        "game_finished": False,
-        "players": current_players,
-        "spectators": rooms_info[room]["spectators"],
-        "sockets": rooms_info[room]["sockets"],
-        "p1scores": [0],
-        "p2scores": [0],
-        "p3scores": [0],
-        "starttime": time.time(),
-        "cube_index": rolled_cubes[:],  # fixed length of 24, index is cube's id
-        "resources": rolled_cubes,  # fixed length of 24
-        "goal": [],  # stores cube ids (based on cube_index); same for 3 below
-        "required": [],
-        "permitted": [],
-        "forbidden": [],
-        "turn": random.randint(0, len(current_players) - 1),
-        "goalset": False,
-        "num_timer_flips": 0,
-        "10s_warning_called": False,
-        "challenge": None,
-        "touched_cube": None,
-        "bonus_clicked": False,
-        "started_move": False,
-        "endgame": None,
-    }
-
-    game_begin_instructions = {
-        'cubes': rolled_cubes,
-        'players': current_players,
-        'firstmove': rooms_info[room]['turn'],
-    }
-
-    emit("begin_game", game_begin_instructions, room=room)
-
-    start_instruction = f"{name} started the game! The cubes have been rolled! \
-        {get_current_mover(room)} is chosen to be the goal setter. \
-            Move cubes by clicking a cube in resources, \
-                then clicking the area on the mat you want to move it to. \
-                    If you touch a cube you must move it! \
-                    Press \"Goal Set!\" when you're done!"
-    emit("server_message", start_instruction, room=room)
+    start_shake(False)
 
 @equations.socketio.on("cube_clicked")
 def handle_cube_click(pos):
@@ -250,7 +206,7 @@ def handle_sector_click(sectorid):
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} clicked {sectorid} in room {room}")
 
-    if rooms_info[room]["game_finished"]:
+    if rooms_info[room]["game_finished"] or rooms_info[room]["touched_cube"] is None:
         return
 
     if name != get_current_mover(room):

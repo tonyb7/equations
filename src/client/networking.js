@@ -63,6 +63,10 @@ function registerSocketCallbacks(name) {
             registerStartButton(socket);
         }
     });
+
+    socket.on("new_player", (players) => {
+        initializeScoreboard(players);
+    });
     
     socket.on("begin_game", (data) => {
         let cubes = data['cubes']
@@ -70,11 +74,28 @@ function registerSocketCallbacks(name) {
         document.getElementById("start_game").onclick = () => {
             console.log("Game has already started!")
         };
+        
+        appendMessage("Server", `${data['starter']} started the game! The cubes have been rolled!`);
+        appendMessage("Server", `${data['goalsetter']} is chosen to be the goalsetter.`);
+        appendMessage("Server", "Move cubes by clicking a cube in resources, then clicking the " +
+                    "area on the mat you want to move it to. Press \"Goal Set!\" when you;re done!");
 
         renderResources(cubes);
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
 
-        let firstmover = data['players'][data['firstmove']];
+        let firstmover = data['goalsetter'];
+        initializeBoardCallbacks(socket, firstmover === name);
+        updateTurnText(firstmover);
+        registerGoalSetButton(socket, name, firstmover, true);
+    });
+
+    socket.on("begin_shake", (data) => {
+        document.getElementById("new_shake_button").remove();
+
+        appendMessage("Server", `A new shake has started! ${data['goalsetter']} is chosen to be the goalsetter.`);
+        renderResources(data['cubes']);
+
+        let firstmover = data['goalsetter'];
         initializeBoardCallbacks(socket, firstmover === name);
         updateTurnText(firstmover);
         registerGoalSetButton(socket, name, firstmover, true);
