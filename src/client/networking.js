@@ -2,7 +2,7 @@
 
 import io from 'socket.io-client';
 import { cleanInput, appendMessage, appendSidingOptions, 
-         appendSolutionPrompt, appendAcceptPrompt } from './message_utils';
+         appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, updateTurnText, moveCube, renderGameVisuals,
     updateBonusButton } from './board';
@@ -143,13 +143,50 @@ function registerSocketCallbacks(name) {
     });
     
     socket.on("review_solutions", (solutions) => {
-        //appendAcceptPrompt(socket, name, solution) 
+        appendMessage("Server", "Time to review solutions!");
+        
+        let reviewing_one = false;
         for (let writer in solutions) {
             if (writer === name) {
                 continue;
             }
-            appendAcceptPrompt(socket, writer, solutions[writer]);
+
+            reviewing_one = true;
+            appendAcceptPrompt(socket, writer, solutions[writer], false);
         }
+
+        if (!reviewing_one) {
+            appendMessage("Server", "Waiting for others to finish reviewing solutions...");
+        }
+    });
+
+    socket.on("rejection_assent", (info) => {
+        let rejecter = info['rejecter'];
+        let writer = info['writer'];
+
+        if (writer !== name) {
+            appendMessage("Server", `Waiting for ${writer} to accept the rejection...`);
+            return;
+        }
+
+        appendAssentToRejectPrompt(socket, rejecter);
+    });
+
+    socket.on("reevaluate_solution", (info) => {
+        let rejecter = info['rejecter'];
+        let writer = info['writer'];
+        let solution = info['solution'];
+
+        if (rejecter !== name) {
+            let msg_pt1 = `${writer} does not agree that his/her solution `;
+            let msg_pt2 = `is incorrect. Waiting for ${rejecter} to re-evaluate `;
+            let msg_pt3 = "whether the solution is correct...";
+
+            appendMessage("Server", `${msg_pt1}${msg_pt2}${msg_pt3}`);
+            return;
+        }
+
+        appendAcceptPrompt(socket, writer, solution, true);
     });
 }
 

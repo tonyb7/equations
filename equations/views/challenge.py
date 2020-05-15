@@ -155,3 +155,34 @@ def handle_solution_decision(info):
 
     accepted_str = "accepted" if accepted else "rejected"
     emit("server_message", f"{name} " + accepted_str + f" {writer}'s solution!", room=room)
+
+    if not accepted:
+        emit("rejection_assent", {"rejecter": name, "writer": writer}, room=room)
+    else:
+        pass
+        # TODO
+
+@equations.socketio.on('assented')
+def handle_rejection_assent(info):
+    """Handle when a player assents to a rejection."""
+    rejecter = info['rejecter']
+    assented = info['assented']
+
+    MapsLock()
+    [name, room] = get_name_and_room(flask.request.sid)
+
+    if assented:
+        emit("server_message", f"{name} has accepted that his/her solution is incorrect.", room=room)
+
+        # TODO
+
+        return
+
+    assert name in rooms_info[room]['endgame']['solutions']
+    reevaluate_msg = {
+        "writer": name,
+        "solution": rooms_info[room]['endgame']['solutions'][name],
+        "rejecter": rejecter,
+    }
+    emit("reevaluate_solution", reevaluate_msg, room=room)
+    

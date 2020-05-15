@@ -88,14 +88,19 @@ export function appendSolutionPrompt(socket) {
     messages.appendChild(solution_area);
 }
 
-export function appendAcceptPrompt(socket, name, solution) {
+export function appendAcceptPrompt(socket, name, solution, reevaluate) {
     // <li><b>Server: </b>Tony submitted the following solution. Do you accept?</li>
     // <li class="chat-button">
     //     <p>4+5=9</p>
     //     <button>Yes</button><button>No</button>
     // </li>
 
-    appendMessage("Server", name + " submitted the following solution. Do you accept?");
+    if (reevaluate) {
+        appendMessage("Server", name + " does not agree that the solution is incorrect. Please re-evaluate whether you accept.")
+    }
+    else {
+        appendMessage("Server", name + " submitted the following solution. Do you accept?");
+    }
     
     let options = document.createElement('li');
     options.classList.add("chat-button");
@@ -120,6 +125,40 @@ export function appendAcceptPrompt(socket, name, solution) {
 
     no_button.onclick = () => {
         socket.emit("decided", {"name": name, "accepted": false});
+        deregisterChatButtons([yes_button, no_button]);
+        yes_button.classList.add("hidden");
+    };
+
+    let messages = document.getElementById('message-list');
+    messages.appendChild(options);
+}
+
+export function appendAssentToRejectPrompt(socket, name) {
+    // <li><b>Server: </b>Tony rejected your solution. Do you agree?</li>
+    // <li class="chat-button">
+    //     <button>Yes</button><button>No</button>
+    // </li>
+    appendMessage("Server", name + " rejected your solution. Do you agree?");
+
+    let options = document.createElement('li');
+    options.classList.add("chat-button");
+
+    let yes_button = document.createElement("button");
+    yes_button.innerHTML = "Yes";
+    options.appendChild(yes_button);
+
+    let no_button = document.createElement("button");
+    no_button.innerHTML = "No";
+    options.appendChild(no_button);
+
+    yes_button.onclick = () => {
+        socket.emit("assented", {"rejecter": name, "assented": true});
+        deregisterChatButtons([yes_button, no_button]);
+        no_button.classList.add("hidden");
+    };
+
+    no_button.onclick = () => {
+        socket.emit("assented", {"rejecter": name, "assented": false});
         deregisterChatButtons([yes_button, no_button]);
         yes_button.classList.add("hidden");
     };
