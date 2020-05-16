@@ -528,6 +528,9 @@ body {
 }
 
 .goal-area.goal-cubes.play-area th {
+    /* border: dotted;
+    border-color: white; */
+
     width: 4vw;
     height: 4vw;
 
@@ -689,4 +692,20 @@ body {
 
 button {
     background-color: white !important;
+}
+
+.rotate0 {
+    transform: rotate(0deg);
+}
+
+.rotate90 {
+    transform: rotate(90deg);
+}
+
+.rotate180 {
+    transform: rotate(180deg);
+}
+
+.rotate270 {
+    transform: rotate(270deg);
 }
