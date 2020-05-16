@@ -51,7 +51,7 @@ npm start # (or equivalently, ./bin/run)
 5. Go to http://localhost:8000 in browser
 
 # Other
-If you gonna deploy this, don't forget to generate a new bytestring to replace the Flask secret key in `/equations/config.py`.
+If you gonna deploy this, don't forget to generate a new bytestring to replace the Flask secret key.
 ```
 python3 -c "import os; print(os.urandom(24))"
 ```
