@@ -522,25 +522,29 @@ body {
     align-items: stretch;
 }
 
-.goal-area.goal-cubes.play-area table {
+.goal-area.goal-cubes.play-area canvas {
     border: dotted;
     border-color: white;
-}
 
+    width: 77%;
+}
+/* 
 .goal-area.goal-cubes.play-area th {
     width: 4vw;
     height: 4vw;
 
     transform: translateY(0%);
-}
+} */
 
-.goal-area.goal-cubes.play-area th img {
+.cube-size {
     width: 3vw;
     height: 3vw;
 }
 
 .goal-area.goal-cubes.play-area #btn-div {
-    margin-right: 6vw;
+    /* border:dotted; border-color:white; */
+
+    margin-right: 2vw;
 }
 
 .goal-area.goal-cubes.play-area button {
@@ -689,4 +693,20 @@ body {
 
 button {
     background-color: white !important;
+}
+
+.rotate0 {
+    transform: rotate(0deg);
+}
+
+.rotate90 {
+    transform: rotate(90deg);
+}
+
+.rotate180 {
+    transform: rotate(180deg);
+}
+
+.rotate270 {
+    transform: rotate(270deg);
 }

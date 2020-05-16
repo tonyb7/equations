@@ -3,7 +3,7 @@
     <head>
         <title>Equations</title>
         <link rel="stylesheet" type="text/css" href="/static/css/game.css">
-        <!-- <link rel="stylesheet" type="text/css" href="../static/css/game.css"> -->
+        <link rel="stylesheet" type="text/css" href="../static/css/game.css">
         <script language="JavaScript" type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script>
             $(function () {
@@ -130,16 +130,61 @@
                                     </div>
                                     <div class="goal-area goal-cubes">
                                         <div class="goal-area goal-cubes play-area hide-border">
-                                            <table class="playable-area hide-border" id="goal-sector">
-                                                <tr>
-                                                    <th id="g0"></th>
+                                            <canvas class="playable-area hide-border" id="goal-sector">
+                                                <!-- <tr>
+                                                    <th id="g0">
+                                                        <img src="../static/cubes/b0.png" class="rotate0">
+                                                    </th>
                                                     <th id="g1"></th>
                                                     <th id="g2"></th>
                                                     <th id="g3"></th>
                                                     <th id="g4"></th>
                                                     <th id="g5"></th>
-                                                </tr>
-                                            </table>
+                                                </tr> -->
+                                                <script>
+                                                    window.onload = () => {
+                                                        let b = document.getElementById("set-goal-button");
+                                                        b.classList.remove("hidden");
+
+                                                        let dim = window.innerHeight * 0.03;
+
+                                                        let cube1 = new Image();
+                                                        cube1.src = "../static/cubes/b0.png";
+                                                        cube1.classList.add("goal-highlight");
+                                                        cube1.classList.add("rounded-corners");
+                                                        cube1.classList.add("cube-size");
+
+                                                        let cube2 = new Image();
+                                                        cube2.src = "../static/cubes/g5.png";
+                                                        cube2.classList.add("goal-highlight");
+                                                        cube2.classList.add("rounded-corners");
+                                                        cube2.classList.add("cube-size");
+
+                                                        let canvas = document.getElementById("goal-sector");
+                                                        canvas.onmousedown = () => {};
+                                                        canvas.onmouseup = () => {};
+                                                        canvas.onmousemove = () => {};
+
+                                                        let context = canvas.getContext('2d');
+                                                        cube1.onload = () => {
+                                                            cube1.classList.add("goal-highlight");
+                                                            cube1.classList.add("rounded-corners");
+                                                            cube1.classList.add("cube-size");
+
+                                                            console.log(dim);
+                                                            cube1.width = dim;
+                                                            cube1.height = dim;
+                                                            cube1.style.border = "solid";
+                                                            cube1.style.borderColor = "white";
+                                                            context.drawImage(cube1, 0, 0);
+                                                            console.log(cube1);
+                                                            console.log(context);
+                                                        }
+                                                        
+                                                        document.getElementById("r0").appendChild(cube2);
+                                                    }
+                                                </script>
+                                            </canvas>
                                             <div id="btn-div">
                                                 <button id="set-goal-button" class="hidden">Goal Set!</button>
                                             </div>
