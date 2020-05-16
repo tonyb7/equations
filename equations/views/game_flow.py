@@ -9,6 +9,7 @@ import random
 import time
 from equations.data import rooms_info, user_info, socket_info, MapsLock
 from equations.data import get_name_and_room, get_current_mover
+from equations.views.challenge import handle_force_out
 from flask_socketio import emit
 
 # Constant to represent index of a moved cube in resources list
@@ -132,6 +133,8 @@ def handle_cube_click(pos):
         return
 
     if rooms_info[room]['touched_cube'] is not None:
+        print("Unhighlighting at position ", pos)
+        
         emit("unhighlight_cube", pos, room=room)
         rooms_info[room]['touched_cube'] = None
         return
@@ -201,7 +204,11 @@ def next_turn(room):
     }
 
     rooms_info[room]["started_move"] = False
-    emit("next_turn", next_turn_command, room=room)
+
+    if cubes_in_resources > 0:
+        emit("next_turn", next_turn_command, room=room)
+    else:
+        handle_force_out(room)
 
     # TODO timer logic
     # TODO ability to challenge

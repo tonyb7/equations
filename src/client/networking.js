@@ -59,7 +59,7 @@ function registerSocketCallbacks(name) {
         if (game['game_finished']) {
             return;
         }
-        
+
         if (game['game_started']) {
             initializeBoardCallbacks(socket, show_bonus_for(game, name));
             registerGoalSetButton(socket, name, game['players'][game['turn']], !game["goalset"]);
@@ -161,6 +161,14 @@ function registerSocketCallbacks(name) {
         else {
             appendServerMessage("Waiting for solutions to be submitted....");
         }
+    });
+
+    socket.on("force_out", () => {
+        deregisterBoardCallbacks();
+        updateTurnText("Force Out");
+
+        appendServerMessage("It is now Force Out.");
+        appendSolutionPrompt(socket);
     });
     
     socket.on("review_solutions", (solutions) => {

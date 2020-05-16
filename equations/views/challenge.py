@@ -30,6 +30,15 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
         rooms_info[room]['endgame'] = {
             # TODO
         }
+    elif challenge == "force_out":
+        rooms_info[room]['endgame'] = {
+            "challenger": None,
+            "writers": rooms_info[room]['players'],
+            "solutions": {},
+            "solution_decided_count": {},
+            "solution_status": {},
+            "sider": None,
+        }
 
     for writer in rooms_info[room]['endgame']['writers']:
         rooms_info[room]['endgame']['solution_decided_count'][writer] = 0
@@ -47,7 +56,7 @@ def handle_challenge(socketid, challenge):
     print(f"{name} pressed {challenge}")
 
     assert room in rooms_info
-    if rooms_info[room]["challenge"] is not None:
+    if rooms_info[room]["challenge"] is not None and challenge != "p_flub":  # TODO can't p flub after 1st minute. TEST!!
         print(f"{name} tried to challenge {challenge} but was too late")
         return
 
@@ -133,6 +142,13 @@ def handle_no_goal():
     """Player pressed no_goal."""
     handle_challenge(flask.request.sid, "no_goal")
 
+def handle_force_out(room):
+    """Force out initiated. Called by next_turn in game_flow."""
+    challenge = 'force_out'
+    rooms_info[room]['challenge'] = challenge
+    initialize_endgame(room, challenge, None, None, None)
+    emit("force_out", room=room)
+
 def check_if_ready_to_present(room):
     """Check if solutions are ready to be presented."""
     if rooms_info[room]["endgame"]["sider"] is None and \
@@ -176,7 +192,12 @@ def finish_shake(room):
     non_writers = [name for name in players if name not in set(solution_writers)]
 
     shake_scores = {}
-    if one_writer_correct:
+    if challenger is None:  # force out
+        for player in players:
+            assert player in solution_writers   # TODO HANDLE case when no solution submitted when time is implemented
+            shake_scores[player] = 4 if solution_statuses[player] else 2
+
+    elif one_writer_correct:
         if challenger in solution_writers and solution_statuses[challenger]:
             for writer in solution_writers:
                 shake_scores[writer] = 4 if solution_statuses[writer] else 2
@@ -264,4 +285,4 @@ def handle_rejection_assent(info):
         "rejecter": rejecter,
     }
     emit("reevaluate_solution", reevaluate_msg, room=room)
-    
+

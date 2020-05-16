@@ -98,7 +98,11 @@ function clearGoal() {
 function clearSector(sectorid) {
     let sector_table = document.getElementById(sectorid).querySelector('table');
 
-    for (let i = 3; i < sector_table.rows.length; ++i) {
+    // console.log("sector id ", sectorid);
+    // console.log("sector table: ", sector_table);
+
+    for (let i = sector_table.rows.length - 1; i >= 3; --i) {
+        // console.log("deleting row ", i);
         sector_table.deleteRow(i);
     }
 
@@ -171,10 +175,15 @@ export function updateTurnText(name) {
 }
 
 export function moveCube(directions) {
+    // console.log("moving cube with directions ", directions);
+
     let from_idx = directions['from'];
 
     let num_cubes_in_sector = sector_cube_count[directions['to']];
     let to_id = `${sector_code_map.get(directions['to'])}${num_cubes_in_sector}`;
+
+    // console.log("num_cubes_in_sector: ", num_cubes_in_sector);
+    // console.log("to_id: ", to_id);
 
     if (num_cubes_in_sector === 12 || num_cubes_in_sector === 16 
         || num_cubes_in_sector === 20) {
@@ -187,6 +196,7 @@ export function moveCube(directions) {
     
     img_in_resources.onmouseover = () => {};
     img_in_resources.onmouseout = () => {};
+    img_in_resources.onclick = () => {};
     img_in_resources.classList.remove("highlight-img");
     if (directions['to'] === 'goal-sector') {
         img_in_resources.classList.add("goal-highlight");
@@ -194,10 +204,14 @@ export function moveCube(directions) {
     
     document.getElementById(to_id).appendChild(img_in_resources);
     updateBonusButton(false);
+
+    // console.log("successfully moved cube");
 }
 
 function addRowsToSector(sectorid, begin_idx) {
     // console.log(`inserting row into table for ${sectorid} at ${begin_idx / 4}`);
+    // console.log("table ", table);
+
     let table = document.getElementById(sectorid).querySelector('table');
     let new_row = table.insertRow();
 
@@ -205,6 +219,8 @@ function addRowsToSector(sectorid, begin_idx) {
         let new_cell = new_row.insertCell();
         new_cell.id = `${sector_code_map.get(sectorid)}${begin_idx + i}`;
     }
+
+    // console.log("new table ", table);
 }
 
 // Render all visuals, including the board, resources/cubes, and scoreboard
@@ -225,7 +241,7 @@ export const renderGameVisuals = (game) => {
     if (game["game_started"]) {
         document.getElementById("start_game").remove();
         if (game["goalset"]) {
-            hideNoGoalButton();
+            hideGoalSettingButtons();
         }
 
         renderResources(game['resources']);
