@@ -254,7 +254,12 @@ function show_bonus_for(game, player) {
     }
 
     if (num_resources_cubes() < 2) {
-        console.log("Can't bonus with less than 2 cubes in resources");
+        // console.log("Can't bonus with less than 2 cubes in resources");
+        return false;
+    }
+
+    if (game['started_move']) {
+        // started_move indicates that a cube has been moved
         return false;
     }
 
