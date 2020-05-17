@@ -164,7 +164,7 @@ def move_cube(room, sectorid):
 
     touched_cube_idx = rooms_info[room]['touched_cube']
     assert touched_cube_idx is not None
-    if sector_str != "goal-sector":
+    if sector_str != "goal":
         rooms_info[room][sector_str].append(touched_cube_idx)
     else:
         goal_cube_dict = {

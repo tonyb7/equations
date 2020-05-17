@@ -2,7 +2,7 @@
 import { getAssetClone } from './assets';
 import { emitCubeClicked, bonusButtonCallback } from './networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
-         clearGoalCanvas, addCubeToGoal } from './goal';
+         clearGoalCanvas, addCubeToGoal, initializeGoalsettingGlobals } from './goal';
 
 const sector_code_map = new Map([
     ["forbidden-sector", 'f'],
@@ -225,6 +225,7 @@ export const renderGameVisuals = (game) => {
 
     if (game["game_started"]) {
         document.getElementById("start_game").remove();
+        initializeGoalsettingGlobals();
         if (game["goalset"]) {
             hideGoalSettingButtons();
         }

@@ -41,5 +41,5 @@ def update_cube_orientation(info):
         "order": i,
         "new_val": new_orientation,
     }
-    emit("update_goalline", {update_msg}, room=room)
+    emit("update_goalline", update_msg, room=room)
 

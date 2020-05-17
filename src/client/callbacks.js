@@ -2,7 +2,7 @@
 // callbacks on the board and for buttons
 
 import { updateBonusButton } from './board';
-import { registerGoalsettingCanvas } from './goal';
+import { registerGoalsettingCanvas, initializeGoalsettingGlobals } from './goal';
 
 const board_sectors = ["forbidden-sector", "permitted-sector", 
                          "required-sector", "goal-sector"];
@@ -20,6 +20,7 @@ export function registerStartButton(socket) {
 }
 
 export const registerGoalSetting = (socket, name, firstmover, firstmove) => {
+    initializeGoalsettingGlobals();
     if (!firstmove)
         return;
 

@@ -8,7 +8,7 @@ import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
     renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard,
     num_resources_cubes } from './board';
-import { initializeBoardCallbacks, registerGoalSetButton, 
+import { initializeBoardCallbacks, registerGoalSetting, 
          registerStartButton, deregisterBoardCallbacks } from './callbacks';
 import { updateGoalline } from './goal';
 
@@ -105,7 +105,7 @@ function registerSocketCallbacks(name) {
         let firstmover = data['goalsetter'];
         initializeBoardCallbacks(socket, firstmover === name);
         updateTurnText(firstmover);
-        registerGoalSetButton(socket, name, firstmover, true);
+        registerGoalSetting(socket, name, firstmover, true);
     });
 
     socket.on("hide_goal_setting_buttons", () => hideGoalSettingButtons());

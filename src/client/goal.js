@@ -6,23 +6,32 @@
 import { getAssetClone } from './assets';
 import { socket } from './networking';
 
-let canvas = document.getElementById("goal-sector");
-canvas.width = window.innerWidth * 0.33;
-canvas.height = window.innerHeight * 0.09;
-
-let BB = canvas.getBoundingClientRect();
-let offsetX = BB.left;
-let offsetY = BB.top;
+let canvas;
+let BB;
+let offsetX;
+let offsetY;
 
 let cube_dim = window.innerHeight * 0.06;
 let cube_width = cube_dim + 3;
 let cube_height = cube_dim + 2;
-let cube_pos_y = canvas.height/8;
+let cube_pos_y;
 
 let dragok = false;
 let startX;
 
 let cubes = [];
+
+export function initializeGoalsettingGlobals() {
+    canvas = document.getElementById("goal-sector");
+    canvas.width = window.innerWidth * 0.33;
+    canvas.height = window.innerHeight * 0.09;
+
+    BB = canvas.getBoundingClientRect();
+    offsetX = BB.left;
+    offsetY = BB.top;
+
+    cube_pos_y = canvas.height/8;
+}
 
 function isWithinCube(r, mouseX, mouseY) {
     return mouseX > r.cube_pos_x && mouseX < r.cube_pos_x + cube_width && 
@@ -125,7 +134,7 @@ function mouseMove(e) {
         for (var i = 0; i < cubes.length; i++) {
             var r = cubes[i];
             if (r.isDragging) {
-                r.cube_pos_x = Math.min(r.cube_pos_x + dx, canvas.width - width);
+                r.cube_pos_x = Math.min(r.cube_pos_x + dx, canvas.width - cube_width);
                 r.cube_pos_x = Math.max(r.cube_pos_x, 4);
                 break;
             }
@@ -177,6 +186,7 @@ function drawCubes() {
     // redraw each rect in the rects[] array
     for (var i = 0; i < cubes.length; i++) {
         var r = cubes[i];
+        console.log("Calling draw rotated on ", r);
         drawRotated(context, r.cube, r.cube_pos_x, cube_pos_y, 
                     cube_dim, cube_dim, r.orientation);
     }
@@ -195,6 +205,7 @@ function drawRotated(context, image, x, y, width, height, degrees) {
 
     // draw the image
     // since the context is rotated, the image will be rotated also
+    console.log("Drawing the image!");
     context.drawImage(image,-width/2,-height/2, width, height);
     roundRect(context, -(width/2)-1, -(height/2)-1, width+3, height+2, 7);
 
@@ -238,6 +249,8 @@ export function initializeGoalCanvas(game_info, cube_idx) {
     window.addEventListener("resize", resizeGoalsettingCanvas);
 
     for (let cube_info of game_info) {
+        let image = getAssetClone(cube_info['idx'], cube_idx);
+        image.onload = drawCubes;
         cubes.push({
             order: cubes.length,  // index within the cubes array 
             idx: cube_info['idx'],
@@ -247,8 +260,6 @@ export function initializeGoalCanvas(game_info, cube_idx) {
             orientation: cube_info['orientation'],
         });
     }
-
-    drawCubes();
 }
 
 export function clearGoalCanvas() {
