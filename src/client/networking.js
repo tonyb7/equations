@@ -62,7 +62,7 @@ function registerSocketCallbacks(name) {
 
         if (game['game_started']) {
             initializeBoardCallbacks(socket, show_bonus_for(game, name));
-            registerGoalSetButton(socket, name, game['players'][game['turn']], !game["goalset"]);
+            registerGoalSetting(socket, name, game['players'][game['turn']], !game["goalset"]);
         }
         else {
             registerStartButton(socket);
@@ -80,7 +80,10 @@ function registerSocketCallbacks(name) {
         appendServerMessage(`${data['starter']} started the game! The cubes have been rolled!`);
         appendServerMessage(`${data['goalsetter']} is chosen to be the goalsetter.`);
         appendServerMessage("Move cubes by clicking a cube in resources, then clicking the " +
-                    "area on the mat you want to move it to. Press \"Goal Set!\" when you're done!");
+                    "area on the mat you want to move it to.");
+        appendServerMessage("Once on the goal line, you can rearrange the cubes by dragging " +
+                    "horizontally, and to rotate a cube, right click on the cube.");
+        appendServerMessage("Press \"Goal Set!\" when you're done!");
 
         renderResources(cubes);
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
@@ -88,7 +91,7 @@ function registerSocketCallbacks(name) {
         let firstmover = data['goalsetter'];
         initializeBoardCallbacks(socket, firstmover === name);
         updateTurnText(firstmover);
-        registerGoalSetButton(socket, name, firstmover, true);
+        registerGoalSetting(socket, name, firstmover, true);
     });
 
     socket.on("begin_shake", (data) => {
