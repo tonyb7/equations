@@ -525,8 +525,9 @@ body {
 .goal-area.goal-cubes.play-area canvas {
     border: dotted;
     border-color: white;
-
-    width: 77%;
+/* 
+    width: 40vw;
+    height: 9vh; */
 }
 /* 
 .goal-area.goal-cubes.play-area th {
