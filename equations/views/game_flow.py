@@ -56,10 +56,14 @@ def start_shake(new_game):
             "p2scores": [0],
             "p3scores": [0],
             "starttime": time.time(),
-            "cube_index": rolled_cubes[:],  # fixed length of 24, index is cube's id
+            # cube_index is poorly named. fixed length of 24, index is cube's id.
+            # first six are red, next six are blue, next six are green, last six are black.
+            # so if the first element of cube_index was x (where 0 <= x <= 5), the
+            # corresponding cube is given by the file "rx.png" (where x is replaced w/#)
+            "cube_index": rolled_cubes[:], 
             "resources": rolled_cubes,  # fixed length of 24
-            "goal": [],  # stores cube ids (based on cube_index); same for 3 below
-            "required": [],
+            "goal": [],  # stores cube id, x pos on canvas, orientation of cube
+            "required": [], # stores cube ids (based on cube_index); same for 2 below
             "permitted": [],
             "forbidden": [],
             "turn": random.randint(0, len(current_players) - 1),
@@ -160,7 +164,16 @@ def move_cube(room, sectorid):
 
     touched_cube_idx = rooms_info[room]['touched_cube']
     assert touched_cube_idx is not None
-    rooms_info[room][sector_str].append(touched_cube_idx)
+    if sector_str != "goal":
+        rooms_info[room][sector_str].append(touched_cube_idx)
+    else:
+        goal_cube_dict = {
+            "idx": touched_cube_idx,
+            "x": 0,  # should recv actual value from client after cube is moved
+            "orientation": 0,
+        }
+        rooms_info[room]['goal'].append(goal_cube_dict)
+
     rooms_info[room]['touched_cube'] = None
     rooms_info[room]["resources"][touched_cube_idx] = MOVED_CUBE_IDX
     rooms_info[room]["started_move"] = True

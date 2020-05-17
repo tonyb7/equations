@@ -8,11 +8,12 @@ import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
     renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard,
     num_resources_cubes } from './board';
-import { initializeBoardCallbacks, registerGoalSetButton, 
+import { initializeBoardCallbacks, registerGoalSetting, 
          registerStartButton, deregisterBoardCallbacks } from './callbacks';
+import { updateGoalline } from './goal';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
-const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
+export const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
 const connectedPromise = new Promise(resolve => {
     socket.on('connect', () => {
         console.log('Connected to server!');
@@ -62,7 +63,7 @@ function registerSocketCallbacks(name) {
 
         if (game['game_started']) {
             initializeBoardCallbacks(socket, show_bonus_for(game, name));
-            registerGoalSetButton(socket, name, game['players'][game['turn']], !game["goalset"]);
+            registerGoalSetting(socket, name, game['players'][game['turn']], !game["goalset"]);
         }
         else {
             registerStartButton(socket);
@@ -80,7 +81,10 @@ function registerSocketCallbacks(name) {
         appendServerMessage(`${data['starter']} started the game! The cubes have been rolled!`);
         appendServerMessage(`${data['goalsetter']} is chosen to be the goalsetter.`);
         appendServerMessage("Move cubes by clicking a cube in resources, then clicking the " +
-                    "area on the mat you want to move it to. Press \"Goal Set!\" when you're done!");
+                    "area on the mat you want to move it to.");
+        appendServerMessage("Once on the goal line, you can rearrange the cubes by dragging " +
+                    "horizontally, and to rotate a cube, right click on the cube.");
+        appendServerMessage("Press \"Goal Set!\" when you're done!");
 
         renderResources(cubes);
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
@@ -88,7 +92,7 @@ function registerSocketCallbacks(name) {
         let firstmover = data['goalsetter'];
         initializeBoardCallbacks(socket, firstmover === name);
         updateTurnText(firstmover);
-        registerGoalSetButton(socket, name, firstmover, true);
+        registerGoalSetting(socket, name, firstmover, true);
     });
 
     socket.on("begin_shake", (data) => {
@@ -101,10 +105,17 @@ function registerSocketCallbacks(name) {
         let firstmover = data['goalsetter'];
         initializeBoardCallbacks(socket, firstmover === name);
         updateTurnText(firstmover);
-        registerGoalSetButton(socket, name, firstmover, true);
+        registerGoalSetting(socket, name, firstmover, true);
     });
 
     socket.on("hide_goal_setting_buttons", () => hideGoalSettingButtons());
+    socket.on("update_goalline", (data) => {
+        if (data['goalsetter'] === name) {
+            return;
+        }
+
+        updateGoalline(data['type'], data['order'], data['new_val']);
+    });
 
     socket.on("highlight_cube", (pos) => highlightResourcesCube(pos));
     socket.on("unhighlight_cube", (pos) => unhighlightResourcesCube(pos));

@@ -2,6 +2,7 @@
 // callbacks on the board and for buttons
 
 import { updateBonusButton } from './board';
+import { registerGoalsettingCanvas, initializeGoalsettingGlobals } from './goal';
 
 const board_sectors = ["forbidden-sector", "permitted-sector", 
                          "required-sector", "goal-sector"];
@@ -18,7 +19,8 @@ export function registerStartButton(socket) {
     };
 }
 
-export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
+export const registerGoalSetting = (socket, name, firstmover, firstmove) => {
+    initializeGoalsettingGlobals();
     if (!firstmove)
         return;
 
@@ -28,6 +30,7 @@ export const registerGoalSetButton = (socket, name, firstmover, firstmove) => {
         set_goal_button.onclick = () => {
             socket.emit("set_goal");
         };
+        registerGoalsettingCanvas();
     }
 };
 
