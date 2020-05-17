@@ -28,6 +28,9 @@ from equations.views.challenge import handle_solution_submit
 from equations.views.challenge import handle_solution_decision
 from equations.views.challenge import handle_rejection_assent
 
+from equations.views.goalsetting import update_cube_xpos
+from equations.views.goalsetting import update_cube_orientation
+
 from equations.views.timing import handle_flip_timer
 from equations.views.timing import handle_claim_warning
 from equations.views.timing import handle_claim_minus_one
