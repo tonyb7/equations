@@ -10,9 +10,10 @@ import { renderResources, initializeScoreboard, addScoreboardScore,
     num_resources_cubes } from './board';
 import { initializeBoardCallbacks, registerGoalSetButton, 
          registerStartButton, deregisterBoardCallbacks } from './callbacks';
+import { updateGoalline } from './goal';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
-const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
+export const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
 const connectedPromise = new Promise(resolve => {
     socket.on('connect', () => {
         console.log('Connected to server!');
@@ -108,6 +109,13 @@ function registerSocketCallbacks(name) {
     });
 
     socket.on("hide_goal_setting_buttons", () => hideGoalSettingButtons());
+    socket.on("update_goalline", (data) => {
+        if (data['goalsetter'] === name) {
+            return;
+        }
+
+        updateGoalline(data['type'], data['order'], data['new_val']);
+    });
 
     socket.on("highlight_cube", (pos) => highlightResourcesCube(pos));
     socket.on("unhighlight_cube", (pos) => unhighlightResourcesCube(pos));

@@ -527,10 +527,10 @@ body {
     border-color: white;
 }
 
-.cube-size {
+/* .cube-size {
     width: 3vw;
     height: 3vw;
-}
+} */
 
 .goal-area.goal-cubes.play-area #btn-div {
     /* border:dotted; border-color:white; */
@@ -630,12 +630,12 @@ body {
     display: none;
 }
 
-.goal-highlight {
+/* .goal-highlight {
     border: solid;
     border-width: 0.15vw;
     border-color: white;
     border-radius: 0.5vw;
-}
+} */
 
 .rounded-corners {
     border-radius: 0.5vw;

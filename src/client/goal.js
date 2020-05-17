@@ -3,6 +3,9 @@
 // Dragging functionality taken from https://stackoverflow.com/a/24938627/8157027
 // drawRotated taken from // https://stackoverflow.com/a/17412387/8157027
 
+import { getAssetClone } from './assets';
+import { socket } from './networking';
+
 let canvas = document.getElementById("goal-sector");
 canvas.width = window.innerWidth * 0.33;
 canvas.height = window.innerHeight * 0.09;
@@ -20,6 +23,11 @@ let dragok = false;
 let startX;
 
 let cubes = [];
+
+function isWithinCube(r, mouseX, mouseY) {
+    return mouseX > r.cube_pos_x && mouseX < r.cube_pos_x + cube_width && 
+           mouseY > cube_pos_y && mouseY < cube_pos_y + cube_height;
+}
 
 // Draw a rounded border around an image on the Canvas
 function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
@@ -69,7 +77,7 @@ function mouseDown(e) {
     dragok = false;
     for (var i = cubes.length - 1; i >= 0; i--) {
         var r = cubes[i];
-        if (mx > r.x && mx < r.x + cube_width && my > cube_pos_y && my < cube_pos_y + cube_height) {
+        if (isWithinCube(r, mx, my)) {
             // if yes, set that rects isDragging=true
             dragok = true;
             r.isDragging = true;
@@ -91,6 +99,7 @@ function mouseUp(e) {
     for (var i = 0; i < cubes.length; i++) {
         if (cubes[i].isDragging) {
             cubes[i].isDragging = false;
+            socket.emit("x_pos_update", {"order": i, "x_pos": cubes[i].cube_pos_x});
             return;
         }
     }
@@ -116,8 +125,8 @@ function mouseMove(e) {
         for (var i = 0; i < cubes.length; i++) {
             var r = cubes[i];
             if (r.isDragging) {
-                r.x = Math.min(r.x + dx, canvas.width - width);
-                r.x = Math.max(r.x, 4);
+                r.cube_pos_x = Math.min(r.cube_pos_x + dx, canvas.width - width);
+                r.cube_pos_x = Math.max(r.cube_pos_x, 4);
                 break;
             }
         }
@@ -140,9 +149,10 @@ function mouseRightClick(e) {
 
     for (var i = cubes.length - 1; i >= 0; i--) {
         var r = cubes[i];
-        if (mx > r.x && mx < r.x + cube_width && my > cube_pos_y && my < cube_pos_y + cube_height) {
+        if (isWithinCube(r, mx, my)) {
             // if yes, set that rects isDragging=true
             r.orientation = (r.orientation + 90) % 360;
+            socket.emit("orientation_update", {"order": i, "orientation": r.orientation});
             break;
         }
     }
@@ -167,7 +177,8 @@ function drawCubes() {
     // redraw each rect in the rects[] array
     for (var i = 0; i < cubes.length; i++) {
         var r = cubes[i];
-        drawRotated(context, r.cube, r.x, cube_pos_y, cube_dim, cube_dim, r.orientation);
+        drawRotated(context, r.cube, r.cube_pos_x, cube_pos_y, 
+                    cube_dim, cube_dim, r.orientation);
     }
 }
 
@@ -204,7 +215,7 @@ function resizeGoalsettingCanvas() {
     cube_height = cube_dim + 2;
     cube_pos_y = canvas.height/8;
 
-    // what happens to startX? if someone resizes while dragging cube...
+    // what happens to startX? what if someone resizes window while dragging cube?
 
     drawCubes();
 }
@@ -223,88 +234,56 @@ export function deregisterGoalsettingCanvas() {
     canvas.oncontextmenu = () => {};
 };
 
+export function initializeGoalCanvas(game_info, cube_idx) {
+    window.addEventListener("resize", resizeGoalsettingCanvas);
 
-// window.onload = () => {
-//     let b = document.getElementById("set-goal-button");
-//     b.classList.remove("hidden");
+    for (let cube_info of game_info) {
+        cubes.push({
+            order: cubes.length,  // index within the cubes array 
+            idx: cube_info['idx'],
+            cube: getAssetClone(cube_info['idx'], cube_idx),
+            cube_pos_x: cube_info['x'],
+            isDragging: false,
+            orientation: cube_info['orientation'],
+        });
+    }
 
-//     let cube1 = new Image();
-//     cube1.src = "../static/cubes/bk0.png";
-//     cube1.classList.add("goal-highlight");
-//     cube1.classList.add("rounded-corners");
-//     cube1.classList.add("cube-size");
+    drawCubes();
+}
 
-//     let cube2 = new Image();
-//     cube2.src = "../static/cubes/g5.png";
-//     cube2.classList.add("goal-highlight");
-//     cube2.classList.add("rounded-corners");
-//     cube2.classList.add("cube-size");
+export function clearGoalCanvas() {
+    // https://stackoverflow.com/questions/1232040/how-do-i-empty-an-array-in-javascript
+    cubes.length = 0; // clear the array 
+    drawCubes();
+}
 
-//     let canvas = document.getElementById("goal-sector");
-//     canvas.width = window.innerWidth * 0.33;
-//     canvas.height = window.innerHeight * 0.09;
-//     window.addEventListener("resize", () => {
-//         let canvas = document.getElementById("goal-sector");
-//         canvas.width = window.innerWidth * 0.33;
-//         canvas.height = window.innerHeight * 0.09;
-//         drawCubes();
-//     });
+export function addCubeToGoal(idx, cube_image) {
+    let x_pos = canvas.width / 100;
+    if (cubes.length !== 0) {
+        x_pos += cubes.length * ((3 * x_pos) + cube_width);
+    }
 
-//     canvas.onmousedown = myDown;
-//     canvas.onmouseup = myUp;
-//     canvas.onmousemove = myMove;
-//     canvas.oncontextmenu = myRightClick;
-    
-//     // let cubes = [];
+    let order = cubes.length;
+    cubes.push({
+        order: order,
+        idx: idx,
+        cube: cube_image.cloneNode(true),
+        cube_pos_x: x_pos,
+        isDragging: false,
+        orientation: 0,
+    });
 
-//     let dim = window.innerHeight * 0.06;
-//     let width = dim + 3;
-//     let height = dim + 2;
-//     let base_x = canvas.width/100;
-    
+    cube_image.remove();
+    socket.emit("x_pos_update", {"order": order, "x_pos": x_pos});
+    drawCubes();
+}
 
-//     // let context = canvas.getContext('2d');
-//     cube1.onload = () => {
-
-//         let x = base_x;
-
-
-//         // context.drawImage(cube1, x, y, dim, dim);
-//         // console.log(cube1);
-//         // console.log(context);
-
-//         // context.strokeStyle = '#fff';
-//         // context.lineWidth = 2.5; 
-//         // // context.strokeRect(x, y, dim, dim);
-//         // roundRect(context, x-1, y-1, width, height, 7);
-
-//         cubes.push({
-//             cube: cube1, 
-//             x: x,
-//             isDragging: false,
-//             orientation: 0,
-//         });
-
-//         drawCubes();
-//     }
-
-//     cube2.onload = () => {      
-//         let x = 4*base_x + width;
-
-//         // context.drawImage(cube2, x, y, dim, dim);
-
-//         // context.strokeStyle = '#fff';
-//         // context.lineWidth = 2.5; 
-//         // // context.strokeRect(x, y, dim, dim);
-//         // roundRect(context, x-1, y-1, width, height, 7);
-
-//         cubes.push({
-//             cube: cube2,
-//             x: x,
-//             isDragging: false,
-//             orientation: 90,
-//         });
-
-//         drawCubes();
-//     }
-// }
+export function updateGoalline(type, i, new_val) {
+    if (type === "x_pos") {
+        cubes[i].cube_pos_x = new_val;
+    }
+    else if (type === "orientation") {
+        cubes[i].orientation = new_val;
+    }
+    drawCubes();
+}

@@ -1,13 +1,8 @@
 // Functions related to moving cubes around the board
-import { getAsset } from './assets';
+import { getAssetClone } from './assets';
 import { emitCubeClicked, bonusButtonCallback } from './networking';
-
-const cube_color_map = new Map([
-    [0, 'r'],
-    [1, 'b'],
-    [2, 'g'],
-    [3, 'bk'],
-]);
+import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
+         clearGoalCanvas, addCubeToGoal } from './goal';
 
 const sector_code_map = new Map([
     ["forbidden-sector", 'f'],
@@ -33,8 +28,7 @@ export function renderResources(cubes) {
         }
 
         let relevant_th = resources_div.querySelector(`#r${i}`);
-        let image_name = `${cube_color_map.get(Math.floor(i/6))}${cubes[i]}.png`;
-        let image_clone = getAsset(image_name).cloneNode(true);
+        let image_clone = getAssetClone(i, cubes);
 
         image_clone.onmouseover = () => {
             image_clone.classList.add("show-border");
@@ -50,13 +44,13 @@ export function renderResources(cubes) {
     console.log("Finished rolling cubes");
 }
 
-export function renderGoal(cubes, cube_idx) {
-    if (cubes.length > 6) {
+export function renderGoal(goal_info, cube_idx) {
+    if (goal_info.length > 6) {
         console.log("Something is wrong! Server stored more than 6 cubes in goal!");
     }
 
-    sector_cube_count["goal-sector"] = cubes.length;
-    fillSector(cubes, "goal-sector", cube_idx);
+    sector_cube_count["goal-sector"] = goal_info.length;
+    initializeGoalCanvas(goal_info, cube_idx);
 }
 
 export function renderSector(cubes, sectorid, cube_idx) {
@@ -76,22 +70,12 @@ function fillSector(cubes, sectorid, cube_idx) {
         let relevant_th = document.getElementById(`${sector_code_map.get(sectorid)}${i}`);
         let idx = cubes[i]; // idx is the position that cube was in resources originally
 
-        let image_name = `${cube_color_map.get(Math.floor(idx/6))}${cube_idx[idx]}.png`;
-        let image_clone = getAsset(image_name).cloneNode(true);
-        if (sectorid === 'goal-sector') {
-            image_clone.classList.add("goal-highlight");
-        }
-
-        relevant_th.appendChild(image_clone);
+        relevant_th.appendChild(getAssetClone(idx, cube_idx));
     }
 }
 
 function clearGoal() {
-    let goal_cubes = document.getElementById("goal-sector");
-    for (let i = 0; i < 6; ++i) {
-        let th = goal_cubes.querySelector(`#g${i}`);
-        th.innerHTML = '';
-    }
+    clearGoalCanvas();
     sector_cube_count["goal-sector"] = 0;
 }
 
@@ -199,12 +183,13 @@ export function moveCube(directions) {
     img_in_resources.onclick = () => {};
     img_in_resources.classList.remove("highlight-img");
     if (directions['to'] === 'goal-sector') {
-        img_in_resources.classList.add("goal-highlight");
+        addCubeToGoal(directions['from'], img_in_resources);
     }
-    
-    document.getElementById(to_id).appendChild(img_in_resources);
-    updateBonusButton(false);
+    else {
+        document.getElementById(to_id).appendChild(img_in_resources);
+    }
 
+    updateBonusButton(false);
     // console.log("successfully moved cube");
 }
 
@@ -278,6 +263,8 @@ export function hideGoalSettingButtons() {
     set_goal_button.classList.add("hidden");
     set_goal_button.onclick = () => 
         console.log("Set goal button somehow clicked...");
+
+    deregisterGoalsettingCanvas();
 }
 
 export function clearBoard() {

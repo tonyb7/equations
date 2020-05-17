@@ -26,5 +26,20 @@ function downloadAsset(assetName) {
 
 export const downloadAssets = () => downloadPromise;
 
-export const getAsset = assetName => assets[assetName];
+const getAsset = assetName => assets[assetName];
 
+const cube_color_map = new Map([
+    [0, 'r'],
+    [1, 'b'],
+    [2, 'g'],
+    [3, 'bk'],
+]);
+
+function getImageName(index, cube_index) {
+    return `${cube_color_map.get(Math.floor(index/6))}${cube_index[index]}.png`;
+}
+
+export function getAssetClone(index, cube_index) {
+    let image_name = getImageName(index, cube_index);
+    return getAsset(image_name).cloneNode(true);
+}

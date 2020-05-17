@@ -2,7 +2,7 @@
 // callbacks on the board and for buttons
 
 import { updateBonusButton } from './board';
-import { registerGoalsettingCanvas, deregisterGoalsettingCanvas } from './goal';
+import { registerGoalsettingCanvas } from './goal';
 
 const board_sectors = ["forbidden-sector", "permitted-sector", 
                          "required-sector", "goal-sector"];
@@ -27,7 +27,6 @@ export const registerGoalSetting = (socket, name, firstmover, firstmove) => {
         let set_goal_button = document.getElementById("set-goal-button");
         set_goal_button.classList.remove("hidden");
         set_goal_button.onclick = () => {
-            deregisterGoalsettingCanvas();
             socket.emit("set_goal");
         };
         registerGoalsettingCanvas();
