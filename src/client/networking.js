@@ -84,7 +84,13 @@ function registerSocketCallbacks(name) {
                     "area on the mat you want to move it to.");
         appendServerMessage("Once on the goal line, you can rearrange the cubes by dragging " +
                     "horizontally, and to rotate a cube, right click on the cube.");
-        appendServerMessage("Press \"Goal Set!\" when you're done!");
+        
+        if (data['starter'] === name) {
+            appendServerMessage("Press \"Goal Set!\" when you're done!");
+        }
+        else {
+            appendServerMessage(`Waiting for ${data['starter']} to finish setting the goal...`);
+        }
 
         renderResources(cubes);
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
