@@ -27,11 +27,8 @@ def show_index():
         context['username'] = flask.session['username']
 
     MapsLock()
-    print("HELLO 1")
     if context['username'] in user_info:
-        print("HELLO 2")
         gamerooms = user_info[context['username']]["gamerooms"]
-        print("GAMEROOMS: ", gamerooms)
         for gameroom in gamerooms:
             if gameroom in rooms_info and rooms_info[gameroom]["game_started"] \
                     and not rooms_info[gameroom]["game_finished"]:
