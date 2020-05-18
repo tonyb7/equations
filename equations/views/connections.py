@@ -108,7 +108,7 @@ def register_player(player_info):
     
     if len(rooms_info[room]["spectators"]) > 0:
         people_message = "People in this room: "
-        people = ", ".join([socket_info[x]['name'] for x in rooms_info[room]["sockets"]])
+        people = ", ".join([socket_info[x]['name'] for x in set(rooms_info[room]["sockets"])])
         emit("server_message", people_message + people, room=room)
 
     if rooms_info[room]["game_finished"]:
