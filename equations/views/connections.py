@@ -91,6 +91,8 @@ def register_player(player_info):
     else:
         if joined_as_player:
             user_info[name]['gameroom'] = room
+            if rejoin and rooms_info[room]["game_finished"]:
+                user_info[name]['gameroom'] = None
         user_info[name]["latest_socketids"][room] = socketid
     
     if rooms_info[room]['game_started'] and not joined_as_player:
