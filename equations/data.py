@@ -20,7 +20,7 @@ rooms_info = {}
     - A user can be *playing* in any number of games at a time, and those games are
         tracked in the "gamerooms" list, which is a list of room ids.
     - All rooms that the user is in (spectating or playing) will be tracked in
-        the "rooms" dict, which maps room ids to latest socketids.
+        the "rooms" dict, which maps room ids to list of socketids.
     - A user will always be in this map as long as he/she has at least one 
         active socket connection (one item in the rooms dict) and at least one
         of its games in the gamerooms list is still active.

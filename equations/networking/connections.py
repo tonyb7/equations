@@ -76,6 +76,7 @@ def register_player(player_info):
             "latest_socketids": {},
             "gamerooms": [room] if joined_as_player else [],
         }
+        user_info[name]["latest_socketids"][room] = [socketid]
     else:
         if joined_as_player:
             user_info[name]['gamerooms'].append(room)
@@ -86,7 +87,8 @@ def register_player(player_info):
             # and the game was previously active, but the game has now ended.
             if room in user_info[name]['gamerooms']:
                 user_info[name]['gamerooms'].remove(room)
-    user_info[name]["latest_socketids"][room] = socketid
+
+        user_info[name]["latest_socketids"][room].append(socketid)
     
     if rooms_info[room]['game_started'] and not joined_as_player:
         # Render every visual aspect of the board correctly for a spectator.
@@ -151,8 +153,13 @@ def on_disconnect():
         del rooms_info[room]
 
     # Update user_info
-    if room in user_info[username]["latest_socketids"] and \
-            user_info[username]["latest_socketids"][room] == socketid:
+    # On a refresh on a game page, due to delay in socket disconnect, new socket
+    # (most likely) has connected by the time this code runs and (potentially) deletes
+    # the user from the user_info dict. Even if not, worst thing that can happen
+    # is that the game is marked as finished.
+    assert room in user_info[username]["latest_socketids"]
+    user_info[username]["latest_socketids"][room].remove(socketid)
+    if len(user_info[username]["latest_socketids"][room]) == 0:
 
         print(f"{username} is no longer connected to {room}")
         del user_info[username]["latest_socketids"][room]
@@ -179,5 +186,5 @@ def on_disconnect():
         print(f"Client {socketid}: {username} left room {room}")
 
     else:
-        # User made a new connection to the room, so current socket is outdated
-        print(f"Outdated socket {socketid} for user {username} disconnected")
+        print(f"Socket {socketid} for user {username} disconnected, but user "
+               "still has another connection to the room open")
