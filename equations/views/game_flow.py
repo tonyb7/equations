@@ -169,7 +169,9 @@ def move_cube(room, sectorid):
     else:
         goal_cube_dict = {
             "idx": touched_cube_idx,
-            "x": 0,  # should recv actual value from client after cube is moved
+            # unit for x is thousandths of canvas width
+            # should recv actual value from client after cube is moved
+            "x": 0, 
             "orientation": 0,
         }
         rooms_info[room]['goal'].append(goal_cube_dict)

@@ -12,7 +12,7 @@ def update_cube_xpos(info):
     [name, room] = get_name_and_room(flask.request.sid)
 
     i = info['order']
-    new_x_pos = info['x_pos']
+    new_x_pos = info['x_pos_per_mille']
 
     rooms_info[room]["goal"][i]["x"] = new_x_pos
 
