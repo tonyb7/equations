@@ -19,7 +19,7 @@ def show_index():
     context = {
         "logged_in": False,
         "username": '',
-        "room_id": None,
+        "gamerooms": [],
     }
 
     if "username" in flask.session:
@@ -27,12 +27,15 @@ def show_index():
         context['username'] = flask.session['username']
 
     MapsLock()
+    print("HELLO 1")
     if context['username'] in user_info:
-        room_id = user_info[context['username']]["gameroom"]
-        if room_id is not None and room_id in rooms_info \
-                and rooms_info[room_id]["game_started"] and \
-                not rooms_info[room_id]["game_finished"]:
-            context["room_id"] = room_id
+        print("HELLO 2")
+        gamerooms = user_info[context['username']]["gamerooms"]
+        print("GAMEROOMS: ", gamerooms)
+        for gameroom in gamerooms:
+            if gameroom in rooms_info and rooms_info[gameroom]["game_started"] \
+                    and not rooms_info[gameroom]["game_finished"]:
+                context["gamerooms"].append(gameroom)
 
     return flask.render_template("index.html", **context)
 
@@ -68,7 +71,8 @@ def create_game():
     return flask.redirect(flask.url_for('show_game', nonce=game_nonce, name=name))
 
 def get_game_from_db(room_id):
-    """Helper function to get a game from the DB and do checks on it."""
+    """Helper function to get a game from the DB and do checks on it.
+    Returns whether game was found."""
     connection = equations.model.get_db()
     game_info = connection.execute(
         "SELECT * FROM games "
@@ -76,11 +80,12 @@ def get_game_from_db(room_id):
     ).fetchone()
 
     if game_info is None:
-        flask.flash(f"The Room ID you entered ({room_id}) does not exist!")
-        return flask.redirect(flask.url_for('show_index'))
+        return False
 
     if game_info['ended'] and room_id not in rooms_info:
         rooms_info[room_id] = db_deserialize(game_info)
+
+    return True
 
 @equations.app.route("/join/", methods=['POST'])
 def join_game():
@@ -93,7 +98,9 @@ def join_game():
     room_id = flask.request.form['room']
 
     MapsLock()
-    get_game_from_db(room_id)
+    if not get_game_from_db(room_id):
+        flask.flash(f"The Room ID you entered ({room_id}) does not exist!")
+        return flask.redirect(flask.url_for('show_index'))
 
     return flask.redirect(flask.url_for('show_game', nonce=room_id, name=name))
 
@@ -110,13 +117,13 @@ def show_game(nonce):
     # See Issue #18 on GitHub
     MapsLock()
     if nonce not in rooms_info:
-        get_game_from_db(nonce)
+        if not get_game_from_db(nonce):
+            flask.flash(f"The Room you tried to visit (ID of {nonce}) does not exist!")
+            return flask.redirect(flask.url_for('show_index'))
 
-    base_url = equations.app.config["BASE_URL"]
     context = {
         "nonce": nonce,
         "name": flask.session['username'],
-        "shareable_url": base_url + "/game/" + nonce,
     }
 
     return flask.render_template("game.html", **context)

@@ -118,7 +118,7 @@ def on_disconnect():
     MapsLock()
     if socketid not in socket_info:
         # Note: MapsLock makes register_player atomic, so we can safely say
-        # in this case socket disconnected before it *started*.
+        # in this case socket disconnected before register_player *started*.
         print("Socket disconnected before register_player started")
         return
 

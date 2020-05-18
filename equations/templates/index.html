@@ -9,44 +9,42 @@
         <div id="user-info">
             <h3>Logged in as: {{ username }}</h3>
         </div>
-        {% if room_id is none %}
-            <div id="join-options">    
-                <button id="create-button">Create New Game</button>
-                <button id="join-button">Join Existing Game</button>
-            </div>
-            <div id='join-new'>
-                <form id="join-new" action="/create/" method="post" enctype="multipart/form-data">
-                    <!-- <div class="user-inputs">
-                        <p><b>Enter your name: </b><input type='text' name='name'/></p> 
-                    </div> -->
-                    <input type="submit" name="create" value="Create Room"/>
-                </form>
-            </div>
-            <div id='join-existing'>
-                <form id="join-existing" action="/join/" method="post" enctype="multipart/form-data">
-                    <div class="user-inputs">
-                        <!-- <p><b>Enter your name: </b><input type='text' name='name'/> </p> -->
-                        <p><b>Enter Room ID* : <input type='text' name='room'/> </p>
-                    </div>
-                    <input type="submit" name="join" value="Join Room"/>
-                </form>
-                <p><em>* If the URL ends with "/game/a1b2c3-d4", <br/>
-                then the Room ID is a1b2c3-d4</em></p>
-            </div>
-        {% else %}
-            <!-- If game hasn't started and user sees this button and user was
-            last user in room, then game will not end but on clicking this, DB
-            holds this game as ended=0 so game can still be started as normal upon
-            rejoin. If this was seen after last user of a started game but unfinished 
-            game left, then  game will be marked as finished but user will still 
-            see this button due to delay in socket disconnect... -->
-            <div id="join-options">
-                <form action="/join/" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="room" value="{{ room_id }}"/>
-                    <input type="submit" name="rejoin" value="Rejoin Current Game"/>
-                </form>
+        {{ gamerooms|length }}
+        {% if gamerooms|length > 0 %}
+            <div id="current-games">
+                <p>You are currently a player in these rooms:</p>
+                <p>
+                    {% for gameroom in gamerooms %}
+                        {{ gameroom }}{{ ", " if not loop.last }}
+                    {% endfor %}
+                </p>
             </div>
         {% endif %}
+        
+        <div id="join-options">    
+            <button id="create-button">Create New Game</button>
+            <button id="join-button">Join Existing Game</button>
+        </div>
+        <div id='join-new'>
+            <form id="join-new" action="/create/" method="post" enctype="multipart/form-data">
+                <!-- <div class="user-inputs">
+                    <p><b>Enter your name: </b><input type='text' name='name'/></p> 
+                </div> -->
+                <input type="submit" name="create" value="Create Room"/>
+            </form>
+        </div>
+        <div id='join-existing'>
+            <form id="join-existing" action="/join/" method="post" enctype="multipart/form-data">
+                <div class="user-inputs">
+                    <!-- <p><b>Enter your name: </b><input type='text' name='name'/> </p> -->
+                    <p><b>Enter Room ID* : <input type='text' name='room'/> </p>
+                </div>
+                <input type="submit" name="join" value="Join Room"/>
+            </form>
+            <p><em>* If the URL ends with "/game/a1b2c3-d4", <br/>
+            then the Room ID is a1b2c3-d4</em></p>
+        </div>
+
         <div id="logout-button">
             <button id="logout" onclick="window.location.href='/logout/'">Log Out</button>
         </div>
