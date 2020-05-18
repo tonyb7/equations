@@ -115,10 +115,6 @@ function registerSocketCallbacks(name) {
 
     socket.on("hide_goal_setting_buttons", () => hideGoalSettingButtons());
     socket.on("update_goalline", (data) => {
-        if (data['goalsetter'] === name) {
-            return;
-        }
-
         updateGoalline(data['type'], data['order'], data['new_val']);
     });
 

@@ -18,11 +18,10 @@ def update_cube_xpos(info):
 
     update_msg = {
         "type": "x_pos", 
-        "goalsetter": name, 
         "order": i,
         "new_val": new_x_pos,
     }
-    emit("update_goalline", update_msg, room=room)
+    emit("update_goalline", update_msg, room=room, include_self=False)
 
 @equations.socketio.on("orientation_update")
 def update_cube_orientation(info):
@@ -37,9 +36,8 @@ def update_cube_orientation(info):
 
     update_msg = {
         "type": "orientation", 
-        "goalsetter": name, 
         "order": i,
         "new_val": new_orientation,
     }
-    emit("update_goalline", update_msg, room=room)
+    emit("update_goalline", update_msg, room=room, include_self=False)
 
