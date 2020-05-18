@@ -9,7 +9,7 @@ import random
 import time
 from equations.data import rooms_info, user_info, socket_info, MapsLock
 from equations.data import get_name_and_room, get_current_mover
-from equations.views.challenge import handle_force_out
+from equations.networking.challenge import handle_force_out
 from flask_socketio import emit
 
 # Constant to represent index of a moved cube in resources list

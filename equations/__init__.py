@@ -18,3 +18,4 @@ app.config.from_envvar('EQ_SETTINGS', silent=True)
 
 import equations.views  # noqa: E402  pylint: disable=wrong-import-position
 import equations.model  # noqa: E402  pylint: disable=wrong-import-position
+import equations.networking  # noqa: E402  pylint: disable=wrong-import-position
