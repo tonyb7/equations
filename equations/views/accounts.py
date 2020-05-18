@@ -15,25 +15,14 @@ def compute_hashed_password(salt, password):
     return hash_obj.hexdigest()
 
 
-def password_correct(connection, username, password):
+def password_correct(stored_pw_hash, password):
     """Check the given password against the stored hashed pw for username."""
-    stored_pw_hash_obj = connection.execute(
-        "SELECT password FROM users "
-        f"WHERE username=\'{username}\'"
-    ).fetchone()
-
-    if stored_pw_hash_obj is None:
-        return False
-
-    stored_pw_hash = stored_pw_hash_obj['password']
-
     pw_parts = stored_pw_hash.split('$')
     salt = pw_parts[1]
     hashed_pw = pw_parts[2]
     entered_final_pw_hash = compute_hashed_password(salt, password)
     if entered_final_pw_hash != hashed_pw:
         return False
-    
     return True
 
 
@@ -45,7 +34,16 @@ def show_login():
         password = flask.request.form['password']
 
         connection = equations.model.get_db()
-        if not password_correct(connection, user, password):
+        stored_pw_hash_obj = connection.execute(
+            "SELECT password FROM users "
+            f"WHERE username=\'{user}\'"
+        ).fetchone()
+
+        if stored_pw_hash_obj is None:
+            flask.flash(f"User with name {user} not found! If you are XiPooh the ******* government has banned you.")
+            return flask.render_template("login.html")
+
+        if not password_correct(stored_pw_hash_obj['password'], password):
             flask.flash("Incorrect password!")
             return flask.render_template("login.html")
 
