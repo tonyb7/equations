@@ -49,7 +49,9 @@ def create_game():
     # This is ugly and might break if enough games are played
     game_nonce = None
     while game_nonce is None:
-        proposed_nonce = str(uuid.uuid4())[:12]
+        # Warning/Notice: Only 36^4 (about 1.68 million) unique game 
+        # nonces under this scheme
+        proposed_nonce = str(uuid.uuid4()).replace('-', '')[:4].upper()
         game_nonce_dict = connection.execute(
             "SELECT nonce FROM games "
             f"WHERE nonce=\'{proposed_nonce}\'"
