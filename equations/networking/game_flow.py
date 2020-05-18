@@ -35,7 +35,7 @@ def start_shake(new_game):
 
     if len(current_players) < 2:
         emit('server_message', 
-             "You can only start a game with 2 or 3 players.", 
+             f"{name} clicked \"Start Game\" but a game can only be started with 2 or 3 players.", 
              room=room)
         return
     

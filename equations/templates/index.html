@@ -36,12 +36,11 @@
             <form id="join-existing" action="/join/" method="post" enctype="multipart/form-data">
                 <div class="user-inputs">
                     <!-- <p><b>Enter your name: </b><input type='text' name='name'/> </p> -->
-                    <p><b>Enter Room ID* : <input type='text' name='room'/> </p>
+                    <p><b>Enter Room ID: <input type='text' name='room'/> </p>
                 </div>
-                <input type="submit" name="join" value="Join Room"/>
+                <input type="submit" name="join" value="Join as Player"/>
+                <input type="submit" name="join" value="Join as Spectator"/>
             </form>
-            <p><em>* If the URL ends with "/game/a1b2c3-d4", <br/>
-            then the Room ID is a1b2c3-d4</em></p>
         </div>
 
         <div id="logout-button">

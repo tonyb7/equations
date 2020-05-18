@@ -18,6 +18,12 @@ def register_player(player_info):
     socketid = flask.request.sid
     name = player_info['name']
     room = player_info['room']
+    
+    # Guaranteed by index.py's join_game and create_game
+    # Will fail when I try to do my old debugging trick, where I hard refresh
+    # on a gamepage after restarting the server.
+    assert name in user_info
+    assert room in rooms_info
 
     print(f"Socket {socketid} associated with {name} wants to join room {room}")
 
@@ -28,71 +34,19 @@ def register_player(player_info):
         "room": room,
     }
 
-    # This if-else block will be responsible for the rooms_info data structure
-    joined_as_player = True
-    rejoin = False
-    if room not in rooms_info:  # for create room
-        # This is a new game room and players can always join as player
-        # See Issue #17 on Github
-        rooms_info[room] = {
-            "game_started": False,
-            "game_finished": False,
-            "players": [name],
-            "spectators": [],
-            "sockets": [socketid]
-        }
-
-        print(f"{name} joined room {room} as new player")
-
-    else:  # for join room
-        # If the user is a player in this room and this game is ongoing, 
-        # he/she will join as player.
-        # Else, the user will join as spectator if the game has started or if 
-        # there are no spots left.
-        # Otherwise, the user will join as a player.
-        # See Issue #17 on Github
-        if name in rooms_info[room]["players"] and not rooms_info[room]["game_finished"]:
-            # join as existing player
-            rejoin = True
-            print(f"{name} rejoined room {room}")
-        elif rooms_info[room]["game_started"] or len(rooms_info[room]["players"]) >= 3:
-            # join as spectator
-            rooms_info[room]["spectators"].append(name)
-            joined_as_player = False
-            print(f"{name} joined room {room} as spectator")
-        else:
-            # join as new player
-            rooms_info[room]["players"].append(name)
-
-            emit("new_player", rooms_info[room]["players"], room=room)
-            print(f"{name} joined room {room} as new player")
-
-        rooms_info[room]["sockets"].append(socketid)
-    
     join_room(room)
     
-    if name not in user_info:
-        user_info[name] = {
-            "latest_socketids": {},
-            "gamerooms": [room] if joined_as_player else [],
-        }
-        user_info[name]["latest_socketids"][room] = [socketid]
-    else:
-        if joined_as_player:
-            user_info[name]['gamerooms'].append(room)
-        else:
-            # A player that is a player in a room which has an ongoing game
-            # must always join as a player. This else block is needed for the 
-            # case where a player refreshes/joins into a game they were in,
-            # and the game was previously active, but the game has now ended.
-            if room in user_info[name]['gamerooms']:
-                user_info[name]['gamerooms'].remove(room)
-
-        user_info[name]["latest_socketids"][room].append(socketid)
+    rooms_info[room]["sockets"].append(socketid)
+    user_info[name]["latest_socketids"][room].append(socketid)
     
-    if rooms_info[room]['game_started'] and not joined_as_player:
+    mode = user_info[name]["room_modes"][room]
+    rejoin = (mode == equations.data.REJOINED_MODE)
+    joined_as_player = rejoin or (mode == equations.data.PLAYER_MODE)
+
+    if not joined_as_player and rooms_info[room]['game_started']:
         # Render every visual aspect of the board correctly for a spectator.
         # Required only if game has started
+        assert mode == equations.data.SPECTATOR_MODE
         emit("render_spectator_state", rooms_info[room])
     if joined_as_player:
         # Joined as player. Clientside should render visuals as well as register
@@ -102,10 +56,11 @@ def register_player(player_info):
     rejoin_str = "rejoined" if rejoin else "joined"
     spectator_str = "" if joined_as_player else " as spectator"
     emit("server_message", f"{name} has {rejoin_str}{spectator_str}.", room=room)
+    emit("new_player", rooms_info[room]["players"], room=room)
     
     if len(rooms_info[room]["spectators"]) > 0:
         people_message = "People in this room: "
-        people = ", ".join([socket_info[x]['name'] for x in set(rooms_info[room]["sockets"])])
+        people = ", ".join(list(set([socket_info[x]['name'] for x in rooms_info[room]["sockets"]])))
         emit("server_message", people_message + people, room=room)
 
     if rooms_info[room]["game_finished"]:
@@ -141,7 +96,7 @@ def on_disconnect():
     if len(rooms_info[room]["sockets"]) == 0:
         # If all players and spectators leave, then game is considered finished even if it's not.
         # TODO Right now this is only way a game ends. When implement timing, may need to reconsider this.
-        if rooms_info[room]["game_started"] and not rooms_info[room]["game_finished"]:
+        if not rooms_info[room]["game_finished"]:
             rooms_info[room]["game_finished"] = True
             db_insert(room, rooms_info[room])
 
@@ -163,6 +118,9 @@ def on_disconnect():
 
         print(f"{username} is no longer connected to {room}")
         del user_info[username]["latest_socketids"][room]
+
+        assert room in user_info[username]["room_modes"].keys()
+        del user_info[username]["room_modes"][room]
 
         # If a player leaves before a game is started, then remove him/her as a player
         if room in rooms_info and not rooms_info[room]["game_started"] \

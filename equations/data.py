@@ -3,6 +3,8 @@
 from threading import Lock
 
 """
+    rooms_info
+
     - Map room_id -> game info
     - See handle_start_game for the specific fields in game info
     - Notably, game info stores player names, spectator names, and socketids
@@ -16,9 +18,11 @@ from threading import Lock
 rooms_info = {}
 
 """
+    user_info
+
     - Map username -> latest socketid for each room, gameroom.
     - A user can be *playing* in any number of games at a time, and those games are
-        tracked in the "gamerooms" list, which is a list of room ids.
+        tracked in the "gamerooms" list, which is set of room ids
     - All rooms that the user is in (spectating or playing) will be tracked in
         the "rooms" dict, which maps room ids to list of socketids.
     - A user will always be in this map as long as he/she has at least one 
@@ -30,10 +34,18 @@ rooms_info = {}
         as a spectator or as a player.
     - And username will be unmapped when that user has no more live connections
         AND the user is no longer a player in any active games.
+    - There is one more field in user_info, which is the "room_modes" dict,
+        which maps, for every room the player is in, a room id to one of the
+        below *_MODE constants
 """
 user_info = {}
+PLAYER_MODE = "player"
+SPECTATOR_MODE = "spectator"
+REJOINED_MODE = "rejoin"  # rejoined as player
 
 """
+    socket_info
+
     - On register_player, map socketid -> username, room
     - On disconnect, unmap socketid
 """

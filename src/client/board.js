@@ -111,6 +111,9 @@ export function initializeScoreboard(players) {
     for (let i = 0; i < players.length; ++i) {
         scoreboard.rows[0].cells.item(i).innerHTML = players[i];
     }
+    for (let i = players.length; i < 3; ++i) {
+        scoreboard.rows[0].cells.item(i).innerHTML = "--------";
+    }
     return scoreboard;
 }
 
