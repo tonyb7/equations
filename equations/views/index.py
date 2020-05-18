@@ -4,7 +4,7 @@ import os
 import uuid
 import flask
 import equations
-from equations.data import can_create_room, rooms_info, user_info, MapsLock
+from equations.data import rooms_info, user_info, MapsLock
 from equations.db_serialize import db_deserialize
 
 @equations.app.route("/favicon.ico")
@@ -59,11 +59,6 @@ def create_game():
 
         if game_nonce_dict is None:
             game_nonce = proposed_nonce
-
-    MapsLock()
-    if not can_create_room(name):
-        flask.flash("You are already in a game, so you cannot create another.")
-        return flask.redirect(flask.url_for('show_index'))
 
     connection.execute(
         "INSERT INTO games(nonce, ended) "

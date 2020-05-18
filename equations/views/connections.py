@@ -29,17 +29,11 @@ def register_player(player_info):
     }
 
     # This if-else block will be responsible for the rooms_info data structure
-    # as well asserting the "gameroom" field of users in user_info
     joined_as_player = True
     rejoin = False
     if room not in rooms_info:  # for create room
         # This is a new game room and players can always join as player
         # See Issue #17 on Github
-        if name in user_info:
-            # this assertion should be guaranteed by call to
-            # can_create_room() from create_game
-            assert user_info[name]["gameroom"] is None
-
         rooms_info[room] = {
             "game_started": False,
             "game_finished": False,
@@ -51,28 +45,23 @@ def register_player(player_info):
         print(f"{name} joined room {room} as new player")
 
     else:  # for join room
-        # If the user is a player in this room, he/she will join as player
+        # If the user is a player in this room and this game is ongoing, 
+        # he/she will join as player.
         # Else, the user will join as spectator if the game has started or if 
-        # there are no spots left or if the player is in another match
-        # as a player (regardless of whether that match has started or not)
-        # Otherwise, the user will join as player
+        # there are no spots left.
+        # Otherwise, the user will join as a player.
         # See Issue #17 on Github
-        if name in rooms_info[room]["players"]:
+        if name in rooms_info[room]["players"] and not rooms_info[room]["game_finished"]:
             # join as existing player
-            # assert name in user_info game coulda ended
-            # assert user_info[name]["gameroom"] == room game coulda ended
             rejoin = True
             print(f"{name} rejoined room {room}")
-        elif rooms_info[room]["game_started"] or len(rooms_info[room]["players"]) >= 3 \
-                or (name in user_info and user_info[name]["gameroom"] != room):
+        elif rooms_info[room]["game_started"] or len(rooms_info[room]["players"]) >= 3:
             # join as spectator
             rooms_info[room]["spectators"].append(name)
             joined_as_player = False
             print(f"{name} joined room {room} as spectator")
         else:
             # join as new player
-            if name in user_info:
-                assert user_info[name]["gameroom"] is None
             rooms_info[room]["players"].append(name)
 
             emit("new_player", rooms_info[room]["players"], room=room)
@@ -85,15 +74,19 @@ def register_player(player_info):
     if name not in user_info:
         user_info[name] = {
             "latest_socketids": {},
-            "gameroom": room if joined_as_player else None,
+            "gamerooms": [room] if joined_as_player else [],
         }
-        user_info[name]["latest_socketids"][room] = socketid
     else:
         if joined_as_player:
-            user_info[name]['gameroom'] = room
-            if rejoin and rooms_info[room]["game_finished"]:
-                user_info[name]['gameroom'] = None
-        user_info[name]["latest_socketids"][room] = socketid
+            user_info[name]['gamerooms'].append(room)
+        else:
+            # A player that is a player in a room which has an ongoing game
+            # must always join as a player. This else block is needed for the 
+            # case where a player refreshes/joins into a game they were in,
+            # and the game was previously active, but the game has now ended.
+            if room in user_info[name]['gamerooms']:
+                user_info[name]['gamerooms'].remove(room)
+    user_info[name]["latest_socketids"][room] = socketid
     
     if rooms_info[room]['game_started'] and not joined_as_player:
         # Render every visual aspect of the board correctly for a spectator.
@@ -138,18 +131,22 @@ def on_disconnect():
     del socket_info[socketid]
 
     # Update room info
-    filter(lambda x: x != username, rooms_info[room]["spectators"])
+    if username in rooms_info[room]['spectators']:
+        # Remove spectators on disconnect. But do not remove player until game finishes.
+        rooms_info[room]['spectators'].remove(username)
+
     rooms_info[room]["sockets"].remove(socketid)
     if len(rooms_info[room]["sockets"]) == 0:
-        # If all players leave, then game is considered finished even if it's not.
+        # If all players and spectators leave, then game is considered finished even if it's not.
+        # TODO Right now this is only way a game ends. When implement timing, may need to reconsider this.
         if rooms_info[room]["game_started"] and not rooms_info[room]["game_finished"]:
             rooms_info[room]["game_finished"] = True
-
             db_insert(room, rooms_info[room])
 
             for player in rooms_info[room]["players"]:
                 assert player in user_info
-                user_info[player]["gameroom"] = None
+                assert room in user_info[player]["gamerooms"]
+                user_info[player]["gamerooms"].remove(room)
 
         del rooms_info[room]
 
@@ -161,17 +158,21 @@ def on_disconnect():
         del user_info[username]["latest_socketids"][room]
 
         # If a player leaves before a game is started, then remove him/her as a player
-        current_game = user_info[username]["gameroom"]
-        if current_game is not None:
-            if current_game not in rooms_info:
-                user_info[username]["gameroom"] = None
-            elif not rooms_info[current_game]["game_started"]:
-                user_info[username]["gameroom"] = None
-                rooms_info[current_game]["players"].remove(username)
+        if room in rooms_info and not rooms_info[room]["game_started"] \
+                and username in rooms_info[room]["players"]:
+            if room in user_info[username]["gamerooms"]:
+                # Need if statement because could gotten removed above in update rooms_info
+                user_info[username]["gamerooms"].remove(room)
+            if room in rooms_info:
+                rooms_info[room]["players"].remove(username)
+            emit("player_left", rooms_info[room]["players"], room=room)
+        
+        if room in user_info[username]["gamerooms"] and room not in rooms_info:
+            user_info[username]["gamerooms"].remove(room)
 
         # Unmap user if he/she is not in any rooms and he/she is not playing a game
         if len(user_info[username]["latest_socketids"]) == 0 and \
-                user_info[username]["gameroom"] is None:
+                len(user_info[username]["gamerooms"]) == 0:
             del user_info[username]
 
         emit("server_message", f"{username} has left.", room=room)

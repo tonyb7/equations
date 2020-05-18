@@ -16,17 +16,20 @@ from threading import Lock
 rooms_info = {}
 
 """
-    - Map username -> latest socketid for each room, gameroom
-    - A user can only be playing in one game at a time, and that game is
-        specified by gameroom. Gameroom is set to None if a user is not playing.
+    - Map username -> latest socketid for each room, gameroom.
+    - A user can be *playing* in any number of games at a time, and those games are
+        tracked in the "gamerooms" list, which is a list of room ids.
+    - All rooms that the user is in (spectating or playing) will be tracked in
+        the "rooms" dict, which maps room ids to latest socketids.
     - A user will always be in this map as long as he/she has at least one 
-        active socket connection (queue is nonempty)
-    - In other words, username will be mapped whenever a user makes his/her
+        active socket connection (one item in the rooms dict) and at least one
+        of its games in the gamerooms list is still active.
+    - A game in the gamerooms list will stay there until the game finishes.
+    - In summary, username will be mapped whenever a user makes his/her
         first connection, regardless of whether that connection is to join a room
-        as a spectator or as a player
+        as a spectator or as a player.
     - And username will be unmapped when that user has no more live connections
-        AND the user is not in a game room anymore
-    - Player will continue being in that game room until that game is finished...TODO
+        AND the user is no longer a player in any active games.
 """
 user_info = {}
 
@@ -51,12 +54,6 @@ class MapsLock():
 Caller's responsibility to grab maps lock before calling functions below.
 """
 
-def can_create_room(name):
-    """Ensure that a user is only playing in one match at a time."""
-    if name in user_info and user_info[name]["gameroom"] is not None:
-        return False
-    return True
-
 def get_name_and_room(socketid):
     """Get the username and room associated with a socketid."""
     assert socketid in socket_info
@@ -73,9 +70,9 @@ def get_current_mover(room):
     return rooms_info[room]['players'][turn_idx]
 
 def get_previous_mover(room):
-    """Return whoever just moved."""
+    """Return whoever just moved. Returns None if no moves have been made yet."""
     assert room in rooms_info
-    if not rooms_info[room]["goalset"]:  # TODO
+    if not rooms_info[room]["goalset"]:
         return None 
     
     previous_mover_index = (rooms_info[room]['turn'] - 1) % (len(rooms_info[room]["players"]))

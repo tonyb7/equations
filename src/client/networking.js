@@ -70,9 +70,8 @@ function registerSocketCallbacks(name) {
         }
     });
 
-    socket.on("new_player", (players) => {
-        initializeScoreboard(players);
-    });
+    socket.on("new_player", initializeScoreboard);
+    socket.on("player_left", initializeScoreboard);
     
     socket.on("begin_game", (data) => {
         let cubes = data['cubes']
