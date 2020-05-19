@@ -4,7 +4,7 @@ from flask_socketio import SocketIO
 # from flask_sqlalchemy import SQLAlchemy
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
-socketio = SocketIO(app, ping_timeout=3, ping_interval=1)
+socketio = SocketIO(app, ping_timeout=12, ping_interval=1)
 
 # Read settings from config module (equations/config.py)
 app.config.from_object('equations.config')
