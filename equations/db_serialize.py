@@ -59,6 +59,7 @@ def db_deserialize(db_result):
         "bonus_clicked": False,
         "started_move": False,
         "endgame": None,
+        "shake_ongoing": False,
     }
 
     return game_info

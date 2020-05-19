@@ -27,7 +27,8 @@ def start_shake(new_game):
     if rooms_info[room]["game_finished"]:
         return
 
-    if room not in rooms_info or (new_game and rooms_info[room]['game_started']):
+    if room not in rooms_info or (new_game and rooms_info[room]['game_started']) \
+            or (not new_game and rooms_info[room]['shake_ongoing']):
         print("Game start rejected")
         return
 
@@ -75,6 +76,7 @@ def start_shake(new_game):
             "bonus_clicked": False,
             "started_move": False,
             "endgame": None,
+            "shake_ongoing": True,
         }
 
         rooms_info[room]['goalsetter_index'] = rooms_info[room]['turn']
@@ -105,6 +107,7 @@ def start_shake(new_game):
         rooms_info[room]["bonus_clicked"] = False
         rooms_info[room]["started_move"] = False
         rooms_info[room]["endgame"] = None
+        rooms_info[room]["shake_ongoing"] = True
 
         shake_begin_instructions = {
             'cubes': rolled_cubes,

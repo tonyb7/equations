@@ -183,7 +183,7 @@ def handle_solution_submit(solution):
     rooms_info[room]["endgame"]["solutions"][name] = solution
     check_if_ready_to_present(room)
 
-# TODO need handle: force out, no goal
+# TODO need handle: no goal
 def finish_shake(room):
     """Handle when all solutions have been reviewed."""
     players = rooms_info[room]['players']
@@ -237,7 +237,8 @@ def finish_shake(room):
     
     for i in range(3):
         rooms_info[room][f"p{i+1}scores"].append(converted_shake_scores[f"p{i+1}score"])
-    
+
+    rooms_info[room]["shake_ongoing"] = False
     emit("finish_shake", converted_shake_scores, room=room)
 
 def check_if_shake_finished(room):
