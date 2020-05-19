@@ -130,29 +130,24 @@ def handle_cube_click(pos):
     MapsLock()
     [user, room] = get_name_and_room(flask.request.sid)
 
-    if rooms_info[room]["game_finished"]:
-        return
-
-    if rooms_info[room]["challenge"]:
-        return
-
-    if rooms_info[room]['touched_cube'] is not None:
-        print("Unhighlighting at position ", pos)
-        
-        emit("unhighlight_cube", pos, room=room)
-        rooms_info[room]['touched_cube'] = None
-        return
-
-    if rooms_info[room]["resources"][pos] == MOVED_CUBE_IDX:
-        return
-
     turn_user = get_current_mover(room)
+    if rooms_info[room]["game_finished"] or rooms_info[room]["challenge"] \
+            or rooms_info[room]["resources"][pos] == MOVED_CUBE_IDX \
+            or turn_user != user:
+        return
 
-    if turn_user == user:
+    do_not_rehighlight = False
+    if rooms_info[room]['touched_cube'] is not None:
+        if rooms_info[room]['touched_cube'] == pos:
+            do_not_rehighlight = True
+        emit("unhighlight_cube", rooms_info[room]['touched_cube'], room=room)
+        rooms_info[room]['touched_cube'] = None
+
+    if not do_not_rehighlight:
         if not rooms_info[room]["goalset"] and len(rooms_info[room]["goal"]) >= 6:
             emit("server_message", 
-                 "Max number of cubes on goal set! Please press \"Goal Set!\"", 
-                 room=room)
+                    "Max number of cubes on goal set! Please press \"Goal Set!\"", 
+                    room=room)
             return
         else:
             rooms_info[room]['touched_cube'] = pos
