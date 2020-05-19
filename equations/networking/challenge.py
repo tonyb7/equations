@@ -85,7 +85,7 @@ def handle_challenge(socketid, challenge):
         sider_list = list(filter(lambda x: x != name and x != defender, rooms_info[room]['players']))
         assert len(sider_list) == 1
         sider = sider_list[0]
-        challenge_message += f" {sider} has one minute to side!"
+        challenge_message += f" {sider} has two minutes to side!"
 
     if challenge == "no_goal":  # TODO gotta implement to goal -- both other players are siders
         if rooms_info[room]["goalset"]:

@@ -124,6 +124,21 @@ def join_game():
         flask.flash(f"The Room ID you entered ({room}) does not exist!")
         return flask.redirect(flask.url_for('show_index'))
 
+    if flask.request.form['join'] == "Join as Player":
+        if not (name in rooms_info[room]["players"] and not rooms_info[room]["game_finished"]):
+            if rooms_info[room]["game_started"] or len(rooms_info[room]["players"]) >= 3:
+                flask.flash(f"You cannot join as a player in that room ({room}) "
+                         "because either the game has started, the game has ended, "
+                         "or there are already 3 players in it.")
+                return flask.redirect(flask.url_for('show_index'))
+    else:
+        assert flask.request.form['join'] == "Join as Spectator"
+        if name in rooms_info[room]["players"] and not rooms_info[room]["game_finished"]:
+            flask.flash(f"You cannot join as a spectator in that room ({room}) "
+                         "because that game has not finished and you are a player "
+                         "in that room. Please join the room as a player.")
+            return flask.redirect(flask.url_for('show_index'))
+
     if name not in user_info:
         user_info[name] = {
             "latest_socketids": {},
@@ -151,10 +166,7 @@ def join_game():
             user_info[name]["room_modes"][room] = equations.data.REJOINED_MODE
 
         elif rooms_info[room]["game_started"] or len(rooms_info[room]["players"]) >= 3:
-            flask.flash(f"You cannot join as a player in that room ({room}) "
-                         "because either the game has started, the game has ended, "
-                         "or there are already 3 players in it.")
-            return flask.redirect(flask.url_for('show_index'))
+            assert False
 
         else:
             assert name not in rooms_info[room]["players"]
@@ -164,12 +176,8 @@ def join_game():
         user_info[name]["gamerooms"].add(room)
         
     else:
-        assert flask.request.form['join'] == "Join as Spectator"
         if name in rooms_info[room]["players"] and not rooms_info[room]["game_finished"]:
-            flask.flash(f"You cannot join as a spectator in that room ({room}) "
-                         "because that game has not finished and you are a player "
-                         "in that room. Please join the room as a player.")
-            return flask.redirect(flask.url_for('show_index'))
+            assert False
     
         rooms_info[room]["spectators"].append(name)
         user_info[name]["room_modes"][room] = equations.data.SPECTATOR_MODE

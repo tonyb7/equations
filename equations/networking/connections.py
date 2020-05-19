@@ -112,7 +112,7 @@ def on_disconnect():
     # (most likely) has connected by the time this code runs and (potentially) deletes
     # the user from the user_info dict. Even if not, worst thing that can happen
     # is that the game is marked as finished.
-    assert room in user_info[username]["latest_socketids"]
+    assert room in user_info[username]["latest_socketids"].keys()
     user_info[username]["latest_socketids"][room].remove(socketid)
     if len(user_info[username]["latest_socketids"][room]) == 0:
 

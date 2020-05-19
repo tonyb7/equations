@@ -83,12 +83,15 @@ function registerSocketCallbacks(name) {
                     "area on the mat you want to move it to.");
         appendServerMessage("Once on the goal line, you can rearrange the cubes by dragging " +
                     "horizontally, and to rotate a cube, right click on the cube.");
-        
+        appendServerMessage("If you can bonus on your turn, a bonus button will appear in the " + 
+                    "upper right corner of resources. To bonus, click on the button, move the " + 
+                    "bonused cube to forbidden, and then continue with the rest of your turn.");
+
         if (data['starter'] === name) {
             appendServerMessage("Press \"Goal Set!\" when you're done!");
         }
         else {
-            appendServerMessage(`Waiting for ${data['starter']} to finish setting the goal...`);
+            appendServerMessage(`Waiting for ${data['goalsetter']} to finish setting the goal...`);
         }
 
         renderResources(cubes);
