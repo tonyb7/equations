@@ -153,7 +153,11 @@ def check_if_ready_to_present(room):
     """Check if solutions are ready to be presented."""
     if rooms_info[room]["endgame"]["sider"] is None and \
             len(rooms_info[room]["endgame"]["solutions"]) == len(rooms_info[room]["endgame"]["writers"]):
-        emit("review_solutions", rooms_info[room]["endgame"]["solutions"], room=room)
+        review_soln_msg = {
+            "solutions": rooms_info[room]["endgame"]["solutions"],
+            "players": rooms_info[room]["players"],
+        }
+        emit("review_solutions", review_soln_msg, room=room)
 
 @equations.socketio.on('sided')
 def handle_siding(writing):
@@ -224,6 +228,7 @@ def finish_shake(room):
         "p1score": 0,
         "p2score": 0,
         'p3score': 0,
+        'players': rooms_info[room]['players'],
     }
 
     for player in shake_scores:

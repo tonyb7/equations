@@ -186,9 +186,12 @@ function registerSocketCallbacks(name) {
         appendSolutionPrompt(socket);
     });
     
-    socket.on("review_solutions", (solutions) => {
+    socket.on("review_solutions", (review_soln_msg) => {
         appendServerMessage("Time to review solutions!");
         
+        let solutions = review_soln_msg["solutions"];
+        let players = review_soln_msg["players"];
+
         let reviewing_one = false;
         for (let writer in solutions) {
             if (writer === name) {
@@ -196,7 +199,7 @@ function registerSocketCallbacks(name) {
             }
 
             reviewing_one = true;
-            appendAcceptPrompt(socket, writer, solutions[writer], false);
+            appendAcceptPrompt(socket, writer, solutions[writer], false, players.includes(name));
         }
 
         if (!reviewing_one) {
@@ -230,17 +233,23 @@ function registerSocketCallbacks(name) {
             return;
         }
 
-        appendAcceptPrompt(socket, writer, solution, true);
+        appendAcceptPrompt(socket, writer, solution, true, true);
     });
 
     socket.on("finish_shake", (scores) => {
         let p1score = scores['p1score'];
         let p2score = scores['p2score'];
         let p3score = scores['p3score'];
+        let players = scores['players'];
 
         appendServerMessage("This shake has finished! The scoreboard has been updated.");
         addScoreboardScore(document.getElementById("scoreboard"), p1score, p2score, p3score);
-        appendStartNewShakeButton(socket);
+        if (players.includes(name)) {
+            appendStartNewShakeButton(socket);
+        }
+        else {
+            appendServerMessage("Waiting for players to start a new shake...");
+        }
     });
 }
 
