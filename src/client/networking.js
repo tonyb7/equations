@@ -111,7 +111,7 @@ function registerSocketCallbacks(name) {
         renderResources(data['cubes']);
 
         let firstmover = data['goalsetter'];
-        initializeBoardCallbacks(socket, firstmover === name);
+        initializeBoardCallbacks(socket, firstmover === name && data['show_bonus']);
         updateTurnText(firstmover);
         registerGoalSetting(socket, name, firstmover, true);
     });
@@ -299,17 +299,16 @@ function show_bonus_for(game, player) {
     let p1score = game['p1scores'].reduce(adder);
     let p2score = game['p2scores'].reduce(adder);
     let p3score = game['p3scores'].reduce(adder);
+    let scores = [p1score, p2score, p3score];
 
-    let max_score = Math.max(p1score, p2score, p3score);
-    let min_score = 0;
-    if (p3score === 0) {
-        min_score = Math.min(p1score, p2score);
-    }
-    else {
-        min_score = Math.min(p1score, p2score, p3score);
+    let num_greater = 0;
+    for (let score of scores) {
+        if (player_score > score) {
+            ++num_greater;
+        }
     }
 
-    if (player_score !== 0 && max_score !== min_score && max_score === player_score) {
+    if (num_greater === 2) {
         return false;
     }
 

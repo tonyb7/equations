@@ -109,11 +109,14 @@ def start_shake(new_game):
         rooms_info[room]["endgame"] = None
         rooms_info[room]["shake_ongoing"] = True
 
+        goalsetter = get_current_mover(room)
         shake_begin_instructions = {
             'cubes': rolled_cubes,
             'players': current_players,
-            'goalsetter': get_current_mover(room),
+            'goalsetter': goalsetter,
+            'show_bonus': not is_leading(room, goalsetter),
         }
+    
 
         emit("begin_shake", shake_begin_instructions, room=room)
 
@@ -192,13 +195,18 @@ def is_leading(room, player):
     p1score = sum(rooms_info[room]["p1scores"])
     p2score = sum(rooms_info[room]["p2scores"])
     p3score = sum(rooms_info[room]["p3scores"])
-    
-    max_score = max(p1score, p2score, p3score)
-    min_score = min(p1score, p2score) if p3score == 0 else min(p2score, p2score, p3score)
 
-    if player_score != 0 and max_score != min_score and player_score == max_score:
+    num_greater = 0
+    for score in [p1score, p2score, p3score]:
+        if player_score > score:
+            num_greater += 1    
+
+    # if 3 player match, obv this make sense. if 2 player match, unused player
+    # will always have score of 0
+    assert num_greater <= 2
+    if num_greater == 2:
         return True
-
+    
     return False
 
 def next_turn(room):
