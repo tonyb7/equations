@@ -13,7 +13,7 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
             "challenger": name,
             "writers": [name],
             "solutions": {},
-            "solution_decided_count": {},
+            "solution_decisions": {},
             "solution_status": {},
             "sider": sider,
         }
@@ -22,7 +22,7 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
             "challenger": name,
             "writers": [last_mover],
             "solutions": {},
-            "solution_decided_count": {},
+            "solution_decisions": {},
             "solution_status": {},
             "sider": sider,
         }
@@ -35,13 +35,13 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
             "challenger": None,
             "writers": rooms_info[room]['players'],
             "solutions": {},
-            "solution_decided_count": {},
+            "solution_decisions": {},
             "solution_status": {},
             "sider": None,
         }
 
     for writer in rooms_info[room]['endgame']['writers']:
-        rooms_info[room]['endgame']['solution_decided_count'][writer] = 0
+        rooms_info[room]['endgame']['solution_decisions'][writer] = []
 
 challenge_translation = {
     "a_flub": "Challenge Now",
@@ -168,7 +168,7 @@ def handle_siding(writing):
     if writing:
         assert rooms_info[room]["endgame"]["sider"] == name
         rooms_info[room]["endgame"]["writers"].append(name)
-        rooms_info[room]["endgame"]["solution_decided_count"][name] = 0
+        rooms_info[room]["endgame"]["solution_decisions"][name] = []
     rooms_info[room]["endgame"]["sider"] = None
     
     msg_diff = "" if writing else "not "
@@ -248,9 +248,13 @@ def check_if_shake_finished(room):
 
 def track_decided_solution(room, writer, accepted):
     """Track that a solution has been accepted or rejected."""
-    rooms_info[room]['endgame']['solution_decided_count'][writer] += 1
-    if rooms_info[room]['endgame']['solution_decided_count'][writer] == len(rooms_info[room]['players']) - 1:
-        rooms_info[room]['endgame']['solution_status'][writer] = accepted
+    rooms_info[room]['endgame']['solution_decisions'][writer].append(accepted)
+
+    # A solution is only considered to be correct if all players have accepted the solution.
+    # One rejection with a rejection assent is irreversible.
+    if len(rooms_info[room]['endgame']['solution_decisions'][writer]) == len(rooms_info[room]['players']) - 1:
+        solution_correct = True if (rooms_info[room]['endgame']['solution_decisions'][writer].count(False) == 0) else False
+        rooms_info[room]['endgame']['solution_status'][writer] = solution_correct
         check_if_shake_finished(room)
 
 @equations.socketio.on('decided')
