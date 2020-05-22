@@ -104,7 +104,10 @@ function registerSocketCallbacks(name) {
     });
 
     socket.on("begin_shake", (data) => {
-        document.getElementById("new_shake_button").remove();
+        let new_shake_button = document.getElementById("new_shake_button");
+        if (new_shake_button) {
+            new_shake_button.remove();
+        }
 
         appendServerMessage(`A new shake has started! ${data['goalsetter']} is chosen to be the goalsetter.`);
         clearBoard();
