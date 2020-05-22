@@ -135,6 +135,18 @@ def join_game():
     if not get_game_from_db(room):
         flask.flash(f"The Room ID you entered ({room}) does not exist!")
         return flask.redirect(flask.url_for('show_index'))
+    
+    # This if is true when game_info['ended'] is 0. If the game has started, then
+    # if the room is not in the rooms_info map, then by invariant the game must
+    # have ended (see on_disconnect in connections.py).
+    if room not in rooms_info:
+        rooms_info[room] = {
+            "game_started": False,
+            "game_finished": False,
+            "players": [],
+            "spectators": [],
+            "sockets": [],
+        }
 
     if flask.request.form['join'] == "Join as Player":
         if not (name in rooms_info[room]["players"] and not rooms_info[room]["game_finished"]):
@@ -152,18 +164,6 @@ def join_game():
             return flask.redirect(flask.url_for('show_index'))
 
     initialize_user_info_elt(name, room)
-
-    # This if is true when game_info['ended'] is 0. If the game has started, then
-    # if the room is not in the rooms_info map, then by invariant the game must
-    # have ended (see on_disconnect in connections.py).
-    if room not in rooms_info:
-        rooms_info[room] = {
-            "game_started": False,
-            "game_finished": False,
-            "players": [],
-            "spectators": [],
-            "sockets": [],
-        }
 
     if flask.request.form['join'] == "Join as Player":
         if name in rooms_info[room]["players"] and not rooms_info[room]["game_finished"]:
@@ -205,7 +205,7 @@ def show_game(nonce):
                 flask.flash(f"The Room you tried to visit (ID of {room}) does not exist!")
                 return flask.redirect(flask.url_for('show_index'))
         
-        if not rooms_info[room]['game_started']:
+        if room not in rooms_info or not rooms_info[room]['game_started']:
             flask.flash(f"The Room you tried to visit (ID of {room}) has not started its game yet. "
                          "Please join by clicking \"Join Existing Game\" below and specifying whether "
                          "you would like to join as a player or a spectator.")
