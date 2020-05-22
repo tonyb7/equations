@@ -109,6 +109,18 @@ def get_game_from_db(room_id):
 
     return True
 
+def initialize_user_info_elt(name, room):
+    """Create an entry for a user in a room in the user_info map if necessary."""
+    if name not in user_info:
+        user_info[name] = {
+            "latest_socketids": {},
+            "gamerooms": set(),
+            "room_modes": {},
+        }
+
+    if room not in user_info[name]["latest_socketids"]: 
+        user_info[name]["latest_socketids"][room] = []
+
 @equations.app.route("/join/", methods=['POST'])
 def join_game():
     """Join an existing game."""
@@ -139,15 +151,7 @@ def join_game():
                          "in that room. Please join the room as a player.")
             return flask.redirect(flask.url_for('show_index'))
 
-    if name not in user_info:
-        user_info[name] = {
-            "latest_socketids": {},
-            "gamerooms": set(),
-            "room_modes": {},
-        }
-
-    if room not in user_info[name]["latest_socketids"]: 
-        user_info[name]["latest_socketids"][room] = []
+    initialize_user_info_elt(name, room)
 
     # This if is true when game_info['ended'] is 0. If the game has started, then
     # if the room is not in the rooms_info map, then by invariant the game must
@@ -187,19 +191,34 @@ def join_game():
 @equations.app.route("/game/<nonce>/", methods=['GET'])
 def show_game(nonce):
     """Show the game with nonce nonce."""
-    if not flask.request.referrer:
-        flask.flash("Please join a game by clicking \"Join Existing Game\"")
+    if 'username' not in flask.session:
+        flask.flash("Please log in before joining a game.")
         return flask.redirect(flask.url_for('show_index'))
 
-    # When a spectator spectates a finished game and the last socket connection 
-    # disconnects, on_disconnect in connections.py deletes the room from the room_info,
-    # and then a refresh bypasses join_game in index.py and goes directly to show_game
-    # See Issue #18 on GitHub
+    name = flask.session['username']
+    room = nonce
+
     MapsLock()
-    if nonce not in rooms_info:
-        if not get_game_from_db(nonce):
-            flask.flash(f"The Room you tried to visit (ID of {nonce}) does not exist!")
+    if not (room in rooms_info and name in user_info and room in user_info[name]['room_modes']):
+        if room not in rooms_info:
+            if not get_game_from_db(room):
+                flask.flash(f"The Room you tried to visit (ID of {room}) does not exist!")
+                return flask.redirect(flask.url_for('show_index'))
+        
+        if not rooms_info[room]['game_started']:
+            flask.flash(f"The Room you tried to visit (ID of {room}) has not started its game yet. "
+                         "Please join by clicking \"Join Existing Game\" below and specifying whether "
+                         "you would like to join as a player or a spectator.")
             return flask.redirect(flask.url_for('show_index'))
+
+        initialize_user_info_elt(name, room)
+
+        if name in rooms_info[room]['players'] and not rooms_info[room]['game_finished']:
+            user_info[name]["gamerooms"].add(room)
+            user_info[name]["room_modes"][room] = equations.data.REJOINED_MODE
+        else:
+            rooms_info[room]["spectators"].append(name)
+            user_info[name]["room_modes"][room] = equations.data.SPECTATOR_MODE
 
     context = {
         "nonce": nonce,

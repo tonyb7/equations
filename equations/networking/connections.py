@@ -12,9 +12,9 @@ def on_connect():
     """Handle request to connect to server."""
     print(f"Client {flask.request.sid} connected!")
 
-@equations.socketio.on('register_player')
-def register_player(player_info):
-    """Register a player."""
+@equations.socketio.on('register_client')
+def register_client(player_info):
+    """Register a client."""
     socketid = flask.request.sid
     name = player_info['name']
     room = player_info['room']

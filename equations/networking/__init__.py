@@ -8,7 +8,7 @@ from equations.networking.challenge import handle_solution_decision
 from equations.networking.challenge import handle_rejection_assent
 
 from equations.networking.connections import on_connect
-from equations.networking.connections import register_player
+from equations.networking.connections import register_client
 from equations.networking.connections import on_disconnect
 
 from equations.networking.game_flow import handle_start_game

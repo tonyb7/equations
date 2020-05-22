@@ -37,7 +37,7 @@ export const connect = () => {
 
         // Tell server wanna join
         console.log(`Connecting as ${name} in room ${room_nonce}`);
-        socket.emit("register_player", player_info);
+        socket.emit("register_client", player_info);
     })
     .catch((error) => console.log("Error: ", error));
 }
