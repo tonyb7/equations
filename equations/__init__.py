@@ -1,7 +1,8 @@
 """Equations package initializer."""
 import flask
 from flask_socketio import SocketIO
-# from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 socketio = SocketIO(app, ping_timeout=12, ping_interval=1)
@@ -14,8 +15,9 @@ app.config.from_object('equations.config')
 # Reference: http://flask.pocoo.org/docs/config/
 app.config.from_envvar('EQ_SETTINGS', silent=True)
 
-# db = SQLAlchemy(app)
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 import equations.views  # noqa: E402  pylint: disable=wrong-import-position
-import equations.model  # noqa: E402  pylint: disable=wrong-import-position
+import equations.models  # noqa: E402  pylint: disable=wrong-import-position
 import equations.networking  # noqa: E402  pylint: disable=wrong-import-position

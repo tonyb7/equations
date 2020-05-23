@@ -4,6 +4,7 @@ import uuid
 import hashlib
 import flask
 import equations
+from equations.models import User
 
 
 def compute_hashed_password(salt, password):
@@ -33,17 +34,15 @@ def show_login():
         user = flask.request.form['username']
         password = flask.request.form['password']
 
-        connection = equations.model.get_db()
-        stored_pw_hash_obj = connection.execute(
-            "SELECT password FROM users "
-            f"WHERE username=\'{user}\'"
-        ).fetchone()
-
-        if stored_pw_hash_obj is None:
-            flask.flash(f"User with name {user} not found! If you are XiPooh the ******* government has banned you.")
+        users = User.query.filter_by(username=user).all()
+        if len(users) == 0:
+            flask.flash(f"User with name {user} not found!")
             return flask.render_template("login.html")
+        
+        assert len(users) == 1
+        stored_pw_hash = users[0].password
 
-        if not password_correct(stored_pw_hash_obj['password'], password):
+        if not password_correct(stored_pw_hash, password):
             flask.flash("Incorrect password!")
             return flask.render_template("login.html")
 
@@ -77,20 +76,19 @@ def show_create():
         if ' ' in username:
             flask.flash("Username cannot have spaces!")
             return flask.render_template("create.html")
-
-        password = flask.request.form['password']
-
-        connection = equations.model.get_db()
-        users_with_username = len(connection.execute(
-            "SELECT username FROM users "
-            f"WHERE username=\'{username}\'"
-        ).fetchall())
-        if users_with_username != 0:
-            flask.flash("A user with that username already exists!")
+        
+        if len(username) > 20:
+            flask.flash("Username cannot be longer tahn than 20 characters.")
             return flask.render_template("create.html")
 
+        password = flask.request.form['password']
         if not password:
             flask.flash("You must provide a password!")
+            return flask.render_template("create.html")
+
+        conflicting_users = User.query.filter_by(username=username).all()
+        if len(conflicting_users) > 0:
+            flask.flash("A user with that username already exists!")
             return flask.render_template("create.html")
 
         # Compute Password Hash
@@ -98,12 +96,11 @@ def show_create():
         password_hash = compute_hashed_password(salt, password)
         password_db_string = "$".join(['sha512', salt, password_hash])
 
-        connection.execute(
-            "INSERT INTO users(username, password) "
-            f"VALUES (\'{username}\', \'{password_db_string}\');"
-        )
+        new_user = User(username=username, password=password_db_string)
+        equations.db.session.add(new_user)
+        equations.db.session.commit()
 
         flask.session['username'] = username
         return flask.redirect(flask.url_for('show_index'))
-
+    
     return flask.render_template("create.html")

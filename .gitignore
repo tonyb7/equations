@@ -1,6 +1,7 @@
 
 *.log
 *equations/html/
+migrations/
 
 *.db
 var

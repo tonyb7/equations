@@ -24,6 +24,7 @@ DATABASE_FILENAME = os.path.join(
 )
 
 SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 #BASE_URL = "http://localhost:8000"
 #BASE_URL = "https://equations-online.herokuapp.com/"

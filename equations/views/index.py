@@ -6,6 +6,7 @@ import flask
 import equations
 from equations.data import rooms_info, user_info, MapsLock
 from equations.db_serialize import db_deserialize
+from equations.models import User, Game
 
 @equations.app.route("/favicon.ico")
 def show_favicon():
@@ -34,7 +35,7 @@ def show_index():
                     and not rooms_info[gameroom]["game_finished"]:
                 context["gamerooms"].append(gameroom)
 
-    return flask.render_template("index.html", **context)    
+    return flask.render_template("index.html", **context)
 
 @equations.app.route("/create/", methods=['POST'])
 def create_game():
@@ -44,7 +45,6 @@ def create_game():
         return flask.redirect(flask.url_for('show_index'))
 
     name = flask.session['username']
-    connection = equations.model.get_db()
 
     # This is ugly and might break if enough games are played
     game_nonce = None
@@ -52,18 +52,14 @@ def create_game():
         # Warning/Notice: Only 36^4 (about 1.68 million) unique game 
         # nonces under this scheme
         proposed_nonce = str(uuid.uuid4()).replace('-', '')[:4].upper()
-        game_nonce_dict = connection.execute(
-            "SELECT nonce FROM games "
-            f"WHERE nonce=\'{proposed_nonce}\'"
-        ).fetchone()
 
-        if game_nonce_dict is None:
+        conflicting_games = Game.query.filter_by(nonce=proposed_nonce).all()
+        if len(conflicting_games) == 0:
             game_nonce = proposed_nonce
 
-    connection.execute(
-        "INSERT INTO games(nonce, ended) "
-        f"VALUES(\'{game_nonce}\', 0);"
-    )
+    new_game = Game(nonce=game_nonce)
+    equations.db.session.add(new_game)
+    equations.db.session.commit()
 
     # This is a new game room and players joins as player by default
     assert game_nonce not in rooms_info
@@ -95,17 +91,14 @@ def create_game():
 def get_game_from_db(room_id):
     """Helper function to get a game from the DB and do checks on it.
     Returns whether game was found."""
-    connection = equations.model.get_db()
-    game_info = connection.execute(
-        "SELECT * FROM games "
-        f"WHERE nonce=\'{room_id}\'"
-    ).fetchone()
-
-    if game_info is None:
+    game_info = Game.query.filter_by(nonce=room_id).all()
+    
+    if len(game_info) == 0: 
         return False
+    assert len(game_info) == 1
 
-    if game_info['ended'] and room_id not in rooms_info:
-        rooms_info[room_id] = db_deserialize(game_info)
+    if game_info[0].ended and room_id not in rooms_info:
+        rooms_info[room_id] = db_deserialize(game_info[0])
 
     return True
 

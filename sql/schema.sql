@@ -1,3 +1,5 @@
+/* deprecated */
+
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE users(

@@ -18,6 +18,11 @@ Client Side
 - JavaScript with [socket.io](https://socket.io) ([`src/client/`](https://github.com/tonyb7/equations/tree/master/src/client))
 - See [`package.json`](https://github.com/tonyb7/equations/blob/master/package.json) for full list of dependencies
 
+Database
+- [Heroku Postgres](https://www.heroku.com/postgres)
+- [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
+- [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)
+
 Running the server
 ================
 1. Download this repo
