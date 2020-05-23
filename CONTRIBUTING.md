@@ -19,9 +19,12 @@ Client Side
 - See [`package.json`](https://github.com/tonyb7/equations/blob/master/package.json) for full list of dependencies
 
 Database
-- [Heroku Postgres](https://www.heroku.com/postgres)
+- [PostgreSQL](https://www.heroku.com/postgres)
 - [`Flask-SQLAlchemy`](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
 - [`Flask-Migrate`](https://flask-migrate.readthedocs.io/en/latest/)
+
+Deployment
+- [Heroku](https://www.heroku.com)
 
 Running the server
 ================
