@@ -20,8 +20,8 @@ Client Side
 
 Database
 - [Heroku Postgres](https://www.heroku.com/postgres)
-- [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
-- [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)
+- [`Flask-SQLAlchemy`](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
+- [`Flask-Migrate`](https://flask-migrate.readthedocs.io/en/latest/)
 
 Running the server
 ================
@@ -47,13 +47,15 @@ pip install -e .
 npm install .
 npm run build
 ```
- 
-4. Run Flask server
+
+5. Set up the database. To do this, please read then run `bin/setupdb`(https://github.com/tonyb7/equations/blob/master/bin/setupdb)
+
+6. Run Flask server
 ```
 npm start # (or equivalently, ./bin/run)
 ```
 
-5. Go to http://localhost:8000 in browser
+7. Go to http://localhost:8000 in browser
 
 # Other
 If you gonna deploy this, don't forget to generate a new bytestring to replace the Flask secret key.

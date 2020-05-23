@@ -1,0 +1,29 @@
+#!/bin/bash
+# Set up a postgres database locally for development
+
+set -Eeuo pipefail
+set -x
+
+# Please read:
+# For this to work, you need Postgres
+# Create a postgres database locally
+#    Using the Postgres CLI, that could look like:
+#    $ psql
+#    # create database eq_dev;
+#    CREATE DATABASE
+#    # \q
+#
+# This script assumes that the database is called "eq_dev"
+# If your database is named differently (if you are using a production database
+#   hosted on AWS, for example), change the DATABASE_URL below
+#
+# Helpful links:
+# https://realpython.com/flask-by-example-part-2-postgres-sqlalchemy-and-alembic/
+# https://stackabuse.com/using-sqlalchemy-with-flask-and-postgresql/
+# 
+
+export FLASK_APP=equations
+export DATABASE_URL="postgres:///eq_dev"
+flask db init
+flask db migrate
+flask db upgrade
