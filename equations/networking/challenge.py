@@ -6,12 +6,20 @@ from equations.data import get_name_and_room, get_current_mover, get_previous_mo
 from flask_socketio import emit
 
 
+challenge_translation = {
+    "a_flub": "Challenge Now",
+    "p_flub": "Challenge Never",
+    "no_goal": "Challenge No Goal",
+    "force_out": "Force Out",
+}
+
 def initialize_endgame(room, challenge, name, last_mover, sider):
     """Set up rooms_info's endgame structure."""
     if challenge == "a_flub":
         rooms_info[room]['endgame'] = {
             "challenger": name,
             "writers": [name],
+            "nonwriters": [last_mover],
             "solutions": {},
             "solution_decisions": {},
             "solution_status": {},
@@ -21,6 +29,7 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
         rooms_info[room]['endgame'] = {
             "challenger": name,
             "writers": [last_mover],
+            "nonwriters": [name],
             "solutions": {},
             "solution_decisions": {},
             "solution_status": {},
@@ -34,20 +43,19 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
         rooms_info[room]['endgame'] = {
             "challenger": None,
             "writers": rooms_info[room]['players'],
+            "nonwriters": [],
             "solutions": {},
             "solution_decisions": {},
             "solution_status": {},
             "sider": None,
         }
+    
+    rooms_info[room]['endgame']['challenge'] = challenge
+    rooms_info[room]['endgame']['last_mover'] = last_mover
+    rooms_info[room]['endgame']['endgame_stage'] = "waiting_for_sider"
 
     for writer in rooms_info[room]['endgame']['writers']:
         rooms_info[room]['endgame']['solution_decisions'][writer] = []
-
-challenge_translation = {
-    "a_flub": "Challenge Now",
-    "p_flub": "Challenge Never",
-    "no_goal": "Challenge No Goal",
-}
 
 def handle_challenge(socketid, challenge):
     """Handle a challenge."""
@@ -147,12 +155,13 @@ def handle_force_out(room):
     challenge = 'force_out'
     rooms_info[room]['challenge'] = challenge
     initialize_endgame(room, challenge, None, None, None)
-    emit("force_out", room=room)
+    emit("force_out", rooms_info[room]["players"], room=room)
 
 def check_if_ready_to_present(room):
     """Check if solutions are ready to be presented."""
     if rooms_info[room]["endgame"]["sider"] is None and \
             len(rooms_info[room]["endgame"]["solutions"]) == len(rooms_info[room]["endgame"]["writers"]):
+        rooms_info[room]["endgame"]["endgame_stage"] = "waiting_for_reviewers"
         review_soln_msg = {
             "solutions": rooms_info[room]["endgame"]["solutions"],
             "players": rooms_info[room]["players"],
@@ -169,7 +178,11 @@ def handle_siding(writing):
         assert rooms_info[room]["endgame"]["sider"] == name
         rooms_info[room]["endgame"]["writers"].append(name)
         rooms_info[room]["endgame"]["solution_decisions"][name] = []
+    else:
+        rooms_info[room]["endgame"]["nonwriters"].append(name)
+
     rooms_info[room]["endgame"]["sider"] = None
+    rooms_info[room]["endgame"]["endgame_stage"] = "waiting_for_solutions"
     
     msg_diff = "" if writing else "not "
     emit("server_message", f"{name} has decided " + msg_diff + "to write a solution!", room=room)
@@ -186,6 +199,8 @@ def handle_solution_submit(solution):
 # TODO need handle: no goal
 def finish_shake(room):
     """Handle when all solutions have been reviewed."""
+    rooms_info[room]["endgame"]["endgame_stage"] = "finished"
+
     players = rooms_info[room]['players']
     challenger = rooms_info[room]['endgame']['challenger']
 

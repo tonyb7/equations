@@ -1,16 +1,17 @@
 // Handle client networking.
 
 import io from 'socket.io-client';
-import { cleanInput, appendMessage, appendServerMessage, appendSidingOptions, 
-         appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
-         appendStartNewShakeButton, appendInstructions } from './message_utils';
+import { cleanInput, appendMessage, appendServerMessage, appendInstructions } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
     renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard,
     num_resources_cubes } from './board';
 import { initializeBoardCallbacks, registerGoalSetting, 
-         registerStartButton, deregisterBoardCallbacks } from './callbacks';
+         registerStartButton } from './callbacks';
 import { updateGoalline } from './goal';
+import { updateClientOnEndgame, handleChallenge,
+         handleForceOut, reviewSolutions, handleRejectionAssent,
+         handleReevaluateSolution, handleShakeFinish } from './endgame';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 export const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -51,7 +52,10 @@ function registerSocketCallbacks(name) {
 
     // Render every visual aspect of the board correctly for a spectator.
     // Required only if game has started
-    socket.on("render_spectator_state", (game) => renderGameVisuals(game));
+    socket.on("render_spectator_state", (game) => {
+        renderGameVisuals(game);
+        updateClientOnEndgame(socket, name, game['endgame'], game['players']);
+    });
 
     // Joined as player. Render visuals as well as register callbacks as
     // appropriate (according to whether game has started)
@@ -64,6 +68,7 @@ function registerSocketCallbacks(name) {
         if (game['game_started']) {
             initializeBoardCallbacks(socket, show_bonus_for(game, name));
             registerGoalSetting(socket, name, game['players'][game['turn']], !game["goalset"]);
+            updateClientOnEndgame(socket, name, game['endgame'], game['players']);
         }
         else {
             registerStartButton(socket);
@@ -133,121 +138,12 @@ function registerSocketCallbacks(name) {
         // TODO timer stuff potentially
     });
 
-    // TODO move
-    const challengeTextMap = new Map([
-        ["a_flub", "Challenge Now"],
-        ["p_flub", "Challenge Never"],
-        ["no_goal", "Challenge No Goal"],
-    ]);
-
-    socket.on("handle_challenge", (info) => {
-        let challenge = info["challenge"];
-        let defender = info["defender"];
-        let caller = info["caller"];
-        let sider = info["sider"];
-
-        console.log("handle_challenge", challenge, defender, caller, sider);
-        console.log(challengeTextMap);
-        console.log(challengeTextMap.get(challenge));
-
-        deregisterBoardCallbacks();
-        updateTurnText(challengeTextMap.get(challenge));
-
-        if (challenge === "no_goal") {
-            // TODO
-            return;
-        }
-
-        if (sider != null) {
-            if (sider === name) {
-                appendSidingOptions(socket);
-            }
-            else {
-                appendServerMessage(`Waiting for ${sider} to side...`);
-            }
-        }
-
-        if ((defender === name && challenge === "p_flub") || (caller === name && challenge === "a_flub")) {
-            appendSolutionPrompt(socket);
-        }
-        else {
-            appendServerMessage("Waiting for solutions to be submitted....");
-        }
-    });
-
-    socket.on("force_out", () => {
-        deregisterBoardCallbacks();
-        updateTurnText("Force Out");
-
-        appendServerMessage("It is now Force Out.");
-        appendSolutionPrompt(socket);
-    });
-    
-    socket.on("review_solutions", (review_soln_msg) => {
-        appendServerMessage("Time to review solutions!");
-        
-        let solutions = review_soln_msg["solutions"];
-        let players = review_soln_msg["players"];
-
-        let reviewing_one = false;
-        for (let writer in solutions) {
-            if (writer === name) {
-                continue;
-            }
-
-            reviewing_one = true;
-            appendAcceptPrompt(socket, writer, solutions[writer], false, players.includes(name));
-        }
-
-        if (!reviewing_one) {
-            appendServerMessage("Waiting for others to finish reviewing solutions...");
-        }
-    });
-
-    socket.on("rejection_assent", (info) => {
-        let rejecter = info['rejecter'];
-        let writer = info['writer'];
-
-        if (writer !== name) {
-            appendServerMessage(`Waiting for ${writer} to accept the rejection...`);
-            return;
-        }
-
-        appendAssentToRejectPrompt(socket, rejecter);
-    });
-
-    socket.on("reevaluate_solution", (info) => {
-        let rejecter = info['rejecter'];
-        let writer = info['writer'];
-        let solution = info['solution'];
-
-        if (rejecter !== name) {
-            let msg_pt1 = `${writer} does not agree that his/her solution `;
-            let msg_pt2 = `is incorrect. Waiting for ${rejecter} to re-evaluate `;
-            let msg_pt3 = "whether the solution is correct...";
-
-            appendServerMessage(`${msg_pt1}${msg_pt2}${msg_pt3}`);
-            return;
-        }
-
-        appendAcceptPrompt(socket, writer, solution, true, true);
-    });
-
-    socket.on("finish_shake", (scores) => {
-        let p1score = scores['p1score'];
-        let p2score = scores['p2score'];
-        let p3score = scores['p3score'];
-        let players = scores['players'];
-
-        appendServerMessage("This shake has finished! The scoreboard has been updated.");
-        addScoreboardScore(document.getElementById("scoreboard"), p1score, p2score, p3score);
-        if (players.includes(name)) {
-            appendStartNewShakeButton(socket);
-        }
-        else {
-            appendServerMessage("Waiting for players to start a new shake...");
-        }
-    });
+    socket.on("handle_challenge", (info) => handleChallenge(socket, name, info));
+    socket.on("force_out", (players) => handleForceOut(socket, name, players));
+    socket.on("review_solutions", (review_soln_msg) => reviewSolutions(socket, name, review_soln_msg));
+    socket.on("rejection_assent", (info) => handleRejectionAssent(socket, name, info));
+    socket.on("reevaluate_solution", (info) => handleReevaluateSolution(socket, name, info));
+    socket.on("finish_shake", (scores) => handleShakeFinish(socket, name, scores));
 }
 
 export function handleChatEnter() {
