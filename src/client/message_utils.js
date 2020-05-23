@@ -4,10 +4,9 @@ export const cleanInput = (input) => {
     return $('<div/>').text(input).html();
 }
 
-export function appendMessage(name, message) {
-    let message_html = `<b>${name}: </b> ${message}`;
+function appendChatDOM(innerhtml) {
     let new_message = document.createElement('li');
-    new_message.innerHTML = message_html;
+    new_message.innerHTML = innerhtml;
 
     let messages = document.getElementById('message-list');
     messages.appendChild(new_message);
@@ -16,8 +15,28 @@ export function appendMessage(name, message) {
     messages_div.scrollTop = messages_div.scrollHeight;
 }
 
+export function appendMessage(name, message) {
+    let message_html = `<b>${name}: </b> ${message}`;
+    appendChatDOM(message_html);
+}
+
+function appendBoldedMessage(name, message) {
+    let message_html = `<b>${name}: </b> <b><em>${message}</em></b>`;
+    appendChatDOM(message_html);
+}
+
 export function appendServerMessage(message) {
     appendMessage("Server", message);
+}
+
+export function appendInstructions() {
+    appendBoldedMessage("Server", "Move cubes by clicking a cube in resources, then clicking the " +
+                    "area on the mat you want to move it to.");
+    appendBoldedMessage("Server", "If you are setting the goal, once on the goal line, you can " +
+                    "rearrange the cubes by dragging them horizontally, and to rotate a cube, right click on the cube.");
+    appendBoldedMessage("Server", "If you can bonus on your turn, a bonus button will appear in the " + 
+                    "upper right corner of resources. To bonus, first click the bonus button, then move the " + 
+                    "bonused cube to forbidden, and continue with the rest of your turn.");
 }
 
 export function appendSidingOptions(socket) {

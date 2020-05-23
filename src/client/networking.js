@@ -3,7 +3,7 @@
 import io from 'socket.io-client';
 import { cleanInput, appendMessage, appendServerMessage, appendSidingOptions, 
          appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
-         appendStartNewShakeButton } from './message_utils';
+         appendStartNewShakeButton, appendInstructions } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
     renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard,
@@ -79,13 +79,7 @@ function registerSocketCallbacks(name) {
         
         appendServerMessage(`${data['starter']} started the game! The cubes have been rolled!`);
         appendServerMessage(`${data['goalsetter']} is chosen to be the goalsetter.`);
-        appendServerMessage("Move cubes by clicking a cube in resources, then clicking the " +
-                    "area on the mat you want to move it to.");
-        appendServerMessage("Once on the goal line, you can rearrange the cubes by dragging " +
-                    "horizontally, and to rotate a cube, right click on the cube.");
-        appendServerMessage("If you can bonus on your turn, a bonus button will appear in the " + 
-                    "upper right corner of resources. To bonus, click on the button, move the " + 
-                    "bonused cube to forbidden, and then continue with the rest of your turn.");
+        appendInstructions();
 
         if (data['starter'] === name) {
             appendServerMessage("Press \"Goal Set!\" when you're done!");
