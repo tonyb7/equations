@@ -48,7 +48,7 @@ npm install .
 npm run build
 ```
 
-5. Set up the database. To do this, please read then run `bin/setupdb`(https://github.com/tonyb7/equations/blob/master/bin/setupdb)
+5. Set up the database. To do this, please read then run [`bin/setupdb`](https://github.com/tonyb7/equations/blob/master/bin/setupdb)
 
 6. Run Flask server
 ```
