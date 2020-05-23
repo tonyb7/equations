@@ -4,7 +4,14 @@ import flask
 import equations
 from equations.data import get_name_and_room, get_current_mover, get_previous_mover, MapsLock, rooms_info
 from flask_socketio import emit
+from enum import Enum
 
+
+class ReviewStatus(Enum):
+    """Tracked in review_status field of endgame info."""
+    ACCEPTED = 1
+    ASSENTING = 2  # reviewer has rejected, waiting for solution writer to assent
+    REJECTED = 3
 
 challenge_translation = {
     "a_flub": "Challenge Now",
@@ -20,20 +27,22 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
             "challenger": name,
             "writers": [name],
             "nonwriters": [last_mover],
+            "sider": sider,
             "solutions": {},
             "solution_decisions": {},
             "solution_status": {},
-            "sider": sider,
+            "review_status": {},
         }
     elif challenge == "p_flub":
         rooms_info[room]['endgame'] = {
             "challenger": name,
             "writers": [last_mover],
             "nonwriters": [name],
+            "sider": sider,
             "solutions": {},
             "solution_decisions": {},
             "solution_status": {},
-            "sider": sider,
+            "review_status": {},
         }
     elif challenge == "no_goal":
         rooms_info[room]['endgame'] = {
@@ -44,10 +53,11 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
             "challenger": None,
             "writers": rooms_info[room]['players'],
             "nonwriters": [],
+            "sider": None,
             "solutions": {},
             "solution_decisions": {},
             "solution_status": {},
-            "sider": None,
+            "review_status": {},
         }
     
     rooms_info[room]['endgame']['challenge'] = challenge
@@ -56,6 +66,11 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
 
     for writer in rooms_info[room]['endgame']['writers']:
         rooms_info[room]['endgame']['solution_decisions'][writer] = []
+    
+    for player in rooms_info[room]['players']:
+        # Will track which other players this player has made a decision on, and
+        # map (other player) -> accepted, assenting, rejected
+        rooms_info[room]['endgame']['review_status'][player] = {}
 
 def handle_challenge(socketid, challenge):
     """Handle a challenge."""
@@ -174,8 +189,13 @@ def handle_siding(writing):
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
 
+    # Case where perhaps user had two windows open and sided on both.
+    # Second click to the siding buttons would trigger this if statement.
+    if rooms_info[room]["endgame"]["sider"] == None:
+        emit("server_message", "You have already sided. The button you just clicked had no effect.")
+        return
+
     if writing:
-        assert rooms_info[room]["endgame"]["sider"] == name
         rooms_info[room]["endgame"]["writers"].append(name)
         rooms_info[room]["endgame"]["solution_decisions"][name] = []
     else:
@@ -193,8 +213,12 @@ def handle_solution_submit(solution):
     """A player submitted a solution."""
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
-    rooms_info[room]["endgame"]["solutions"][name] = solution
-    check_if_ready_to_present(room)
+    if name not in rooms_info[room]["endgame"]["solutions"]:
+        rooms_info[room]["endgame"]["solutions"][name] = solution
+        check_if_ready_to_present(room)
+    else:
+        emit("server_message", "You have already submitted a solution. " + 
+                               "The solution you just submitted was not counted. ")
 
 # TODO need handle: no goal
 def finish_shake(room):
@@ -281,12 +305,22 @@ def handle_solution_decision(info):
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
 
+    # This is true player cannot decide on a solution but somehow clicks a button to decide.
+    # (maybe from a second open window). Clientside should ensure this never happens though...
+    # and make buttons that shouldn't be clicked not clickable
+    if writer in rooms_info[room]['endgame']['review_status'][name]:
+        emit("server_message", "You have already decided on the correctness of this solution. " +
+                               "The button you just clicked had no effect.")
+        return
+
     accepted_str = "accepted" if accepted else "rejected"
     emit("server_message", f"{name} " + accepted_str + f" {writer}'s solution!", room=room)
 
     if not accepted:
+        rooms_info[room]['endgame']['review_status'][name][writer] = ReviewStatus.ASSENTING
         emit("rejection_assent", {"rejecter": name, "writer": writer}, room=room)
     else:
+        rooms_info[room]['endgame']['review_status'][name][writer] = ReviewStatus.ACCEPTED
         track_decided_solution(room, writer, True)
 
 @equations.socketio.on('assented')
@@ -298,8 +332,15 @@ def handle_rejection_assent(info):
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
 
+    if name not in rooms_info[room]['endgame']['review_status'][rejecter] or \
+            rooms_info[room]['endgame']['review_status'][rejecter][name] != ReviewStatus.ASSENTING:
+        emit("server_message", "You have already accepted whether or not your solution is incorrect. " +
+                               "The button you just clicked had no effect.")
+        return
+
     if assented:
         emit("server_message", f"{name} has accepted that his/her solution is incorrect.", room=room)
+        rooms_info[room]['endgame']['review_status'][rejecter][name] = ReviewStatus.REJECTED
         track_decided_solution(room, name, False)
         return
 
@@ -309,5 +350,7 @@ def handle_rejection_assent(info):
         "solution": rooms_info[room]['endgame']['solutions'][name],
         "rejecter": rejecter,
     }
+
+    del rooms_info[room]['endgame']['review_status'][rejecter][name]
     emit("reevaluate_solution", reevaluate_msg, room=room)
 
