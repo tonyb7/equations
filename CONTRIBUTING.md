@@ -9,7 +9,7 @@ Technology Stack
 Server Side
 - Python Flask for routing requests/serving various pages on the site
 - [`flask-socketio`](https://github.com/miguelgrinberg/Flask-SocketIO) for networking (receiving messages from clients)
-- See [`equations/`](https://github.com/tonyb7/equations/tree/master/equations) and [`equations/views/`](https://github.com/tonyb7/equations/tree/master/equations/views)
+- See [`equations/`](https://github.com/tonyb7/equations/tree/master/equations) and [`equations/views/`](https://github.com/tonyb7/equations/tree/master/equations/views) and [`equations/networking/`](https://github.com/tonyb7/equations/tree/master/equations/networking)
 - See [`setup.py`](https://github.com/tonyb7/equations/blob/master/setup.py) for full list of dependencies
 
 Client Side
