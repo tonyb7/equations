@@ -20,11 +20,29 @@ export function updateClientOnEndgame(socket, name, endgame_info, players) {
 
         if (endgame_info["endgame_stage"] === "waiting_for_reviewers") {
             reviewSolutions(socket, name, {"solutions": endgame_info["solutions"], "players": players});
+            checkForRejectionAssents(socket, name, endgame_info);
         }
         else {
             handleSidingPrompt(socket, endgame_info["sider"], name);
             handleSolutionPrompt(socket, endgame_info["challenge"], endgame_info["challenger"], 
                                  endgame_info["last_mover"], name);
+        }
+    }
+}
+
+function checkForRejectionAssents(socket, name, endgame_info) {
+    // console.log(endgame_info);
+    for (let reviewer in endgame_info["review_status"]) {
+        if (endgame_info["review_status"].hasOwnProperty(reviewer)) {
+            for (let writer in endgame_info["review_status"][reviewer]) {
+                if (endgame_info["review_status"][reviewer].hasOwnProperty(writer)) {
+                    let status = endgame_info["review_status"][reviewer][writer];
+                    // console.log("rejecter: ", reviewer, " writer:", writer, " status: ", status);
+                    if (status === "ASSENTING") {
+                        handleRejectionAssent(socket, name, {"rejecter": reviewer, "writer": writer});
+                    }
+                }
+            }
         }
     }
 }
