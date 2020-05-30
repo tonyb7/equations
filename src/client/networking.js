@@ -1,17 +1,20 @@
 // Handle client networking.
 
 import io from 'socket.io-client';
-import { cleanInput, appendMessage, appendServerMessage, appendInstructions } from './message_utils';
+import { cleanInput, appendMessage, appendServerMessage, appendInstructions, 
+         printFiveMinWarningMsg } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
     renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard,
     num_resources_cubes } from './board';
 import { initializeBoardCallbacks, registerGoalSetting, 
-         registerStartButton } from './callbacks';
+         registerStartButton, 
+         deregisterBoardCallbacks} from './callbacks';
 import { updateGoalline } from './goal';
 import { updateClientOnEndgame, handleChallenge,
          handleForceOut, reviewSolutions, handleRejectionAssent,
          handleReevaluateSolution, handleShakeFinish } from './endgame';
+import { initializeElapsedTimer } from './timing';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 export const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -92,7 +95,8 @@ function registerSocketCallbacks(name) {
         else {
             appendServerMessage(`Waiting for ${data['goalsetter']} to finish setting the goal...`);
         }
-
+        
+        initializeElapsedTimer(data['starttime']);
         renderResources(cubes);
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
 
@@ -143,7 +147,15 @@ function registerSocketCallbacks(name) {
     socket.on("review_solutions", (review_soln_msg) => reviewSolutions(socket, name, review_soln_msg));
     socket.on("rejection_assent", (info) => handleRejectionAssent(socket, name, info));
     socket.on("reevaluate_solution", (info) => handleReevaluateSolution(socket, name, info));
-    socket.on("finish_shake", (scores) => handleShakeFinish(socket, name, scores));
+    socket.on("finish_shake", (shake_finish_msg) => 
+        handleShakeFinish(socket, name, shake_finish_msg["scores"], shake_finish_msg["game_finished"]));
+
+    socket.on("five_minute_warning_message", () => printFiveMinWarningMsg());
+    socket.on("game_over_clientside", () => {
+        appendServerMessage("The game has finished!");
+        updateTurnText("Game Ended");
+        deregisterBoardCallbacks();
+    });
 }
 
 export function handleChatEnter() {

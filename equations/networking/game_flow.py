@@ -27,6 +27,10 @@ def start_shake(new_game):
     if rooms_info[room]["game_finished"]:
         return
 
+    if not new_game and rooms_info[room]["five_minute_warning_called"]:
+        emit("server_message", "Five minute warning has been called so a new shake cannot be started.", room=room)
+        return
+
     if room not in rooms_info or (new_game and rooms_info[room]['game_started']) \
             or (not new_game and rooms_info[room]['shake_ongoing']):
         print("Game start rejected")
@@ -77,6 +81,8 @@ def start_shake(new_game):
             "started_move": False,
             "endgame": None,
             "shake_ongoing": True,
+            "five_minute_warning_called": False,
+            "time_up": False,
         }
 
         rooms_info[room]['goalsetter_index'] = rooms_info[room]['turn']
@@ -86,6 +92,7 @@ def start_shake(new_game):
             'players': current_players,
             'starter': name,
             'goalsetter': get_current_mover(room),
+            'starttime': rooms_info[room]['starttime'],
         }
 
         emit("begin_game", game_begin_instructions, room=room)

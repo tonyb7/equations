@@ -3,6 +3,7 @@ import { getAssetClone } from './assets';
 import { emitCubeClicked, bonusButtonCallback } from './networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
          clearGoalCanvas, addCubeToGoal, initializeGoalsettingGlobals } from './goal';
+import { initializeElapsedTimer } from './timing';
 
 const sector_code_map = new Map([
     ["forbidden-sector", 'f'],
@@ -224,6 +225,7 @@ export const renderGameVisuals = (game) => {
     }
     else {
         updateTurnText(game['players'][game['turn']]);
+        initializeElapsedTimer(game['starttime']);
     }
 
     if (game["game_started"]) {

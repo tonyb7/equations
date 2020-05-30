@@ -215,3 +215,10 @@ export function appendStartNewShakeButton(socket) {
 
     document.getElementById('message-list').appendChild(li);
 }
+
+export function printFiveMinWarningMsg() {
+    let msgpt1 = "Five minute warning! If the cubes have been rolled, ";
+    let msgpt2 = "continue your game -- you have five minutes left. ";
+    let msgpt3 = "Do not start a new shake.";
+    appendServerMessage(`${msgpt1}${msgpt2}${msgpt3}`);
+}

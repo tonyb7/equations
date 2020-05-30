@@ -3,6 +3,7 @@
 import flask
 import equations
 from equations.data import get_name_and_room, get_current_mover, get_previous_mover, MapsLock, rooms_info
+from equations.db_serialize import db_insert
 from flask_socketio import emit
 from enum import Enum
 
@@ -278,7 +279,12 @@ def finish_shake(room):
         rooms_info[room][f"p{i+1}scores"].append(converted_shake_scores[f"p{i+1}score"])
 
     rooms_info[room]["shake_ongoing"] = False
-    emit("finish_shake", converted_shake_scores, room=room)
+    rooms_info[room]['endgame']['review_status'] = None
+    shake_finish_msg = {
+        "scores": converted_shake_scores, 
+        "game_finished": rooms_info[room]["five_minute_warning_called"],
+    }
+    emit("finish_shake", shake_finish_msg, room=room)
 
 def check_if_shake_finished(room):
     """Check if the shake is finished."""
@@ -354,3 +360,16 @@ def handle_rejection_assent(info):
     del rooms_info[room]['endgame']['review_status'][rejecter][name]
     emit("reevaluate_solution", reevaluate_msg, room=room)
 
+def clean_up_finished_room(room):
+    """Insert into db for room and emit message."""
+    if not rooms_info[room]["game_finished"]:
+        rooms_info[room]["game_finished"] = True
+        db_insert(room, rooms_info[room])
+        emit("game_over_clientside", room=room)
+
+@equations.socketio.on("game_over")
+def handle_game_over():
+    """The game is finished now."""
+    MapsLock()
+    [_, room] = get_name_and_room(flask.request.sid)
+    clean_up_finished_room(room)

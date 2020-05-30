@@ -6,6 +6,7 @@ from equations.networking.challenge import handle_siding
 from equations.networking.challenge import handle_solution_submit
 from equations.networking.challenge import handle_solution_decision
 from equations.networking.challenge import handle_rejection_assent
+from equations.networking.challenge import handle_game_over
 
 from equations.networking.connections import on_connect
 from equations.networking.connections import register_client
@@ -24,6 +25,8 @@ from equations.networking.goalsetting import update_cube_orientation
 
 from equations.networking.messaging import receive_message
 
+from equations.networking.timing import handle_five_minute_warning
+from equations.networking.timing import handle_game_time_up
 from equations.networking.timing import handle_flip_timer
 from equations.networking.timing import handle_claim_warning
 from equations.networking.timing import handle_claim_minus_one

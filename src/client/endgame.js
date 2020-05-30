@@ -154,7 +154,7 @@ export function handleReevaluateSolution(socket, name, info) {
     appendAcceptPrompt(socket, writer, solution, true, true);
 }
 
-export function handleShakeFinish(socket, name, scores) {
+export function handleShakeFinish(socket, name, scores, game_finished) {
     let p1score = scores['p1score'];
     let p2score = scores['p2score'];
     let p3score = scores['p3score'];
@@ -162,11 +162,18 @@ export function handleShakeFinish(socket, name, scores) {
 
     appendServerMessage("This shake has finished! The scoreboard has been updated.");
     addScoreboardScore(document.getElementById("scoreboard"), p1score, p2score, p3score);
-    handleNextShakePrompt(socket, name, players);
+    if (!game_finished) {
+        handleNextShakePrompt(socket, name, players);
+    } 
+    else {
+        appendServerMessage("This game has finished!");
+        socket.emit("game_over");
+    }
 }
 
 function handleNextShakePrompt(socket, name, players) {
     if (players.includes(name)) {
+        appendServerMessage("Click here to start a new shake: ");
         appendStartNewShakeButton(socket);
     }
     else {
