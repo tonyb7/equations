@@ -8,11 +8,11 @@ from flask_socketio import emit
 from enum import Enum
 
 
-class ReviewStatus(Enum):
-    """Tracked in review_status field of endgame info."""
-    ACCEPTED = 1
-    ASSENTING = 2  # reviewer has rejected, waiting for solution writer to assent
-    REJECTED = 3
+"""Tracked in review_status field of endgame info.
+Not an enum cuz JSON serialization gets angry."""
+REVIEWSTATUS_ACCEPTED = "ACCEPTED"
+REVIEWSTATUS_ASSENTING = "ASSENTING" # reviewer has rejected, waiting for solution writer to assent
+REVIEWSTATUS_REJECTED = "REJECTED"
 
 challenge_translation = {
     "a_flub": "Challenge Now",
@@ -279,7 +279,6 @@ def finish_shake(room):
         rooms_info[room][f"p{i+1}scores"].append(converted_shake_scores[f"p{i+1}score"])
 
     rooms_info[room]["shake_ongoing"] = False
-    rooms_info[room]['endgame']['review_status'] = None
     shake_finish_msg = {
         "scores": converted_shake_scores, 
         "game_finished": rooms_info[room]["five_minute_warning_called"],
@@ -323,10 +322,10 @@ def handle_solution_decision(info):
     emit("server_message", f"{name} " + accepted_str + f" {writer}'s solution!", room=room)
 
     if not accepted:
-        rooms_info[room]['endgame']['review_status'][name][writer] = ReviewStatus.ASSENTING
+        rooms_info[room]['endgame']['review_status'][name][writer] = REVIEWSTATUS_ASSENTING
         emit("rejection_assent", {"rejecter": name, "writer": writer}, room=room)
     else:
-        rooms_info[room]['endgame']['review_status'][name][writer] = ReviewStatus.ACCEPTED
+        rooms_info[room]['endgame']['review_status'][name][writer] = REVIEWSTATUS_ACCEPTED
         track_decided_solution(room, writer, True)
 
 @equations.socketio.on('assented')
@@ -339,14 +338,14 @@ def handle_rejection_assent(info):
     [name, room] = get_name_and_room(flask.request.sid)
 
     if name not in rooms_info[room]['endgame']['review_status'][rejecter] or \
-            rooms_info[room]['endgame']['review_status'][rejecter][name] != ReviewStatus.ASSENTING:
+            rooms_info[room]['endgame']['review_status'][rejecter][name] != REVIEWSTATUS_ASSENTING:
         emit("server_message", "You have already accepted whether or not your solution is incorrect. " +
                                "The button you just clicked had no effect.")
         return
 
     if assented:
         emit("server_message", f"{name} has accepted that his/her solution is incorrect.", room=room)
-        rooms_info[room]['endgame']['review_status'][rejecter][name] = ReviewStatus.REJECTED
+        rooms_info[room]['endgame']['review_status'][rejecter][name] = REVIEWSTATUS_REJECTED
         track_decided_solution(room, name, False)
         return
 

@@ -166,7 +166,6 @@ export function handleShakeFinish(socket, name, scores, game_finished) {
         handleNextShakePrompt(socket, name, players);
     } 
     else {
-        appendServerMessage("This game has finished!");
         socket.emit("game_over");
     }
 }

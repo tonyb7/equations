@@ -24,7 +24,7 @@ def handle_game_time_up():
     [name, room] = get_name_and_room(flask.request.sid)
     if not rooms_info[room]["time_up"]:
         rooms_info[room]["time_up"] = True
-        if rooms_info[room]["shake_ongoing"]:
+        if rooms_info[room]["shake_ongoing"] and rooms_info[room]["endgame"] is None:
             handle_force_out(room)
 
 @equations.socketio.on('flip_timer')

@@ -59,14 +59,14 @@ export function appendSidingOptions(socket) {
     yes_button.onclick = () => {
         socket.emit("sided", true);
         deregisterChatButtons([yes_button, no_button]);
-        no_button.classList.add("hidden");
+        yes_button.classList.add("button-clicked");
         appendSolutionPrompt(socket);
     };
 
     no_button.onclick = () => {
         socket.emit("sided", false);
         deregisterChatButtons([yes_button, no_button]);
-        yes_button.classList.add("hidden");
+        no_button.classList.add("button-clicked");
     };
 
     let messages = document.getElementById('message-list');
@@ -146,13 +146,13 @@ export function appendAcceptPrompt(socket, name, solution, reevaluate, for_game_
         yes_button.onclick = () => {
             socket.emit("decided", {"name": name, "accepted": true});
             deregisterChatButtons([yes_button, no_button]);
-            no_button.classList.add("hidden");
+            yes_button.classList.add("button-clicked");
         };
 
         no_button.onclick = () => {
             socket.emit("decided", {"name": name, "accepted": false});
             deregisterChatButtons([yes_button, no_button]);
-            yes_button.classList.add("hidden");
+            no_button.classList.add("button-clicked");
         };
     }
     
@@ -182,13 +182,13 @@ export function appendAssentToRejectPrompt(socket, name) {
     yes_button.onclick = () => {
         socket.emit("assented", {"rejecter": name, "assented": true});
         deregisterChatButtons([yes_button, no_button]);
-        no_button.classList.add("hidden");
+        yes_button.classList.add("button-clicked");
     };
 
     no_button.onclick = () => {
         socket.emit("assented", {"rejecter": name, "assented": false});
         deregisterChatButtons([yes_button, no_button]);
-        yes_button.classList.add("hidden");
+        no_button.classList.add("button-clicked");
     };
 
     let messages = document.getElementById('message-list');

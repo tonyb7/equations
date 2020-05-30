@@ -28,11 +28,11 @@ export function initializeElapsedTimer(starttime) {
 
         let time_str = `${minutes_leading_zero_str}${minutes}:${seconds_leading_zero_str}${seconds}`;
         
-        if (seconds >= 30 && !five_min_warning_called) {
+        if (minutes >= 30 && !five_min_warning_called) {
             five_min_warning_called = true;
             socket.emit("five_minute_warning");
         }
-        if (seconds >= 35) {
+        if (minutes >= 35) {
             clearInterval(timer);
             socket.emit("game_time_up");
             time_str = "35:00";
