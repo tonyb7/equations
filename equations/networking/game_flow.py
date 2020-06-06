@@ -17,7 +17,7 @@ MOVED_CUBE_IDX = -1
 # Total cubes in the game
 TOTAL_CUBES = 24
 
-def start_shake(new_game):
+def start_shake(new_game, is_restart):
     """Handle logic for starting a shake. new_game specifies if shake
     is the first shake in a game."""
     MapsLock()
@@ -50,6 +50,11 @@ def start_shake(new_game):
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
 
+    if is_restart:
+        # Goalsetter needs to be the same as the previous shake.
+        rooms_info[room]['goalsetter_index'] = \
+            (rooms_info[room]['goalsetter_index'] - 1) % len(rooms_info[room]['players'])
+    
     if new_game:
         rooms_info[room] = {
             "game_started": True,
@@ -130,12 +135,17 @@ def start_shake(new_game):
 @equations.socketio.on('start_game')
 def handle_start_game():
     """Player pressed start_game."""
-    start_shake(True)
+    start_shake(True, False)
 
 @equations.socketio.on('new_shake')
 def handle_new_shake():
     """Handle start of new shake."""
-    start_shake(False)
+    start_shake(False, False)
+
+@equations.socketio.on('restart_shake')
+def handle_restart_shake():
+    """Restart a shake with the same goalsetter after a no goal."""
+    start_shake(False, True)
 
 @equations.socketio.on("cube_clicked")
 def handle_cube_click(pos):

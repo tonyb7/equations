@@ -216,6 +216,69 @@ export function appendStartNewShakeButton(socket) {
     document.getElementById('message-list').appendChild(li);
 }
 
+export function appendNoGoalButtons(socket, caller) {
+    // <li><b>Server: </b>Tony claims no goal can be set which has at least one correct solution. 
+    // Do you agree? If not, you can challenge the No Goal declaration and you will have two minutes to 
+    // write a correct Solution & Goal.</li>
+    // <li class="chat-button">
+    //     <button>Agree</button><button>Disagree & Write</button>
+    // </li>
+    appendServerMessage(caller + " claims no goal can be set which has at least one correct solution. " +
+        "Do you agree? If not, you can challenge the No Goal declaration and you will have two minutes to " +
+        "write a correct Solution & Goal. Disagreeing with the no goal declaration is considered a challenge, " +
+        "so the first player to disagree (if a player disagrees) will be deemed the challenger.");
+
+    let options = document.createElement('li');
+    options.classList.add("chat-button");
+
+    let yes_button = document.createElement("button");
+    yes_button.innerHTML = "Agree";
+    options.appendChild(yes_button);
+
+    let no_button = document.createElement("button");
+    no_button.innerHTML = "Disagree & Write";
+    options.appendChild(no_button);
+
+    yes_button.onclick = () => {
+        socket.emit("no_goal_sided", true);
+        deregisterChatButtons([yes_button, no_button]);
+        yes_button.classList.add("button-clicked");
+    };
+
+    no_button.onclick = () => {
+        socket.emit("no_goal_sided", false);
+        deregisterChatButtons([yes_button, no_button]);
+        no_button.classList.add("button-clicked");
+        appendSolutionPrompt(socket);
+    };
+
+    let messages = document.getElementById('message-list');
+    messages.appendChild(options);
+}
+
+export function appendEndShakeNoGoal(socket) {
+    appendServerMessage("The shake has ended due to a No Goal. Click below to restart the shake.");
+
+    // <li class="chat-button">
+    //     <button>Restart Shake</button>
+    // </li>
+
+    let li = document.createElement('li');
+    li.classList.add("chat-button");
+
+    let start_button = document.createElement("button");
+    start_button.innerHTML = "Restart Shake";
+    start_button.id = "new_shake_button";
+
+    li.appendChild(start_button);
+
+    start_button.onclick = () => {
+        socket.emit("restart_shake");
+    };
+
+    document.getElementById('message-list').appendChild(li);
+}
+
 export function printFiveMinWarningMsg() {
     let msgpt1 = "Five minute warning! If the cubes have been rolled, ";
     let msgpt2 = "continue your game -- you have five minutes left. ";

@@ -2,7 +2,7 @@
 
 import { appendServerMessage, appendSidingOptions, 
     appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
-    appendStartNewShakeButton } from './message_utils';
+    appendStartNewShakeButton, appendNoGoalButtons } from './message_utils';
 import { deregisterBoardCallbacks } from './callbacks';
 import { addScoreboardScore, updateTurnText } from './board';
 
@@ -23,9 +23,13 @@ export function updateClientOnEndgame(socket, name, endgame_info, players) {
             checkForRejectionAssents(socket, name, endgame_info);
         }
         else {
-            handleSidingPrompt(socket, endgame_info["sider"], name);
-            handleSolutionPrompt(socket, endgame_info["challenge"], endgame_info["challenger"], 
-                                 endgame_info["last_mover"], name);
+            if (endgame_info["challenge"] == "no_goal") {
+                handleNoGoalSidingPrompt(socket, endgame_info["caller"], name);
+            }
+            else {
+                handleSidingPrompt(socket, endgame_info["sider"], name);
+            }
+            handleSolutionPrompt(socket, endgame_info["writers"], name);
         }
     }
 }
@@ -54,40 +58,49 @@ const challengeTextMap = new Map([
 ]);
 
 function printEndgameState(endgame_info) {
-    let endgame_stage = endgame_info["endgame_stage"];
-    if (endgame_stage === "force_out") {
+    let challenge = endgame_info["challenge"];
+    if (challenge === "force_out") {
         appendServerMessage("The players are currently in a Force Out...");
     }
-    else if (endgame_stage === "no_goal") {
+    else if (challenge === "no_goal") {
         appendServerMessage("A No Goal has been declared...");
     }
     else {
         let msgpt1 = `${endgame_info["challenger"]} has called `;
-        let msgpt2 = `${challengeTextMap.get(endgame_info["challenge"])} on ${endgame_info["last_mover"]}.`;
+        let msgpt2 = `${challengeTextMap.get(challenge)} on ${endgame_info["last_mover"]}.`;
         appendServerMessage(`${msgpt1}${msgpt2}`);
     }
 }
 
 export function handleChallenge(socket, name, info) {
     let challenge = info["challenge"];
-    let defender = info["defender"];
+    let writers = info["writers"];
     let caller = info["caller"];
     let sider = info["sider"];
 
-    console.log("handle_challenge", challenge, defender, caller, sider);
-    console.log(challengeTextMap);
-    console.log(challengeTextMap.get(challenge));
+    // console.log("handle_challenge", challenge, defender, caller, sider);
+    // console.log(challengeTextMap);
+    // console.log(challengeTextMap.get(challenge));
 
     deregisterBoardCallbacks();
     updateTurnText(challengeTextMap.get(challenge));
 
     if (challenge === "no_goal") {
-        // TODO
+        handleNoGoalSidingPrompt(socket, caller, name);
         return;
     }
 
     handleSidingPrompt(socket, sider, name);
-    handleSolutionPrompt(socket, challenge, caller, defender, name);
+    handleSolutionPrompt(socket, writers, name);
+}
+
+function handleNoGoalSidingPrompt(socket, goalsetter, name) {
+    if (name === goalsetter) {
+        appendServerMessage("Waiting for other player to agree or disagree with your No Goal declaration...");
+    }
+    else {
+        appendNoGoalButtons(socket, goalsetter);
+    }
 }
 
 function handleSidingPrompt(socket, sider, name) {
@@ -101,8 +114,8 @@ function handleSidingPrompt(socket, sider, name) {
     }
 }
 
-function handleSolutionPrompt(socket, challenge, caller, defender, name) {
-    if ((defender === name && challenge === "p_flub") || (caller === name && challenge === "a_flub")) {
+function handleSolutionPrompt(socket, writers, name) {
+    if (writers.includes(name)) {
         appendSolutionPrompt(socket);
     }
     else {

@@ -17,7 +17,7 @@ REVIEWSTATUS_REJECTED = "REJECTED"
 challenge_translation = {
     "a_flub": "Challenge Now",
     "p_flub": "Challenge Never",
-    "no_goal": "Challenge No Goal",
+    "no_goal": "a No Goal",
     "force_out": "Force Out",
 }
 
@@ -47,7 +47,15 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
         }
     elif challenge == "no_goal":
         rooms_info[room]['endgame'] = {
-            # TODO
+            "challenger": None,
+            "writers": [],
+            "nonwriters": [name],
+            "sider": None,
+            "siders": [player for player in rooms_info[room]["players"] if player != name],
+            "solutions": {},
+            "solution_decisions": {},
+            "solution_status": {},
+            "review_status": {},
         }
     elif challenge == "force_out":
         rooms_info[room]['endgame'] = {
@@ -62,6 +70,7 @@ def initialize_endgame(room, challenge, name, last_mover, sider):
         }
     
     rooms_info[room]['endgame']['challenge'] = challenge
+    rooms_info[room]['endgame']['caller'] = name
     rooms_info[room]['endgame']['last_mover'] = last_mover
     rooms_info[room]['endgame']['endgame_stage'] = "waiting_for_sider"
 
@@ -105,13 +114,13 @@ def handle_challenge(socketid, challenge):
         challenge_message += f" But {name} just moved so {name} cannot challenge!"
         emit("server_message", challenge_message, room=room)
         return
-    elif challenge != "no_goal" and len(rooms_info[room]['players']) == 3:  # TODO handle no goals
+    elif challenge != "no_goal" and len(rooms_info[room]['players']) == 3:
         sider_list = list(filter(lambda x: x != name and x != defender, rooms_info[room]['players']))
         assert len(sider_list) == 1
         sider = sider_list[0]
         challenge_message += f" {sider} has two minutes to side!"
 
-    if challenge == "no_goal":  # TODO gotta implement to goal -- both other players are siders
+    if challenge == "no_goal":
         if rooms_info[room]["goalset"]:
             no_goal_msg = f"{name} has called Challenge No Goal! But Goal has already been set, so challenge cannot be made!"  # TODO minus one?
             emit("server_message", no_goal_msg, room=room)
@@ -148,6 +157,7 @@ def handle_challenge(socketid, challenge):
         "defender": defender,
         "caller": name,
         "sider": sider,
+        "writers": rooms_info[room]["endgame"]["writers"],
     }
     emit("handle_challenge", challenge_info, room=room)
 
@@ -173,9 +183,15 @@ def handle_force_out(room):
     initialize_endgame(room, challenge, None, None, None)
     emit("force_out", rooms_info[room]["players"], room=room)
 
-def check_if_ready_to_present(room):
+def check_if_ready_to_present(room, no_goal):
     """Check if solutions are ready to be presented."""
-    if rooms_info[room]["endgame"]["sider"] is None and \
+    no_more_siders = False
+    if no_goal:
+        no_more_siders = len(rooms_info[room]["endgame"]["siders"]) == 0
+    else:
+        no_more_siders = rooms_info[room]["endgame"]["sider"] is None
+
+    if no_more_siders and \
             len(rooms_info[room]["endgame"]["solutions"]) == len(rooms_info[room]["endgame"]["writers"]):
         rooms_info[room]["endgame"]["endgame_stage"] = "waiting_for_reviewers"
         review_soln_msg = {
@@ -207,7 +223,35 @@ def handle_siding(writing):
     
     msg_diff = "" if writing else "not "
     emit("server_message", f"{name} has decided " + msg_diff + "to write a solution!", room=room)
-    check_if_ready_to_present(room)
+    check_if_ready_to_present(room, False)
+
+@equations.socketio.on('no_goal_sided')
+def handle_no_goal_siding(agreed):
+    """Player agreed or disagreed with the no_goal declaration."""
+    MapsLock()
+    [name, room] = get_name_and_room(flask.request.sid)
+    
+    if name not in rooms_info[room]["endgame"]["siders"]:
+        emit("server_message", "You have already sided on the No Goal. The button you just clicked had no effect.")
+        return
+
+    if agreed:
+        if rooms_info[room]["endgame"]["challenger"] is None:
+            rooms_info[room]["endgame"]["challenger"] = name
+        rooms_info[room]["endgame"]["writers"].append(name)
+        rooms_info[room]["endgame"]["solution_decisions"][name] = []
+    else:
+        rooms_info[room]["endgame"]["nonwriters"].append(name)
+
+    rooms_info[room]["endgame"]["siders"].remove(name)
+    if len(rooms_info[room]["endgame"]["siders"]) == 0 and rooms_info[room]["endgame"]["challenger"] is None:
+        emit("end_shake_no_goal", room=room)
+        rooms_info[room]["shake_ongoing"] = False
+        return
+
+    msg_diff = "" if agreed else "not "
+    emit("server_message", f"{name} has decided " + msg_diff + "to challenge the No Goal.", room=room)
+    check_if_ready_to_present(room, True)
 
 @equations.socketio.on('solution_submitted')
 def handle_solution_submit(solution):
@@ -216,7 +260,7 @@ def handle_solution_submit(solution):
     [name, room] = get_name_and_room(flask.request.sid)
     if name not in rooms_info[room]["endgame"]["solutions"]:
         rooms_info[room]["endgame"]["solutions"][name] = solution
-        check_if_ready_to_present(room)
+        check_if_ready_to_present(room, rooms_info[room]["endgame"]["challenge"] == "no_goal")
     else:
         emit("server_message", "You have already submitted a solution. " + 
                                "The solution you just submitted was not counted. ")

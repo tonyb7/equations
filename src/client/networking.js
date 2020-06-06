@@ -2,7 +2,7 @@
 
 import io from 'socket.io-client';
 import { cleanInput, appendMessage, appendServerMessage, appendInstructions, 
-         printFiveMinWarningMsg } from './message_utils';
+         printFiveMinWarningMsg, appendEndShakeNoGoal } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
     renderGameVisuals, updateBonusButton, hideGoalSettingButtons, clearBoard,
@@ -121,6 +121,8 @@ function registerSocketCallbacks(name) {
         updateTurnText(firstmover);
         registerGoalSetting(socket, name, firstmover, true);
     });
+
+    socket.on("end_shake_no_goal", () => appendEndShakeNoGoal(socket));
 
     socket.on("hide_goal_setting_buttons", () => hideGoalSettingButtons());
     socket.on("update_goalline", (data) => {

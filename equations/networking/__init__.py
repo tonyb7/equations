@@ -3,6 +3,7 @@ from equations.networking.challenge import handle_a_flub
 from equations.networking.challenge import handle_p_flub
 from equations.networking.challenge import handle_no_goal
 from equations.networking.challenge import handle_siding
+from equations.networking.challenge import handle_no_goal_siding
 from equations.networking.challenge import handle_solution_submit
 from equations.networking.challenge import handle_solution_decision
 from equations.networking.challenge import handle_rejection_assent
@@ -14,6 +15,7 @@ from equations.networking.connections import on_disconnect
 
 from equations.networking.game_flow import handle_start_game
 from equations.networking.game_flow import handle_new_shake
+from equations.networking.game_flow import handle_restart_shake
 from equations.networking.game_flow import handle_cube_click
 from equations.networking.game_flow import handle_sector_click
 from equations.networking.game_flow import handle_set_goal
