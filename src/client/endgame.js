@@ -24,12 +24,13 @@ export function updateClientOnEndgame(socket, name, endgame_info, players) {
         }
         else {
             if (endgame_info["challenge"] == "no_goal") {
-                handleNoGoalSidingPrompt(socket, endgame_info["caller"], name);
+                handleNoGoalSidingPrompt(socket, endgame_info["caller"], endgame_info["writers"], 
+                    endgame_info["nonwriters"], name);
             }
             else {
                 handleSidingPrompt(socket, endgame_info["sider"], name);
+                handleSolutionPrompt(socket, endgame_info["writers"], name);
             }
-            handleSolutionPrompt(socket, endgame_info["writers"], name);
         }
     }
 }
@@ -75,6 +76,7 @@ function printEndgameState(endgame_info) {
 export function handleChallenge(socket, name, info) {
     let challenge = info["challenge"];
     let writers = info["writers"];
+    let nonwriters = info["nonwriters"];
     let caller = info["caller"];
     let sider = info["sider"];
 
@@ -86,7 +88,7 @@ export function handleChallenge(socket, name, info) {
     updateTurnText(challengeTextMap.get(challenge));
 
     if (challenge === "no_goal") {
-        handleNoGoalSidingPrompt(socket, caller, name);
+        handleNoGoalSidingPrompt(socket, caller, writers, nonwriters, name);
         return;
     }
 
@@ -94,9 +96,15 @@ export function handleChallenge(socket, name, info) {
     handleSolutionPrompt(socket, writers, name);
 }
 
-function handleNoGoalSidingPrompt(socket, goalsetter, name) {
+function handleNoGoalSidingPrompt(socket, goalsetter, writers, nonwriters, name) {
     if (name === goalsetter) {
         appendServerMessage("Waiting for other player to agree or disagree with your No Goal declaration...");
+    }
+    else if (nonwriters.includes(name)) {
+        appendServerMessage("Waiting for one more player to agree or disagree with the No Goal declaration...");
+    }
+    else if (writers.includes(name)) {
+        appendSolutionPrompt(socket);
     }
     else {
         appendNoGoalButtons(socket, goalsetter);

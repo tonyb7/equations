@@ -72,6 +72,9 @@ function registerSocketCallbacks(name) {
             initializeBoardCallbacks(socket, show_bonus_for(game, name));
             registerGoalSetting(socket, name, game['players'][game['turn']], !game["goalset"]);
             updateClientOnEndgame(socket, name, game['endgame'], game['players']);
+            if (game['challenge'] === "no_goal") {
+                hideGoalSettingButtons();
+            }
         }
         else {
             registerStartButton(socket);
@@ -181,6 +184,10 @@ export const emitCubeClicked = (pos) => socket.emit("cube_clicked", pos);
 // Determine whether bonus button should be rendered for player in game
 function show_bonus_for(game, player) {
     if (game['players'][game['turn']] != player) {
+        return false;
+    }
+
+    if (game['challenge']) {
         return false;
     }
 

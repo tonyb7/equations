@@ -158,6 +158,7 @@ def handle_challenge(socketid, challenge):
         "caller": name,
         "sider": sider,
         "writers": rooms_info[room]["endgame"]["writers"],
+        "nonwriters": rooms_info[room]["endgame"]["nonwriters"],
     }
     emit("handle_challenge", challenge_info, room=room)
 
@@ -235,7 +236,7 @@ def handle_no_goal_siding(agreed):
         emit("server_message", "You have already sided on the No Goal. The button you just clicked had no effect.")
         return
 
-    if agreed:
+    if not agreed:
         if rooms_info[room]["endgame"]["challenger"] is None:
             rooms_info[room]["endgame"]["challenger"] = name
         rooms_info[room]["endgame"]["writers"].append(name)
@@ -244,12 +245,14 @@ def handle_no_goal_siding(agreed):
         rooms_info[room]["endgame"]["nonwriters"].append(name)
 
     rooms_info[room]["endgame"]["siders"].remove(name)
-    if len(rooms_info[room]["endgame"]["siders"]) == 0 and rooms_info[room]["endgame"]["challenger"] is None:
-        emit("end_shake_no_goal", room=room)
-        rooms_info[room]["shake_ongoing"] = False
-        return
+    if len(rooms_info[room]["endgame"]["siders"]) == 0:
+        rooms_info[room]["endgame"]["endgame_stage"] = "waiting_for_solutions"
+        if rooms_info[room]["endgame"]["challenger"] is None:
+            emit("end_shake_no_goal", room=room)
+            rooms_info[room]["shake_ongoing"] = False
+            return
 
-    msg_diff = "" if agreed else "not "
+    msg_diff = "" if not agreed else "not "
     emit("server_message", f"{name} has decided " + msg_diff + "to challenge the No Goal.", room=room)
     check_if_ready_to_present(room, True)
 
