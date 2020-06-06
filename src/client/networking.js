@@ -233,3 +233,4 @@ export function bonusButtonCallback() {
     this.classList.toggle("button-clicked");
     socket.emit("bonus_clicked");
 }
+
