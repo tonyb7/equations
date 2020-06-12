@@ -17,16 +17,16 @@ def db_insert(room, game_info):
 
     game.ended = ended
     game.players = game_info["players"]
-    game.p1scores = game_info["p1scores"]    
-    game.p2scores = game_info["p2scores"]
-    game.p3scores = game_info["p3scores"]
-    game.cube_index = game_info["cube_index"]
-    game.resources = game_info["resources"]
-    game.goal = game_info["goal"]
-    game.required = game_info["required"]
-    game.permitted = game_info["permitted"]
-    game.forbidden = game_info["forbidden"]
-    game.turn = game_info["turn"]
+    game.p1scores = game_info["p1scores"] if "p1scores" in game_info else []
+    game.p2scores = game_info["p2scores"] if "p2scores" in game_info else []
+    game.p3scores = game_info["p3scores"] if "p3scores" in game_info else []
+    game.cube_index = game_info["cube_index"] if "cube_index" in game_info else []
+    game.resources = game_info["resources"] if "resources" in game_info else []
+    game.goal = game_info["goal"] if "goal" in game_info else []
+    game.required = game_info["required"] if "required" in game_info else []
+    game.permitted = game_info["permitted"] if "permitted" in game_info else []
+    game.forbidden = game_info["forbidden"] if "forbidden" in game_info else []
+    game.turn = game_info["turn"] if "turn" in game_info else None
 
     equations.db.session.add(game)
     equations.db.session.commit()
