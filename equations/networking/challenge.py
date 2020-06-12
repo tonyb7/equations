@@ -250,6 +250,7 @@ def handle_no_goal_siding(agreed):
         if rooms_info[room]["endgame"]["challenger"] is None:
             emit("end_shake_no_goal", room=room)
             rooms_info[room]["shake_ongoing"] = False
+            rooms_info[room]["endgame"]["endgame_stage"] = "no_goal_finished"
             return
 
     msg_diff = "" if not agreed else "not "

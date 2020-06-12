@@ -72,6 +72,8 @@ function registerSocketCallbacks(name) {
             initializeBoardCallbacks(socket, show_bonus_for(game, name));
             registerGoalSetting(socket, name, game['players'][game['turn']], !game["goalset"]);
             updateClientOnEndgame(socket, name, game['endgame'], game['players']);
+
+            console.log("challenge recorded: ", game['challenge']);
             if (game['challenge'] === "no_goal") {
                 hideGoalSettingButtons();
             }

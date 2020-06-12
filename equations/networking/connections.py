@@ -43,16 +43,6 @@ def register_client(player_info):
     rejoin = (mode == equations.data.REJOINED_MODE)
     joined_as_player = rejoin or (mode == equations.data.PLAYER_MODE)
 
-    if not joined_as_player and rooms_info[room]['game_started']:
-        # Render every visual aspect of the board correctly for a spectator.
-        # Required only if game has started
-        assert mode == equations.data.SPECTATOR_MODE
-        emit("render_spectator_state", rooms_info[room])
-    if joined_as_player:
-        # Joined as player. Clientside should render visuals as well as register
-        # callbacks as appropriate (according to whether game has started)
-        emit("render_player_state", rooms_info[room])
-
     rejoin_str = "rejoined" if rejoin else "joined"
     spectator_str = "" if joined_as_player else " as spectator"
     emit("server_message", f"{name} has {rejoin_str}{spectator_str}.", room=room)
@@ -63,6 +53,16 @@ def register_client(player_info):
         people = ", ".join(list(set([socket_info[x]['name'] for x in rooms_info[room]["sockets"]])))
         emit("server_message", people_message + people, room=room)
 
+    if not joined_as_player and rooms_info[room]['game_started']:
+        # Render every visual aspect of the board correctly for a spectator.
+        # Required only if game has started
+        assert mode == equations.data.SPECTATOR_MODE
+        emit("render_spectator_state", rooms_info[room])
+    if joined_as_player:
+        # Joined as player. Clientside should render visuals as well as register
+        # callbacks as appropriate (according to whether game has started)
+        emit("render_player_state", rooms_info[room])
+        
     if rooms_info[room]["game_finished"]:
         emit("server_message", "This game has finished.", room=room)
 

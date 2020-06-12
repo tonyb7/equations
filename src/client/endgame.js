@@ -2,18 +2,30 @@
 
 import { appendServerMessage, appendSidingOptions, 
     appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
-    appendStartNewShakeButton, appendNoGoalButtons } from './message_utils';
+    appendStartNewShakeButton, appendNoGoalButtons,
+    appendEndShakeNoGoal } from './message_utils';
 import { deregisterBoardCallbacks } from './callbacks';
 import { addScoreboardScore, updateTurnText } from './board';
 
+
+const challengeTextMap = new Map([
+    ["a_flub", "Challenge Now"],
+    ["p_flub", "Challenge Never"],
+    ["no_goal", "No Goal Declared"],
+]);
 
 export function updateClientOnEndgame(socket, name, endgame_info, players) {
     if (!endgame_info) {
         return;
     }
 
+    updateTurnText(challengeTextMap.get(endgame_info["challenge"]));
+
     if (endgame_info["endgame_stage"] === "finished") {
         handleNextShakePrompt(socket, name, players);
+    }
+    else if (endgame_info["endgame_stage"] === "no_goal_finished") {
+        handleNextShakePromptNoGoal(socket, name, players);
     }
     else {
         printEndgameState(endgame_info);
@@ -51,12 +63,6 @@ function checkForRejectionAssents(socket, name, endgame_info) {
         }
     }
 }
-
-const challengeTextMap = new Map([
-    ["a_flub", "Challenge Now"],
-    ["p_flub", "Challenge Never"],
-    ["no_goal", "Challenge No Goal"],
-]);
 
 function printEndgameState(endgame_info) {
     let challenge = endgame_info["challenge"];
@@ -216,5 +222,15 @@ function handleNextShakePrompt(socket, name, players) {
     }
     else {
         appendServerMessage("Waiting for players to start a new shake...");
+    }
+}
+
+function handleNextShakePromptNoGoal(socket, name, players) {
+    if (players.includes(name)) {
+        appendServerMessage("Click here to restart the shake: ");
+        appendEndShakeNoGoal(socket);
+    }
+    else {
+        appendServerMessage("Waiting for players to restart the shake...");
     }
 }
