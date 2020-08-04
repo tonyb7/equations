@@ -1,10 +1,14 @@
-
 body {
     text-align: center;
+    background-color: #00274C;
 }
 
 h1 {
     text-align: center;
+}
+
+img {
+    width: 50%;
 }
 
 #join-options {
@@ -42,3 +46,5 @@ a {
     margin-top: 15vh;
     text-align: center;
 }
+
+

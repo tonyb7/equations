@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-
+    <img src="/static/images/background.jpg">
+    
     {% if not logged_in %}
         <div id="join-options">
             <button id="login" onclick="window.location.href='/login/'">Log In</button>
