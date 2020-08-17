@@ -8,3 +8,6 @@ from equations.views.accounts import show_create
 
 from equations.views.groups import show_groups
 from equations.views.groups import show_group
+from equations.views.groups import join_group
+from equations.views.groups import leave_group
+from equations.views.groups import create_group

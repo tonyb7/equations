@@ -3,6 +3,8 @@
 import flask
 import equations
 from equations.models import Groups
+import copy
+import re
 
 @equations.app.route("/groups/", methods=['GET'])
 def show_groups():
@@ -26,6 +28,27 @@ def show_groups():
 
     return flask.render_template("groups.html", **context)
 
+def construct_group_context(group):
+    """Create context var from a group retrieved from db."""
+    is_owner = False
+    is_player = False
+    if 'username' in flask.session:
+        is_owner = flask.session['username'] in group.owners["owners"]
+        is_player = flask.session['username'] in group.players["players"]
+
+    context = {
+        "id": group.id,
+        "name": group.name,
+        "owners": ", ".join(group.owners["owners"]),
+        "players": ", ".join(group.players["players"]),
+        "tournaments": ", ".join(group.tournaments["tournaments"]),
+        "can_join": not (is_owner or is_player),
+        "can_leave": is_player and not is_owner
+    }
+
+    # print("Constructed group context: ", context)
+    return context
+
 @equations.app.route("/group/<group_id>/", methods=['GET', 'POST'])
 def show_group(group_id):
     group_info = Groups.query.filter_by(id=group_id).first()
@@ -33,12 +56,91 @@ def show_group(group_id):
         flask.flash(f"Group with ID {group_id} doesn't exist!")
         return flask.redirect(flask.url_for('show_index'))
     
-    context = {
-        "id": group_info.id,
-        "name": group_info.name,
-        "owners": ", ".join(group_info.owners["owners"]),
-        "players": ", ".join(group_info.players["players"]),
-        "tournaments": ", ".join(group_info.tournaments["tournaments"]),
-    }
+    return flask.render_template("group.html", **construct_group_context(group_info))
 
-    return flask.render_template("group.html", **context)
+@equations.app.route("/join_group/", methods=['POST'])
+def join_group():
+    if 'username' not in flask.session:
+        flask.flash("Please log in before joining a group.")
+        return flask.redirect(flask.url_for('show_index'))
+        
+    groupid = flask.request.form['groupid']
+    print("Join group called by ", flask.session['username'], " on group ", groupid)
+
+    group = Groups.query.filter_by(id=groupid).first()
+    if group is None:
+        flask.flash(f"Tried to join group with ID {group_id}, but group doesn't exist!")
+        return flask.redirect(flask.url_for('show_index'))
+    
+    player_dict = copy.deepcopy(group.players)
+    player_set = set(player_dict["players"])
+    player_set.add(flask.session['username'])
+    player_dict["players"] = list(player_set)
+    group.players = player_dict
+
+    equations.db.session.commit()
+
+    return flask.redirect(flask.url_for('show_group', group_id=groupid))
+
+@equations.app.route("/leave_group/", methods=['POST'])
+def leave_group():
+    if 'username' not in flask.session:
+        flask.flash("Please log in before leaving a group.")
+        return flask.redirect(flask.url_for('show_index'))
+    
+    groupid = flask.request.form['groupid']
+    group = Groups.query.filter_by(id=groupid).first()
+    if group is None:
+        flask.flash(f"Tried to leave group with ID {group_id}, but group doesn't exist!")
+        return flask.redirect(flask.url_for('show_index'))
+
+    player_dict = copy.deepcopy(group.players)
+    player_set = set(player_dict["players"])
+    player_set.remove(flask.session['username'])
+    player_dict["players"] = list(player_set)
+    group.players = player_dict
+
+    equations.db.session.commit()
+
+    # TODO can there be a race condition between leave_group and join_group??
+
+    return flask.redirect(flask.url_for('show_group', group_id=groupid))
+
+@equations.app.route("/create_group/", methods=['GET', 'POST'])
+def create_group():
+    if 'username' not in flask.session:
+        flask.flash("Please log in before creating a group.")
+        return flask.redirect(flask.url_for('show_index'))
+
+    if flask.request.method == 'POST':
+        groupname = flask.request.form['groupname']
+        groupid = flask.request.form['groupid']
+
+        id_pattern = re.compile("^[a-zA-Z0-9-_]+$")
+        if id_pattern.match(groupid) is None:
+            flask.flash(f"Invalid group id ({groupid}) was provided. Please try again.")
+            return flask.render_template("create_group.html")
+        
+        existing_group = Groups.query.filter_by(id=groupid).first()
+        if existing_group is not None:
+            flask.flash(f"A group with id {groupid} already exists. Please choose another id.")
+            return flask.render_template("create_group.html")
+        
+        owner_json = {
+            "owners": [flask.session['username']]
+        }
+        player_json = {
+            "players": []
+        }
+        tournament_json = {
+            "tournaments": []
+        }
+        new_group = Groups(id=groupid, name=groupname, owners=owner_json, 
+                          players=player_json, tournaments=tournament_json)
+        equations.db.session.add(new_group)
+        equations.db.session.commit()
+
+        return flask.redirect(flask.url_for('show_group', group_id=groupid))
+
+    return flask.render_template("create_group.html")
+
