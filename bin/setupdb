@@ -22,8 +22,14 @@ set -x
 # https://stackabuse.com/using-sqlalchemy-with-flask-and-postgresql/
 # 
 
+dirpath=$(dirname $(realpath $0))
+source $dirpath/env.sh
 export FLASK_APP=equations
 export DATABASE_URL="postgres:///eq_dev"
-flask db init
-flask db migrate
+
+if [ $# -eq 0 ]; then 
+	flask db init
+	flask db migrate
+fi	
+
 flask db upgrade

@@ -57,3 +57,47 @@ class Game(db.Model):
 
     def __repr__(self):
         return f"<Game {nonce}>"
+
+class Groups(db.Model):
+    """A group for tournaments."""
+    __tablename__ = 'groups'
+
+    id = db.Column(db.String(), primary_key=True)
+    name = db.Column(db.String())
+    owners = db.Column(JSON)
+    players = db.Column(JSON)
+    tournaments = db.Column(JSON)
+
+    def __init__(self, id=None, name=None, owners=None, players=None, tournaments=None):
+        if id is not None:
+            self.id = id
+        if name is not None:
+            self.name = name
+        if owners is not None:
+            self.owners = owners
+        if players is not None:
+            self.players = players
+        if tournaments is not None:
+            self.tournaments = tournaments
+
+    def __repr__(self):
+        return f"<Group {self.id}>"
+    
+class Tournaments(db.Model):
+    """Represents a tournament within a group."""
+    __tablename__ = 'tournaments'
+
+    id = db.Column(db.String(), primary_key=True)
+    name = db.Column(db.String())
+    group_id = db.Column(db.String())
+    table_info = db.Column(JSON)
+
+    def __init__(self, id=None, name=None, group_id=None, table_info=None):
+        self.id = id
+        self.name = name
+        self.group_id = group_id
+        self.table_info = table_info
+    
+    def __repr__(self):
+        return f"<Tournament {self.id}"
+

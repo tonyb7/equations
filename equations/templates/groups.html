@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <form id="show-groups" action="/create_group/" method="post" enctype="multipart/form-data">
+        <input type="submit" name="button-text" value="Create New Group"/>
+    </form>
+
+    <table>
+        <tr>
+            <th><b>Group Name</b></th>
+            <th>Group Owners</th>
+        </tr>
+        {% for group in groups %}
+            <tr>
+                <th>{{ group.name }}</th>
+                <th>{{ group.owners }}</th>
+                <th>
+                    <form action="/group/{{ group.id }}/">
+                        <input type="submit" value="View"/>
+                    </form>
+                </th>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

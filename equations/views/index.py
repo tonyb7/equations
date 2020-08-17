@@ -6,7 +6,7 @@ import flask
 import equations
 from equations.data import rooms_info, user_info, MapsLock
 from equations.db_serialize import db_deserialize
-from equations.models import User, Game
+from equations.models import User, Game, Groups
 
 @equations.app.route("/favicon.ico")
 def show_favicon():
