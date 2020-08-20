@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div id="create-tournament">
+        <h2>Create a tournament for group {{ groupname }}</h2>
+        <form action="/create_tournament/{{ groupid }}/" method="post" enctype="multipart/form-data">
+            Tournament Name: <input type="text" name="groupname"/> <br><br>
+            Tournament ID: <input type="text" name="groupid"/> <br><br>
+            (Tournament ID will be used for your URL. No spaces permitted. Only alphanumeric characters, hyphen, and underscore allowed.) <br><br>
+            <input type="submit" name="createtournament" value="Create Tournament"/> <br><br>
+        </form>
+    </div>
+
+{% endblock %}

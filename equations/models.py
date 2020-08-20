@@ -25,6 +25,7 @@ class Game(db.Model):
 
     nonce = db.Column(db.String(), primary_key=True)
     ended = db.Column(db.Boolean, nullable=False)
+    tournament = db.Column(db.String())
     players = db.Column(JSON)
     p1scores = db.Column(JSON)
     p2scores = db.Column(JSON)
@@ -38,11 +39,12 @@ class Game(db.Model):
     turn = db.Column(db.Integer)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, nonce, ended=False, players=None, p1scores=None, p2scores=None,
+    def __init__(self, nonce, ended=False, tournament=None, players=None, p1scores=None, p2scores=None,
                  p3scores=None, cube_index=None, resources=None, goal=None,
                  required=None, permitted=None, forbidden=None, turn=None):
         self.nonce = nonce
         self.ended = ended
+        self.tournament = tournament
         self.players = players
         self.p1scores = p1scores
         self.p2scores = p2scores

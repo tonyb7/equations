@@ -22,11 +22,16 @@
     <body>
         <div id="main">
             <div class="main left">
-                <div class="main left top">
-                    <h3>Equations Game Room</h3>
-                    <p>Welcome <a id="name">{{ name }}</a>!</p>
-                    <p>Share this Room ID for friends to join: <a id="room-nonce">{{ nonce }}</a></p>
-                    <p id="note"></p>
+                <div class="main left top" id="topbar">
+                    <div id="topbar-left">
+                        <a href="/"><button>Home</button></a>
+                    </div>
+                    <div id="topbar-right">
+                        <h3>Equations Game Room</h3>
+                        <p>Welcome <a id="name">{{ name }}</a>!</p>
+                        <p>Share this Room ID for friends to join: <a id="room-nonce">{{ nonce }}</a></p>
+                        <p id="note"></p>
+                    </div>
                 </div>
                 <div class="main left bot">
                     <div class="game">
@@ -142,7 +147,7 @@
                         <div class="resources">
                             <div class="resources heading">
                                 <div id="res-text">
-                                    <p>Resources</p>
+                                    <p></p>
                                 </div>
                                 <div id="res-button">
                                     <button id="bonus-button" class="hidden">Bonus</button>
@@ -212,13 +217,14 @@
                             <div class="buttons-inner" id="buttons-div">
                                 <!-- hidden ones are unimplemented buttons -->
                                 <button id="start_game">Start Game</button> <br/>
-                                <button id="call_judge" class="hidden">Call a Judge</button> <br/>
                                 <button id="flip_timer">Flip Timer</button> <br/>
-                                <button id="claim_warning" class="hidden">Call 10 Second Warning</button> <br/>
-                                <button id="claim_minus_one" class="hidden">Claim -1</button> <br/>
+                                <button id="call_judge" class="hidden">Call a Judge</button> <br/>
                                 <button id="a_flub">Challenge Now</button> <br/>
                                 <button id="p_flub">Challenge Impossible</button> <br/>
                                 <button id="no_goal">Declare No Goal</button> <br/>
+                                <button id="claim_warning" class="hidden">Call 10 Second Warning</button> <br/>
+                                <button id="claim_minus_one" class="hidden">Claim -1</button> <br/>
+                                <button id="leave_game" class="hidden">Leave Game</button> <br/>
                             </div>
                         </div>
                     </div>

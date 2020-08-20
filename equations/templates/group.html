@@ -1,12 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <p>Group ID: {{ id }}</p>
-    <p>Group Name: {{ name }}</p>
-    <p>Owners: {{ owners }}</p>
-    <p>Players: {{ players }}</p>
-    <p>Tournament IDs: {{ tournaments }}</p>
-
     {% if can_join %}
         <form action="/join_group/" method="post" enctype="multipart/form-data">
             <input type="submit" name="buttontext" value="Join this Group"/>
@@ -19,6 +13,16 @@
             <input type="submit" name="buttontext" value="Leave this Group"/>
             <input type="hidden" name="groupid" value="{{ id }}"/>
         </form>
+    {% endif %}
+
+    <p>Group ID: {{ id }}</p>
+    <p>Group Name: {{ name }}</p>
+    <p>Owners: {{ owners }}</p>
+    <p>Players: {{ players }}</p>
+    <p>Tournament IDs: {{ tournaments }}</p>
+
+    {% if is_owner %}
+        <a href="/create_tournament/{{ id }}/"><button>Create a tournament</button></a>
     {% endif %}
 
 {% endblock %}

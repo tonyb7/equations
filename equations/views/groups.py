@@ -43,7 +43,8 @@ def construct_group_context(group):
         "players": ", ".join(group.players["players"]),
         "tournaments": ", ".join(group.tournaments["tournaments"]),
         "can_join": not (is_owner or is_player),
-        "can_leave": is_player and not is_owner
+        "can_leave": is_player and not is_owner,
+        "is_owner": is_owner,
     }
 
     # print("Constructed group context: ", context)
@@ -136,7 +137,7 @@ def create_group():
             "tournaments": []
         }
         new_group = Groups(id=groupid, name=groupname, owners=owner_json, 
-                          players=player_json, tournaments=tournament_json)
+                           players=player_json, tournaments=tournament_json)
         equations.db.session.add(new_group)
         equations.db.session.commit()
 

@@ -59,6 +59,7 @@ def start_shake(new_game, is_restart):
         rooms_info[room] = {
             "game_started": True,
             "game_finished": False,
+            "tournament": None,
             "players": current_players,
             "spectators": rooms_info[room]["spectators"],
             "sockets": rooms_info[room]["sockets"],

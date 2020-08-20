@@ -16,6 +16,7 @@ def db_insert(room, game_info):
     game = games[0]
 
     game.ended = ended
+    game.tournament = game_info["tournament"]
     game.players = game_info["players"]
     game.p1scores = game_info["p1scores"] if "p1scores" in game_info else []
     game.p2scores = game_info["p2scores"] if "p2scores" in game_info else []
@@ -36,6 +37,7 @@ def db_deserialize(db_result):
     game_info = {
         "game_started": db_result.cube_index is not None,
         "game_finished": db_result.ended,
+        "tournament": db_result.tournament,
         "players": db_result.players,
         "spectators": [],
         "sockets": [],
