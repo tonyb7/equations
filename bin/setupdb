@@ -29,7 +29,11 @@ export DATABASE_URL="postgres:///eq_dev"
 
 if [ $# -eq 0 ]; then 
 	flask db init
-	flask db migrate
 fi	
 
+if [ $1 == "update" ]; then
+	flask db stamp head
+fi
+
+flask db migrate
 flask db upgrade

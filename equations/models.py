@@ -39,9 +39,9 @@ class Game(db.Model):
     turn = db.Column(db.Integer)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, nonce, ended=False, tournament=None, players=None, p1scores=None, p2scores=None,
-                 p3scores=None, cube_index=None, resources=None, goal=None,
-                 required=None, permitted=None, forbidden=None, turn=None):
+    def __init__(self, nonce, ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
+                 p3scores=[], cube_index=[], resources=[], goal=[],
+                 required=[], permitted=[], forbidden=[], turn=None):
         self.nonce = nonce
         self.ended = ended
         self.tournament = tournament
@@ -71,16 +71,11 @@ class Groups(db.Model):
     tournaments = db.Column(JSON)
 
     def __init__(self, id=None, name=None, owners=None, players=None, tournaments=None):
-        if id is not None:
-            self.id = id
-        if name is not None:
-            self.name = name
-        if owners is not None:
-            self.owners = owners
-        if players is not None:
-            self.players = players
-        if tournaments is not None:
-            self.tournaments = tournaments
+        self.id = id
+        self.name = name
+        self.owners = owners
+        self.players = players
+        self.tournaments = tournaments
 
     def __repr__(self):
         return f"<Group {self.id}>"

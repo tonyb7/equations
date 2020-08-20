@@ -2,9 +2,10 @@
 
 import os
 import uuid
+import copy
 import flask
 import equations
-from equations.data import rooms_info, MapsLock
+from equations.data import rooms_info, user_info, MapsLock
 from equations.models import Game
 
 @equations.app.route("/favicon.ico")
@@ -29,7 +30,9 @@ def show_index():
     # Generate a list of the rooms a user is currently in.
     MapsLock()
     if context['username'] in user_info:
-        gamerooms = user_info[context['username']]["latest_socketids"].keys()
+        gamerooms = list(user_info[context['username']]["latest_socketids"].keys())
+        print(f"Rooms user {context['username']} is currently in: ", gamerooms)
+
         for gameroom in gamerooms:
             if gameroom in rooms_info and rooms_info[gameroom]["game_started"] \
                     and not rooms_info[gameroom]["game_finished"]:
@@ -87,8 +90,8 @@ def join_game():
                 flask.flash(f"The room you tried to join ({room}) is part of a tournament, "
                             " so you cannot join as player!")
                 return flask.redirect(flask.url_for('show_index'))
-            
-            game_started = game_info.cube_index is not None
+
+            game_started = len(game_info.cube_index) > 0
             if game_started or game_info.ended or len(game_info.players) >= 3:
                 flask.flash(f"You cannot join as a player in that room ({room}) "
                          "because either the game has started, the game has ended,  "
@@ -97,10 +100,12 @@ def join_game():
             
             # At this point, it is possible to join as a player. 
             # Add this user as a player in this game, and commit to the database.
-            game_info.players.append(name)
+            player_list = copy.deepcopy(game_info.players)
+            player_list.append(name)
+            game_info.players = player_list
             equations.db.session.commit()
     
-    flask.redirect(flask.url_for('show_game', nonce=room))
+    return flask.redirect(flask.url_for('show_game', nonce=room))
 
 @equations.app.route("/game/<nonce>/", methods=['GET'])
 def show_game(nonce):

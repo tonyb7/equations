@@ -44,13 +44,14 @@ def register_client(player_info):
     if not is_player and name not in rooms_info[room]["spectators"]:
         rooms_info[room]["spectators"].append(name)
     
-    if user not in user_info:
+    if name not in user_info:
         user_info[name] = {
             "latest_socketids": {},
         }
     if room not in user_info[name]["latest_socketids"]:
         user_info[name]["latest_socketids"][room] = []
     user_info[name]["latest_socketids"][room].append(socketid)
+    print("User info: ", user_info)
 
     join_room(room)
 
@@ -61,6 +62,8 @@ def register_client(player_info):
     join_msg = "as a player" if is_player else "as a spectator"
     emit("server_message", f"{name} has connected {join_msg}.", room=room)
     emit("new_player", rooms_info[room]["players"], room=room)
+
+    print(f"Connected to room {room} with the following rooms_info: {rooms_info[room]}")
     
     if len(rooms_info[room]["spectators"]) > 0:
         people_message = "People in this room: "
@@ -125,10 +128,15 @@ def on_disconnect():
                "still has another connection to the room open")
 
     rooms_info[room]["sockets"].remove(socketid)
+    print(f"Sockets left in room {room}: {len(rooms_info[room]['sockets'])}")
+
     if len(rooms_info[room]["sockets"]) == 0:
         # If all players and spectators leave a non-tournament match before the 
         # game has started, then game is deleted.
-        if not rooms_info[room]["game_started"] and len(rooms_info[room]["tournament"]) == 0:
+
+        print(f"Has game started? {rooms_info[room]['game_started']}, tournament: {rooms_info[room]['tournament']}")
+
+        if not rooms_info[room]["game_started"] and rooms_info[room]["tournament"] is None:
             del rooms_info[room]
             game = Game.query.filter_by(nonce=room).first()
             assert game is not None
