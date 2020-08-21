@@ -144,3 +144,8 @@ def on_disconnect():
             equations.db.session.delete(game)
             equations.db.session.commit()
 
+@equations.socketio.on('leave_game')
+def on_leave():
+    """Handle when a player leaves a non-tournament game before game starts."""
+    print("on_leave triggered")
+
