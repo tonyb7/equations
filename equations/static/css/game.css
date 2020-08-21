@@ -374,7 +374,7 @@ body {
 
 .resources {
     /* background-color: #818AA3; */
-    background-image: url(wood-horizontal.jpg);
+    background-image: url(../images/wood-horizontal.jpg);
     height: 30%;
 
     display: flex;
