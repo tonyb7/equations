@@ -11,3 +11,7 @@ from equations.views.groups import show_group
 from equations.views.groups import join_group
 from equations.views.groups import leave_group
 from equations.views.groups import create_group
+
+from equations.views.tournaments import create_tournament
+from equations.views.tournaments import edit_tournament
+from equations.views.tournaments import show_tournament

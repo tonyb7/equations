@@ -89,7 +89,7 @@ class Tournaments(db.Model):
     group_id = db.Column(db.String())
     table_info = db.Column(JSON)
 
-    def __init__(self, id=None, name=None, group_id=None, table_info=None):
+    def __init__(self, id=None, name=None, group_id=None, table_info={}):
         self.id = id
         self.name = name
         self.group_id = group_id

@@ -19,10 +19,26 @@
     <p>Group Name: {{ name }}</p>
     <p>Owners: {{ owners }}</p>
     <p>Players: {{ players }}</p>
-    <p>Tournament IDs: {{ tournaments }}</p>
 
     {% if is_owner %}
         <a href="/create_tournament/{{ id }}/"><button>Create a tournament</button></a>
+        <a href="/tournament/create/{{ id }}/"><button>Test Conflict</button></a>
     {% endif %}
+
+    <table>
+        <tr>
+            <th><u>Tournament ID</u></th>
+            <th><u>Tournament Name</u></th>
+        </tr>
+        {% for tournament in tournaments %}
+            <tr>
+                <th>{{ tournament.id }}</th>
+                <th>{{ tournament.name }}</th>
+                <th>
+                    <a href="/tournament/{{ tournament.id }}/"><button>View</button></a>
+                </th>
+            </tr>
+        {% endfor %}
+    </table>
 
 {% endblock %}

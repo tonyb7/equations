@@ -2,7 +2,7 @@
 
 import flask
 import equations
-from equations.models import Groups
+from equations.models import Groups, Tournaments
 import copy
 import re
 
@@ -41,11 +41,20 @@ def construct_group_context(group):
         "name": group.name,
         "owners": ", ".join(group.owners["owners"]),
         "players": ", ".join(group.players["players"]),
-        "tournaments": ", ".join(group.tournaments["tournaments"]),
+        "tournaments": [],
         "can_join": not (is_owner or is_player),
         "can_leave": is_player and not is_owner,
         "is_owner": is_owner,
     }
+
+    for tourid in group.tournaments["tournaments"]:
+        tournament = Tournaments.query.filter_by(id=tourid).first()
+        assert tournament is not None
+        tour_dict = {
+            "id": tournament.id,
+            "name": tournament.name,
+        }
+        context["tournaments"].append(tour_dict)
 
     # print("Constructed group context: ", context)
     return context
