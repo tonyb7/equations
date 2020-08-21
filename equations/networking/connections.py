@@ -1,5 +1,6 @@
 """Handle socket connects and disconnects."""
 
+import copy
 import flask
 import equations
 from equations.data import rooms_info, user_info, socket_info, MapsLock, get_name_and_room
@@ -46,7 +47,8 @@ def register_client(player_info):
     
     if name not in user_info:
         user_info[name] = {
-            "latest_socketids": {},
+            "latest_socketids": {},     # maps room -> array of socket ids
+            "leave_requests": set(),    # set of rooms where leave_room was requested
         }
     if room not in user_info[name]["latest_socketids"]:
         user_info[name]["latest_socketids"][room] = []
@@ -114,6 +116,25 @@ def on_disconnect():
         if username in rooms_info[room]['spectators']:
             rooms_info[room]['spectators'].remove(username)
         
+        # Leave the room if the player requested to leave the room, and the game hasn't started yet.
+        if username in rooms_info[room]['players'] and room in user_info[username]['leave_requests'] \
+                and not rooms_info[room]['game_started']:
+            # Button should not be clickable if this is a tournament match
+            assert rooms_info[room]['tournament'] is None
+            # Remove the user as a player from the database
+            game = Game.query.filter_by(nonce=room).first()
+            assert game is not None
+            player_list = copy.deepcopy(game.players)
+            player_list.remove(username)
+            game.players = player_list
+            equations.db.session.commit()
+            # Remove room from this user's leave requests -- it was used up
+            user_info[username]['leave_requests'].remove(room)
+            # Remove player from rooms_info and report to the clientside
+            rooms_info[room]['players'].remove(username)
+            emit("player_left", rooms_info[room]["players"], room=room)
+            emit("server_message", f"{username} is no longer a player in this game.")
+        
         # Unmap user if he/she has not more socket connections.
         # User could still be a player in a game.
         if len(user_info[username]["latest_socketids"]) == 0:
@@ -133,9 +154,7 @@ def on_disconnect():
     if len(rooms_info[room]["sockets"]) == 0:
         # If all players and spectators leave a non-tournament match before the 
         # game has started, then game is deleted.
-
         print(f"Has game started? {rooms_info[room]['game_started']}, tournament: {rooms_info[room]['tournament']}")
-
         if not rooms_info[room]["game_started"] and rooms_info[room]["tournament"] is None:
             del rooms_info[room]
             game = Game.query.filter_by(nonce=room).first()
@@ -148,5 +167,6 @@ def on_disconnect():
 def on_leave():
     """Handle when a player chooses to leave a non-tournament game before game starts."""
     print("on_leave triggered")
-    # TODO
-
+    [name, room] = get_name_and_room(flask.request.sid)
+    MapsLock()
+    user_info[name]["leave_requests"].add(room)
