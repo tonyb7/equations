@@ -146,6 +146,7 @@ def on_disconnect():
 
 @equations.socketio.on('leave_game')
 def on_leave():
-    """Handle when a player leaves a non-tournament game before game starts."""
+    """Handle when a player chooses to leave a non-tournament game before game starts."""
     print("on_leave triggered")
+    # TODO
 
