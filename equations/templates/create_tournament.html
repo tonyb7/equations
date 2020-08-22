@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div id="create-tournament">
+        <h2>Create a tournament for {{ groupname }}</h2>
+        <p>A tournament is a collection of games which are organized under a group.
+            The creator will be able to assign players to tables, and the players
+            should be able to view their assigned games and go to them with the click
+            of a button. Judges should have a view of all the games going on, and be
+            able to go to the games where players are requesting help. Scores at the end
+            of the round are collected automatically. Tournaments are created by the  group's owners. 
+            Only members of a group can participate in a group's tournament.</p> <br>
+        <form action="/create_tournament/{{ groupid }}/" method="post" enctype="multipart/form-data">
+            Tournament Name: <input type="text" name="tournamentname"/> <br><br>
+            Tournament ID: <input type="text" name="tournamentid"/> <br><br>
+            (Tournament ID will be used for your URL. No spaces permitted. Only alphanumeric characters, hyphen, and underscore allowed.) <br><br>
+            <input type="submit" name="createtournament" value="Create Tournament"/> <br><br>
+        </form>
+    </div>
+
+{% endblock %}

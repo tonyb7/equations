@@ -20,6 +20,24 @@ export function registerStartButton(socket) {
     };
 }
 
+export function registerLeaveButton(socket, game, name) {
+    if (!game['tournament'] && game['players'].includes(name)) {
+        let leave_button = document.createElement("button");
+        leave_button.innerHTML = "Leave Game";
+        leave_button.onclick = () => {
+            socket.emit("leave_game");
+        };
+
+        let leave_anchor = document.createElement("a");
+        leave_anchor.id = "leave_game_anchor";
+        leave_anchor.href = "/";
+        leave_anchor.appendChild(leave_button);
+
+        let buttons = document.getElementById("buttons-div");
+        buttons.appendChild(leave_anchor);
+    }
+}
+
 export const registerGoalSetting = (socket, name, firstmover, firstmove) => {
     initializeGoalsettingGlobals();
     window.onresize = resizeGoalsettingCanvas;

@@ -47,4 +47,16 @@ a {
     text-align: center;
 }
 
+table {
+    margin: auto;
+}
 
+table th {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+    padding: 10px;
+}
+
+table th button {
+    margin-top: 10px;
+}

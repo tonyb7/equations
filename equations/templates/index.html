@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+    <br/><br/>
     <img src="/static/images/background.jpg">
     
     {% if not logged_in %}
@@ -24,13 +25,14 @@
         <div id="join-options">    
             <button id="create-button">Create Game</button>
             <button id="join-button">Join Game</button>
+            <button id="groups-button">Groups & Tournaments</button>
         </div>
         <div id='join-new'>
             <form id="join-new" action="/create/" method="post" enctype="multipart/form-data">
                 <!-- <div class="user-inputs">
                     <p><b>Enter your name: </b><input type='text' name='name'/></p> 
                 </div> -->
-                <input type="submit" name="create" value="Create Room"/>
+                <input type="submit" name="create" value="Create Game"/>
             </form>
         </div>
         <div id='join-existing'>
@@ -43,6 +45,9 @@
                 <input type="submit" name="join" value="Join as Spectator"/>
             </form>
         </div>
+        <div id="join-groups">
+            <a href="/groups/"><button>View Groups</button></a>
+        </div>
 
         <div id="logout-button">
             <button id="logout" onclick="window.location.href='/logout/'">Log Out</button>
@@ -53,15 +58,24 @@
             $(function() {
                 $('#join-existing').slideUp(0);
                 $('#join-new').slideUp(0);
+                $('#join-groups').slideUp(0);
 
                 $('#create-button').on('click', function() {
                     $('#join-existing').slideUp(0);
                     $('#join-new').slideDown(300);
+                    $('#join-groups').slideUp(0);
                 });
 
                 $('#join-button').on('click', function() {
                     $('#join-new').slideUp(0);
                     $('#join-existing').slideDown(300);
+                    $('#join-groups').slideUp(0);
+                });
+
+                $('#groups-button').on('click', function() {
+                    $('#join-new').slideUp(0);
+                    $('#join-existing').slideUp(0);
+                    $('#join-groups').slideDown(300);
                 });
             });
         </script>

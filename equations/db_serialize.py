@@ -16,6 +16,7 @@ def db_insert(room, game_info):
     game = games[0]
 
     game.ended = ended
+    game.tournament = game_info["tournament"]
     game.players = game_info["players"]
     game.p1scores = game_info["p1scores"] if "p1scores" in game_info else []
     game.p2scores = game_info["p2scores"] if "p2scores" in game_info else []
@@ -34,8 +35,9 @@ def db_insert(room, game_info):
 def db_deserialize(db_result):
     """Translate db result to game_info dict. Kinda dupe down there."""
     game_info = {
-        "game_started": db_result.cube_index is not None,
+        "game_started": len(db_result.cube_index) > 0,
         "game_finished": db_result.ended,
+        "tournament": db_result.tournament,
         "players": db_result.players,
         "spectators": [],
         "sockets": [],
@@ -50,7 +52,7 @@ def db_deserialize(db_result):
         "permitted":  db_result.permitted,
         "forbidden":  db_result.forbidden, 
         "turn":  db_result.turn,
-        "goalset": len(db_result.goal) > 0,
+        "goalset": False if db_result.goal is None else len(db_result.goal) > 0,
         "num_timer_flips": 0,
         "10s_warning_called": False,
         "challenge": None,

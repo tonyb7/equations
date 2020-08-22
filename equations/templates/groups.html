@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <a href="/create_group/"><button>Create New Group</button></a>
+
+    <table>
+        <tr>
+            <th><u>Group ID</u></th>
+            <th><u>Group Name</u></th>
+            <th><u>Group Owners</u></th>
+        </tr>
+        {% for group in groups %}
+            <tr>
+                <th>{{ group.id }}</th>
+                <th>{{ group.name }}</th>
+                <th>{{ group.owners }}</th>
+                <th>
+                    <a href="/group/{{ group.id }}/"><button>View</button></a>
+                </th>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

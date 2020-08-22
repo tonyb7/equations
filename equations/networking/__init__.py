@@ -12,6 +12,7 @@ from equations.networking.challenge import handle_game_over
 from equations.networking.connections import on_connect
 from equations.networking.connections import register_client
 from equations.networking.connections import on_disconnect
+from equations.networking.connections import on_leave
 
 from equations.networking.game_flow import handle_start_game
 from equations.networking.game_flow import handle_new_shake

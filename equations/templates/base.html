@@ -5,12 +5,12 @@
         <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     </head>
     <body>
-        <h1>Welcome to Equations Online</h1>
+        <h1><a href="/">Equations Online</a></h1>
         <!-- <script async src="/game.bundle.js"></script> -->
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                    <p class='flashed'>Oops! {{ message }}</p>
+                    <p class='flashed'>{{ message }}</p>
                 {% endfor %}
             {% endif %}
         {% endwith %}

@@ -25,6 +25,7 @@ class Game(db.Model):
 
     nonce = db.Column(db.String(), primary_key=True)
     ended = db.Column(db.Boolean, nullable=False)
+    tournament = db.Column(db.String())
     players = db.Column(JSON)
     p1scores = db.Column(JSON)
     p2scores = db.Column(JSON)
@@ -38,11 +39,12 @@ class Game(db.Model):
     turn = db.Column(db.Integer)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, nonce, ended=False, players=None, p1scores=None, p2scores=None,
-                 p3scores=None, cube_index=None, resources=None, goal=None,
-                 required=None, permitted=None, forbidden=None, turn=None):
+    def __init__(self, nonce, ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
+                 p3scores=[], cube_index=[], resources=[], goal=[],
+                 required=[], permitted=[], forbidden=[], turn=None):
         self.nonce = nonce
         self.ended = ended
+        self.tournament = tournament
         self.players = players
         self.p1scores = p1scores
         self.p2scores = p2scores
@@ -57,3 +59,49 @@ class Game(db.Model):
 
     def __repr__(self):
         return f"<Game {nonce}>"
+
+class Groups(db.Model):
+    """A group describes a set of players under a number of coaches. For example,
+    there can be a Tappan AG group, or a Nationals 2021 group. Tournaments right
+    now can only be created under a group. For example, for a Saturday tournament, 
+    a coach can create a group named 'Region B Middle' and create a tournament 
+    within that group called 'December Saturday Tournament'."""
+    __tablename__ = 'groups'
+
+    id = db.Column(db.String(), primary_key=True)
+    name = db.Column(db.String())
+    owners = db.Column(JSON)
+    players = db.Column(JSON)
+    tournaments = db.Column(JSON)
+
+    def __init__(self, id=None, name=None, owners=None, players=None, tournaments=None):
+        self.id = id
+        self.name = name
+        self.owners = owners
+        self.players = players
+        self.tournaments = tournaments
+
+    def __repr__(self):
+        return f"<Group {self.id}>"
+    
+class Tournaments(db.Model):
+    """Represents a tournament within a group. Tournaments are created by the 
+    group's owners. Only members of a group can participate in a group's 
+    tournament. Database describes information about the tournament's id, name, 
+    and group, as well as the tables and games within the tournament."""
+    __tablename__ = 'tournaments'
+
+    id = db.Column(db.String(), primary_key=True)
+    name = db.Column(db.String())
+    group_id = db.Column(db.String())
+    table_info = db.Column(JSON)
+
+    def __init__(self, id=None, name=None, group_id=None, table_info={}):
+        self.id = id
+        self.name = name
+        self.group_id = group_id
+        self.table_info = table_info
+    
+    def __repr__(self):
+        return f"<Tournament {self.id}"
+

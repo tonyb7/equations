@@ -1,10 +1,12 @@
 """Handle socket connects and disconnects."""
 
+import copy
 import flask
 import equations
 from equations.data import rooms_info, user_info, socket_info, MapsLock, get_name_and_room
-from equations.db_serialize import db_insert
+from equations.db_serialize import db_insert, db_deserialize
 from flask_socketio import join_room, leave_room, emit
+from equations.models import Game
 
 
 @equations.socketio.on('connect')
@@ -18,14 +20,12 @@ def register_client(player_info):
     socketid = flask.request.sid
     name = player_info['name']
     room = player_info['room']
-    
-    # Guaranteed by index.py's join_game and create_game
-    # Will fail when I try to do my old debugging trick, where I hard refresh
-    # on a gamepage after restarting the server.
-    assert name in user_info
-    assert room in rooms_info
 
     print(f"Socket {socketid} associated with {name} wants to join room {room}")
+
+    ############################################################################
+    #   Modify maps, and join socketid room (with the join_room call).
+    ############################################################################
 
     MapsLock()
     assert socketid not in socket_info
@@ -34,31 +34,49 @@ def register_client(player_info):
         "room": room,
     }
 
-    join_room(room)
-    
-    rooms_info[room]["sockets"].append(socketid)
-    user_info[name]["latest_socketids"][room].append(socketid)
-    
-    mode = user_info[name]["room_modes"][room]
-    rejoin = (mode == equations.data.REJOINED_MODE)
-    joined_as_player = rejoin or (mode == equations.data.PLAYER_MODE)
+    game = Game.query.filter_by(nonce=room).first()
+    assert game is not None
+    is_player = name in game.players
 
-    rejoin_str = "rejoined" if rejoin else "joined"
-    spectator_str = "" if joined_as_player else " as spectator"
-    emit("server_message", f"{name} has {rejoin_str}{spectator_str}.", room=room)
+    if room not in rooms_info:
+        rooms_info[room] = db_deserialize(game)
+    rooms_info[room]["players"] = game.players
+    rooms_info[room]["sockets"].append(socketid)
+    if not is_player and name not in rooms_info[room]["spectators"]:
+        rooms_info[room]["spectators"].append(name)
+    
+    if name not in user_info:
+        user_info[name] = {
+            "latest_socketids": {},     # maps room -> array of socket ids
+            "leave_requests": set(),    # set of rooms where leave_room was requested
+        }
+    if room not in user_info[name]["latest_socketids"]:
+        user_info[name]["latest_socketids"][room] = []
+    user_info[name]["latest_socketids"][room].append(socketid)
+    print("User info: ", user_info)
+
+    join_room(room)
+
+    ############################################################################
+    #   Emit messages to client-side for chat and rendering.
+    ############################################################################
+
+    join_msg = "as a player" if is_player else "as a spectator"
+    emit("server_message", f"{name} has connected {join_msg}.", room=room)
     emit("new_player", rooms_info[room]["players"], room=room)
+
+    print(f"Connected to room {room} with the following rooms_info: {rooms_info[room]}")
     
     if len(rooms_info[room]["spectators"]) > 0:
         people_message = "People in this room: "
         people = ", ".join(list(set([socket_info[x]['name'] for x in rooms_info[room]["sockets"]])))
         emit("server_message", people_message + people, room=room)
 
-    if not joined_as_player and rooms_info[room]['game_started']:
+    if not is_player and rooms_info[room]['game_started']:
         # Render every visual aspect of the board correctly for a spectator.
         # Required only if game has started
-        assert mode == equations.data.SPECTATOR_MODE
         emit("render_spectator_state", rooms_info[room])
-    if joined_as_player:
+    if is_player:
         # Joined as player. Clientside should render visuals as well as register
         # callbacks as appropriate (according to whether game has started)
         emit("render_player_state", rooms_info[room])
@@ -87,62 +105,68 @@ def on_disconnect():
     # Update socket_info
     del socket_info[socketid]
 
-    # Update room info
-    if username in rooms_info[room]['spectators']:
-        # Remove spectators on disconnect. But do not remove player until game finishes.
-        rooms_info[room]['spectators'].remove(username)
-
-    rooms_info[room]["sockets"].remove(socketid)
-    if len(rooms_info[room]["sockets"]) == 0:
-        # If all players and spectators leave, then game is considered finished even if it's not.
-        # TODO Right now this is only way a game ends. When implement timing, may need to reconsider this.
-        if not rooms_info[room]["game_finished"]:
-            rooms_info[room]["game_finished"] = True
-            db_insert(room, rooms_info[room])
-
-            for player in rooms_info[room]["players"]:
-                assert player in user_info
-                assert room in user_info[player]["gamerooms"]
-                user_info[player]["gamerooms"].remove(room)
-
-        del rooms_info[room]
-
-    # Update user_info
-    # On a refresh on a game page, due to delay in socket disconnect, new socket
-    # (most likely) has connected by the time this code runs and (potentially) deletes
-    # the user from the user_info dict. Even if not, worst thing that can happen
-    # is that the game is marked as finished.
-    assert room in user_info[username]["latest_socketids"].keys()
+    # Remove socket from user's maps
     user_info[username]["latest_socketids"][room].remove(socketid)
     if len(user_info[username]["latest_socketids"][room]) == 0:
 
         print(f"{username} is no longer connected to {room}")
         del user_info[username]["latest_socketids"][room]
 
-        assert room in user_info[username]["room_modes"].keys()
-        del user_info[username]["room_modes"][room]
-
-        # If a player leaves before a game is started, then remove him/her as a player
-        if room in rooms_info and not rooms_info[room]["game_started"] \
-                and username in rooms_info[room]["players"]:
-            if room in user_info[username]["gamerooms"]:
-                # Need if statement because could gotten removed above in update rooms_info
-                user_info[username]["gamerooms"].remove(room)
-            if room in rooms_info:
-                rooms_info[room]["players"].remove(username)
-            emit("player_left", rooms_info[room]["players"], room=room)
+        # Remove spectators on disconnect.
+        if username in rooms_info[room]['spectators']:
+            rooms_info[room]['spectators'].remove(username)
         
-        if room in user_info[username]["gamerooms"] and room not in rooms_info:
-            user_info[username]["gamerooms"].remove(room)
-
-        # Unmap user if he/she is not in any rooms and he/she is not playing a game
-        if len(user_info[username]["latest_socketids"]) == 0 and \
-                len(user_info[username]["gamerooms"]) == 0:
+        # Leave the room if the player requested to leave the room, and the game hasn't started yet.
+        if username in rooms_info[room]['players'] and room in user_info[username]['leave_requests'] \
+                and not rooms_info[room]['game_started']:
+            # Button should not be clickable if this is a tournament match
+            assert rooms_info[room]['tournament'] is None
+            # Remove the user as a player from the database
+            game = Game.query.filter_by(nonce=room).first()
+            assert game is not None
+            player_list = copy.deepcopy(game.players)
+            player_list.remove(username)
+            game.players = player_list
+            equations.db.session.commit()
+            # Remove room from this user's leave requests -- it was used up
+            user_info[username]['leave_requests'].remove(room)
+            # Remove player from rooms_info and report to the clientside
+            rooms_info[room]['players'].remove(username)
+            emit("player_left", rooms_info[room]["players"], room=room)
+            emit("server_message", f"{username} is no longer a player in this game.")
+        
+        # Unmap user if he/she has not more socket connections.
+        # User could still be a player in a game.
+        if len(user_info[username]["latest_socketids"]) == 0:
             del user_info[username]
-
-        emit("server_message", f"{username} has left.", room=room)
-        print(f"Client {socketid}: {username} left room {room}")
+        
+        emit("server_message", f"All of {username}'s connections to this room "
+                                "have disconnected.", room=room)
+        print(f"Client {socketid}: {username} completely disconnected from room {room}")
 
     else:
         print(f"Socket {socketid} for user {username} disconnected, but user "
                "still has another connection to the room open")
+
+    rooms_info[room]["sockets"].remove(socketid)
+    print(f"Sockets left in room {room}: {len(rooms_info[room]['sockets'])}")
+
+    if len(rooms_info[room]["sockets"]) == 0:
+        # If all players and spectators leave a non-tournament match before the 
+        # game has started, then game is deleted.
+        print(f"Has game started? {rooms_info[room]['game_started']}, tournament: {rooms_info[room]['tournament']}")
+        if not rooms_info[room]["game_started"] and rooms_info[room]["tournament"] is None:
+            del rooms_info[room]
+            game = Game.query.filter_by(nonce=room).first()
+            assert game is not None
+            print("Deleting game of id ", room)
+            equations.db.session.delete(game)
+            equations.db.session.commit()
+
+@equations.socketio.on('leave_game')
+def on_leave():
+    """Handle when a player chooses to leave a non-tournament game before game starts."""
+    print("on_leave triggered")
+    [name, room] = get_name_and_room(flask.request.sid)
+    MapsLock()
+    user_info[name]["leave_requests"].add(room)
