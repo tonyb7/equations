@@ -28,6 +28,13 @@ Deployment
 
 Running the server
 ================
+
+
+0. Install pre-requisite software
+```
+# On ubuntu/linux
+sudo apt-get install git python3 python3-venv postgresql libpq-dev python3-dev
+```
 1. Download this repo
 ```
 git clone https://github.com/tonyb7/equations.git
