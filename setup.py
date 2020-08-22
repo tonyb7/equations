@@ -34,6 +34,7 @@ setup(
         'six==1.14.0',
         'SQLAlchemy==1.3.17',
         'Werkzeug==1.0.1',
+        'wheel==0.35.1',
     ],
 )
 
