@@ -61,7 +61,11 @@ class Game(db.Model):
         return f"<Game {nonce}>"
 
 class Groups(db.Model):
-    """A group for tournaments."""
+    """A group describes a set of players under a number of coaches. For example,
+    there can be a Tappan AG group, or a Nationals 2021 group. Tournaments right
+    now can only be created under a group. For example, for a Saturday tournament, 
+    a coach can create a group named 'Region B Middle' and create a tournament 
+    within that group called 'December Saturday Tournament'."""
     __tablename__ = 'groups'
 
     id = db.Column(db.String(), primary_key=True)
@@ -81,7 +85,10 @@ class Groups(db.Model):
         return f"<Group {self.id}>"
     
 class Tournaments(db.Model):
-    """Represents a tournament within a group."""
+    """Represents a tournament within a group. Tournaments are created by the 
+    group's owners. Only members of a group can participate in a group's 
+    tournament. Database describes information about the tournament's id, name, 
+    and group, as well as the tables and games within the tournament."""
     __tablename__ = 'tournaments'
 
     id = db.Column(db.String(), primary_key=True)

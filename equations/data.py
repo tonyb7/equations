@@ -70,7 +70,6 @@ def get_name_and_room(socketid):
     """Get the username and room associated with a socketid."""
     assert socketid in socket_info
     name = socket_info[socketid]['name']
-    # assert name in user_info
     room = socket_info[socketid]['room']
     return [name, room]
 

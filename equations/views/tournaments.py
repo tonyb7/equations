@@ -43,7 +43,6 @@ def create_tournament(groupid):
         
         new_tour = Tournaments(id=tourid, name=tourname, group_id=groupid)
         equations.db.session.add(new_tour)
-        equations.db.session.commit()
 
         tournament_dict = copy.deepcopy(group.tournaments)
         tournament_dict["tournaments"].append(tourid)
@@ -57,18 +56,20 @@ def create_tournament(groupid):
 @equations.app.route("/tournament/<tourid>/edit/", methods=['GET', 'POST'])
 def edit_tournament(tourid):
 
-    # TODO
-
-    return flask.redirect(flask.url_for('show_tournament', tourid=tourid))
+    # TODO Implement a page for a coach to be able to assign tables
+    
+    return flask.render_template('edit_tournament.html', **{"tourname": tourid})
 
 @equations.app.route("/tournament/<tourid>/", methods=['GET'])
 def show_tournament(tourid):
 
-    # TODO
+    # TODO Implement a page where a tournament's information can be viewed
+    # The table assignments, a button to view the game of each table, etc.
 
     tournament = Tournaments.query.filter_by(id=tourid).first()
     if tournament is None:
         flask.flash(f"Tournament with id {tourid} doesn't exist")
         return flask.redirect(flask.url_for('show_index'))
-    return flask.redirect(flask.url_for('show_group', group_id=tournament.group_id))
+    
+    return flask.render_template('tournament.html', **{"tourname": tournament.name})
 
