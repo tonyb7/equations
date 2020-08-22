@@ -31,7 +31,7 @@ if [ $# -eq 0 ]; then
 	flask db init
 fi	
 
-if [ $1 == "update" ]; then
+if [[ $# -ne 0 ]] && [[ $1 == "update" ]]; then
 	flask db stamp head
 fi
 

@@ -57,6 +57,7 @@ def create_tournament(groupid):
 def edit_tournament(tourid):
 
     # TODO Implement a page for a coach to be able to assign tables
+    # https://github.com/tonyb7/equations/issues/103
     
     return flask.render_template('edit_tournament.html', **{"tourname": tourid})
 
@@ -65,6 +66,7 @@ def show_tournament(tourid):
 
     # TODO Implement a page where a tournament's information can be viewed
     # The table assignments, a button to view the game of each table, etc.
+    # https://github.com/tonyb7/equations/issues/104
 
     tournament = Tournaments.query.filter_by(id=tourid).first()
     if tournament is None:

@@ -56,7 +56,6 @@ def construct_group_context(group):
         }
         context["tournaments"].append(tour_dict)
 
-    # print("Constructed group context: ", context)
     return context
 
 @equations.app.route("/group/<group_id>/", methods=['GET', 'POST'])
@@ -109,11 +108,8 @@ def leave_group():
     player_set.remove(flask.session['username'])
     player_dict["players"] = list(player_set)
     group.players = player_dict
-
     equations.db.session.commit()
-
-    # TODO can there be a race condition between leave_group and join_group??
-
+    
     return flask.redirect(flask.url_for('show_group', group_id=groupid))
 
 @equations.app.route("/create_group/", methods=['GET', 'POST'])

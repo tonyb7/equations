@@ -1,7 +1,6 @@
 
 body {
     background: lightcyan;
-    /* background-image: url(wood-vertical.jpg); */
 }
 
 #main {
@@ -33,7 +32,6 @@ body {
     font-size: 2vw;
     text-align: center;
     font-family: monospace;
-    /* transform: translateY(5%); */
 }
 
 #note {
@@ -132,8 +130,6 @@ body {
 .main.left.bot {
     width: auto;
     height: 83%;
-    /* background-image: url(wood-horizontal.jpg); */
-    /* background-color: blue; */
 
     display: flex;
     flex-direction: row;
@@ -147,7 +143,6 @@ body {
 .info {
     height: auto;
     width: 25%;
-    /* background-image: url(wood-vertical.jpg); */
     background-color: #2B4162;
 
     display: flex;
@@ -156,8 +151,6 @@ body {
 }
 
 .stats {
-    /* background-color: #818AA3; */
-
     height: 30%;
 
     display: flex;
@@ -214,15 +207,8 @@ body {
 }
 
 .time-elapsed #elapsed-text {
-    /* border: dotted;
-    border-color: white; */
     width: 45%;
 }
-
-/* .time-elapsed #elapsed {
-    /* border: dotted;
-    border-color: white;
-} */
 
 .scores table {
     height: 85%;
@@ -236,18 +222,10 @@ body {
 
     table-layout: fixed;
     transform: translate(2.5%, -27%);
-
-    /* border: dotted;
-    border-color: white; */
-
 }
 
 .scores table th {
-    /* border: dotted;
-    border-color: white; */
-
     text-align: center;
-    /* overflow-wrap: break-word; */
     overflow-x: scroll;
     font-size: 0.7vw;
 }
@@ -258,11 +236,8 @@ body {
 }
 
 .time {
-    /* background-color: #99B2DD; */
     height: 20%;
     position: relative;
-
-    /* overflow: scroll; */
 }
 
 .time.inner {
@@ -294,20 +269,13 @@ body {
     display: flex;
     flex-direction: row;
     align-items: stretch;
-
-    /* border: dotted;
-    border-color: white; */
 }
 
 .time-inner-first #turn-text {
-    /* border: dotted;
-    border-color: white; */
     width: 37%;
 }
 
 .time-inner-first #turn {
-    /* border: dotted;
-    border-color: white; */
     width: 63%;
     overflow: hidden;
 }
@@ -337,7 +305,6 @@ body {
 }
 
 .buttons {
-    /* background-color: #99B2DD; */
     height: 50%;
     position: relative;
 }
@@ -373,7 +340,6 @@ body {
 }
 
 .resources {
-    /* background-color: #818AA3; */
     background-image: url(../images/wood-horizontal.jpg);
     height: 30%;
 
@@ -425,9 +391,6 @@ body {
 }
 
 .resources.cubes.playable-area {
-    /* border: dotted;
-    border-color: white; */
-
     height: 88%;
     width: 97%;
 
@@ -448,11 +411,7 @@ body {
 }
 
 .resources.cubes.playable-area th {
-    /* border: dotted;
-    border-color: white; */
-
     width: 8.3%;
-
 }
 
 .resources.cubes.playable-area th img {
@@ -552,14 +511,7 @@ body {
     border-color: white;
 }
 
-/* .cube-size {
-    width: 3vw;
-    height: 3vw;
-} */
-
 .goal-area.goal-cubes.play-area #btn-div {
-    /* border:dotted; border-color:white; */
-
     margin-right: 2vw;
 }
 
@@ -632,8 +584,6 @@ body {
 }
 
 .play-sector.cubes.playable-area table td {
-    /* border: dotted;
-    border-color: white; */
     height: 3vw;
     width: 3vw;
 }
@@ -654,13 +604,6 @@ body {
 .hidden {
     display: none;
 }
-
-/* .goal-highlight {
-    border: solid;
-    border-width: 0.15vw;
-    border-color: white;
-    border-radius: 0.5vw;
-} */
 
 .rounded-corners {
     border-radius: 0.5vw;
