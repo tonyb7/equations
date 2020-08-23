@@ -80,7 +80,7 @@ def join_game():
 
     game_info = Game.query.filter_by(nonce=room).first()
     if game_info is None:
-        flask.flash(f"The Room ID you entered ({room}) does not exist!")
+        flask.flash(f"A room with the ID you entered ({room}) does not exist!")
         return flask.redirect(flask.url_for('show_index'))
     
     # Perform checks to see if it is possible to join as a player

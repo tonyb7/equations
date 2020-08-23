@@ -5,10 +5,6 @@ set -Eeuo pipefail
 
 dirpath=$(dirname $(realpath $0))
 
-if [ ! -f $dirpath/../var/equations.sqlite3 ]; then
-	$dirpath/equationsdb create
-fi
-
 set -x
 
 source $dirpath/env.sh
