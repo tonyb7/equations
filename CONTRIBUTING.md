@@ -63,7 +63,7 @@ npm install .
 npm run build
 ```
 
-5. Set up the database. See the [PostgreSQL Setup](#postgresql-setup) section, especially if you are using Windows or Linux. Once the database is set up, run the following script:
+5. Set up the database. See the [PostgreSQL Setup](#postgresql-setup) section. Once the database is set up, run the following script:
 ```
 ./bin/setupdb
 ```
@@ -112,7 +112,7 @@ When it asks for a name, name the user with the same name as your Linux username
 
 8. While still in this new shell, run `psql`.
 
-9. A new prompt should have opened. In this prompt, run `create database <linux username>;` (same Linux username as from Step 6; don't forget the semicolon at the end).
+9. A new prompt should have opened. In this prompt, run `create database <linux username>;` (this is the same Linux username as from Step 6; don't forget the semicolon at the end).
  
 10. Quit the psql shell with `\q`, and then exit the new shell we created with `exit`.
 
