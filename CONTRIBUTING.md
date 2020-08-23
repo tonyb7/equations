@@ -97,7 +97,8 @@ You should see something like `10/main (port 5432): down`. If the port is not `5
 ```
 sudo service postgresql start
 ```
-If this step fails, that means another process is listening to port 5432 on your computer. If this happens, it is likely another version of Postgres you have on your computer, so make sure you've completed Step 2. 
+If this step fails, that means another process is listening to port 5432 on your computer. If this happens, the problem is likely due to another version of Postgres you have running on your computer, so make sure you've completed Step 2. 
+
 If this step succeeded, then after running `sudo service postgresql status` again, you should see a message like: `10/main (port 5432): online`.
 
 6. Now we need to make `postgresql` recognize your Linux user. To do this, first run `echo $USER` to get your Linux username. Remember this. Then, log in to a new shell as the postgres user with:
