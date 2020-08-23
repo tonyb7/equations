@@ -63,7 +63,7 @@ npm install .
 npm run build
 ```
 
-5. Set up the database. Please read the [PostgreSQL Setup](#postgresql-setup) section. Once the database is set up, run the following script:
+5. Set up the database. Please read the [PostgreSQL Setup](#postgresql-setup) section for instructions. Once the database is set up, run the following script:
 ```
 ./bin/setupdb
 ```
