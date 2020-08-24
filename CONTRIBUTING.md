@@ -78,7 +78,7 @@ npm start # (or equivalently, ./bin/run)
 # PostgreSQL Setup
 These set up steps are tailored most specifically towards Windows Subsystem for Linux (WSL) users. Many of these steps apply to Linux users as well. Mac users might be able to skip some of the steps in this section, but they should at least read the comments in the [`bin/run`](https://github.com/tonyb7/equations/blob/master/bin/setupdb) file for setup directions. The end result should be to have a PostgreSQL server listening on port 5432, and to have a database called `eq_dev` created.
 
-1. The first step which might fail for WSL users is the `pip install -e .` command (step 3 in [Running the server](#running-the-server)). To fix this, try changing the line in `setup.py` that says `'psycopg2==2.8.5',` to `'psycopg2-binary==2.8.5',`.  
+1. The first step which might fail for WSL users is the `pip install -e .` command (step 3 in [Running the server](#running-the-server)). If this steps fails for you due to failure of the `psycopg2` installation, try `sudo apt-get install python3.x-dev` (where x depends on your version of Python). If that doesn't work, try `sudo apt-get install libssl-dev`. As a last resort, try changing the line in `setup.py` that says `'psycopg2==2.8.5',` to `'psycopg2-binary==2.8.5',`.  
 
 2. Next, before we install `postgresql`, if you had previously installed a version of `postgresql` from the internet, please uninstall it. On Windows, you can do this by finding going to your `Program Files` folder, navigating into the `PostgreSQL` directories, and then running the uninstaller application.
 
