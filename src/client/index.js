@@ -1,9 +1,14 @@
 // Client entrypoint
 
-import { connect, handleChatEnter } from './networking';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {ChatInput} from './components/ChatInput';
+import { connect } from './networking';
 import { downloadAssets } from './assets';
 
-$(document).ready(handleChatEnter);
+$(document).ready(() => {
+    ReactDOM.render(<ChatInput />, document.getElementById('chat-input'));
+});
 
 downloadAssets()
 .then(connect)
