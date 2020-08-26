@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js",
     "start": "./bin/run",
-    "run": "npm run build && npm start"
+    "run": "npm run build && npm start",
+    "watch": "webpack --watch --info-verbosity verbose --config webpack.config.js "
   },
   "repository": {
     "type": "git",
