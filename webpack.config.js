@@ -8,6 +8,11 @@ module.exports = {
 	filename: "[name].bundle.js",
 	path: path.join(__dirname, '/equations/static/js/'),
   },
+  watchOptions: {
+    ignored: /node_modules/,
+    poll: 1000,
+    aggregateTimeout:500,
+  },
   module: {
     rules: [
       {
