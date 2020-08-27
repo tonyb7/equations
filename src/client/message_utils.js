@@ -1,9 +1,5 @@
 // Helper functions for sending messages
 
-export const cleanInput = (input) => {
-    return $('<div/>').text(input).html();
-}
-
 function appendChatDOM(innerhtml) {
     let new_message = document.createElement('li');
     new_message.innerHTML = innerhtml;

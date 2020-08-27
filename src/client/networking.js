@@ -1,7 +1,7 @@
 // Handle client networking.
 
 import io from 'socket.io-client';
-import { cleanInput, appendMessage, appendServerMessage, appendInstructions, 
+import { appendMessage, appendServerMessage, appendInstructions, 
          printFiveMinWarningMsg, appendEndShakeNoGoal } from './message_utils';
 import { renderResources, initializeScoreboard, addScoreboardScore,
     highlightResourcesCube, unhighlightResourcesCube, updateTurnText, moveCube, 
@@ -167,20 +167,10 @@ function registerSocketCallbacks(name) {
     });
 }
 
-export function handleChatEnter() {
-    let $window = $(window);
-    let $inputMessage = $('.inputMessage');
-    $window.keydown(event => {
-        // enter key was pressed
-        if ($inputMessage.is(":focus") && event.which === 13 && $inputMessage.val().length > 0) {
-            let message = $inputMessage.val();
-            let name = document.getElementById("name").innerHTML;
-            message = cleanInput(message);
+export function sendChatMessage(text) {
+    let name = document.getElementById("name").innerHTML;
 
-            $inputMessage.val('');
-            socket.emit('new_message', {'name': name, 'message': message});
-        }
-    });
+    socket.emit('new_message', {'name': name, 'message': text});
 }
 
 export const emitCubeClicked = (pos) => socket.emit("cube_clicked", pos);

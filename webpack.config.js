@@ -5,8 +5,10 @@ module.exports = {
   	game: './src/client/index.js',
   },
   output: {
-	filename: "[name].bundle.js",
-	path: path.join(__dirname, '/equations/static/js/'),
+    filename: "[name].bundle.js",
+    chunkFilename: "[name].bundle.js",
+    path: path.join(__dirname, '/equations/static/js/'),
+    publicPath: "/static/js/",
   },
   watchOptions: {
     ignored: /node_modules/,
@@ -21,7 +23,7 @@ module.exports = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ['@babel/preset-env'],
+            presets: ['@babel/preset-env', '@babel/preset-react'],
           },
         },
       },
