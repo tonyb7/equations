@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import { sendChatMessage } from "../networking";
 
 /** React compunent responsible for composing and sending a chat message. */
 export function ChatInput () {
@@ -8,8 +7,12 @@ export function ChatInput () {
 
     function onKeyPress(e) {
         if (e.key === 'Enter' && text.length > 0) {
-            sendChatMessage(text);
-            setText("");
+            import(/*webpackChunkName: "networking" */ "../networking").then(
+                (networking) => {
+                    networking.sendChatMessage(text)
+                    setText("");
+                }
+            ).catch((err) => console.log(err))
         }
     }
 
