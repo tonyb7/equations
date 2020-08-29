@@ -1,0 +1,14 @@
+.inputMessage {
+    border: 0.6vw solid #000;
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    outline: none;
+    padding-left: 1vw;
+    position: relative;
+    right: 0;
+    width: 91%;
+
+    font-family: monospace;
+    font-size: 1vw;
+}

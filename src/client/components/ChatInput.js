@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import styles from "./Chat.module.css";
 
 /** React compunent responsible for composing and sending a chat message. */
 export function ChatInput () {
@@ -21,10 +22,10 @@ export function ChatInput () {
     }
 
     return <input 
-        class="inputMessage" 
+        className={styles.inputMessage} 
         onKeyPress={onKeyPress} 
         onChange={onChange}
         placeholder="Type here..." 
-        maxlength="200" 
+        maxLength="200" 
         value={text}/>
 }

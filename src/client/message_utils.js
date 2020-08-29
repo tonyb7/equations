@@ -14,7 +14,6 @@ export function appendMessage(name, message, boldMessage = false) {
 }
 
 function appendBoldedMessage(name, message) {
-    let message_html = `<b>${name}: </b> <b><em>${message}</em></b>`;
     appendMessage(name, message, true);
 }
 

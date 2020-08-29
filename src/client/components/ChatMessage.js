@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import PropTypes from 'prop-types';
+import styles from './ChatMessage.module.css';
 
 ChatMessage.propTypes = {
     name: PropTypes.string.isRequired,
@@ -13,11 +14,12 @@ ChatMessage.defaultProps = {
 /** React compunent responsible for rendering a single chat message. */
 export function ChatMessage (props) {
 
-    let messageElement = props.boldMessage 
-        ? <b><em>props.message</em></b>
-        : props.message;
+    let messageStyle = props.boldMessage 
+        ? styles.boldMessageText
+        : "";
 
     return <>
-        <b>{props.name}</b>: {messageElement} 
+        <span className={styles.messageSender}>{props.name}: </span>
+        <span className={messageStyle}>{props.message} </span>
     </>
 }
