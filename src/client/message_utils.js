@@ -1,32 +1,41 @@
 // Helper functions for sending messages
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {ChatMessage} from './components/ChatMessage';
+import {ChatMessage, NewShakeButton} from './components/ChatMessage';
 
-export function appendMessage(name, message, boldMessage = false) {
-    let new_message = document.createElement('li');
+/** render message component and keep chat-list scrolled to the bottom */
+function renderAndScroll(new_message_li, component) {
     let messages = document.getElementById('message-list');
-    messages.appendChild(new_message);
-    ReactDOM.render(<ChatMessage name={name} message={message} boldMessage={boldMessage}/>, new_message);
+    messages.appendChild(new_message_li);
+    ReactDOM.render(component, new_message_li);
 
     let messages_div = document.getElementById('message-list-div');
     messages_div.scrollTop = messages_div.scrollHeight;
 }
 
-function appendBoldedMessage(name, message) {
-    appendMessage(name, message, true);
+export function appendMessage(name, message, type = "player_message") {
+    let new_message = document.createElement('li');
+    renderAndScroll(new_message, 
+        <ChatMessage 
+            name={name} 
+            message={message} 
+            type={type}/>);
+}
+
+function appendInstruction(name, message) {
+    appendMessage(name, message, "instruction");
 }
 
 export function appendServerMessage(message) {
-    appendMessage("Server", message);
+    appendMessage("Server", message, "server_message");
 }
 
 export function appendInstructions() {
-    appendBoldedMessage("Server", "Move cubes by clicking a cube in resources, then clicking the " +
+    appendInstruction("Server", "Move cubes by clicking a cube in resources, then clicking the " +
                     "area on the mat you want to move it to.");
-    appendBoldedMessage("Server", "For goalsetting, once cubes are on the goal line, you can " +
+    appendInstruction("Server", "For goalsetting, once cubes are on the goal line, you can " +
                     "rearrange them (by dragging them horizontally) and rotate them (by right clicking on the cube you want to rotate).");
-    appendBoldedMessage("Server", "If you can bonus on your turn, a bonus button will appear in the " + 
+    appendInstruction("Server", "If you can bonus on your turn, a bonus button will appear in the " + 
                     "upper right corner of resources. To bonus, first click the bonus button, then move the " + 
                     "bonused cube to forbidden, and continue with the rest of your turn.");
 }
@@ -194,18 +203,13 @@ export function appendStartNewShakeButton(socket) {
 
     let li = document.createElement('li');
     li.classList.add("chat-button");
-
-    let start_button = document.createElement("button");
-    start_button.innerHTML = "Start New Shake";
-    start_button.id = "new_shake_button";
-
-    li.appendChild(start_button);
-
-    start_button.onclick = () => {
-        socket.emit("new_shake");
-    };
-
-    document.getElementById('message-list').appendChild(li);
+    renderAndScroll(
+        li,
+        <NewShakeButton
+            buttonText = "Start New Shake"
+            onClick = {() => socket.emit("new_shake")}
+            />
+    );
 }
 
 export function appendNoGoalButtons(socket, caller) {
@@ -258,17 +262,12 @@ export function appendEndShakeNoGoal(socket) {
     let li = document.createElement('li');
     li.classList.add("chat-button");
 
-    let start_button = document.createElement("button");
-    start_button.innerHTML = "Restart Shake";
-    start_button.id = "new_shake_button";
-
-    li.appendChild(start_button);
-
-    start_button.onclick = () => {
-        socket.emit("restart_shake");
-    };
-
-    document.getElementById('message-list').appendChild(li);
+    renderAndScroll(
+        li,
+        <NewShakeButton
+            buttonText = "Restart Shake"
+            onClick = {() => socket.emit("restart_shake")}
+            />);
 }
 
 export function printFiveMinWarningMsg() {
