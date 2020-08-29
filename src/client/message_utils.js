@@ -1,24 +1,21 @@
 // Helper functions for sending messages
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {ChatMessage} from './components/ChatMessage';
 
-function appendChatDOM(innerhtml) {
+export function appendMessage(name, message, boldMessage = false) {
     let new_message = document.createElement('li');
-    new_message.innerHTML = innerhtml;
-
     let messages = document.getElementById('message-list');
     messages.appendChild(new_message);
-    
+    ReactDOM.render(<ChatMessage name={name} message={message} boldMessage={boldMessage}/>, new_message);
+
     let messages_div = document.getElementById('message-list-div');
     messages_div.scrollTop = messages_div.scrollHeight;
 }
 
-export function appendMessage(name, message) {
-    let message_html = `<b>${name}: </b> ${message}`;
-    appendChatDOM(message_html);
-}
-
 function appendBoldedMessage(name, message) {
     let message_html = `<b>${name}: </b> <b><em>${message}</em></b>`;
-    appendChatDOM(message_html);
+    appendMessage(name, message, true);
 }
 
 export function appendServerMessage(message) {
