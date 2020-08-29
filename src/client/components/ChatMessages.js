@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import styles from './ChatMessage.module.css';
+import styles from './ChatMessages.module.css';
 
 /** Keeping track of the different UI types that can show up in the chat log */
 const MESSAGE_TYPES = [

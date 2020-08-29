@@ -1,7 +1,7 @@
 // Helper functions for sending messages
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {ChatMessage, NewShakeButton, FiveMinWarning} from './components/ChatMessage';
+import {ChatMessage, NewShakeButton, FiveMinWarning} from './components/ChatMessages';
 
 /** render message component and keep chat-list scrolled to the bottom */
 function renderAndScroll(new_message_li, component) {
