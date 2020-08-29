@@ -8,6 +8,7 @@ const MESSAGE_TYPES = [
     "server_message",
     "instruction",
     "new_shake",
+    "five_min_warning"
 ];
 
 ChatMessage.propTypes = {
@@ -40,4 +41,15 @@ NewShakeButton.propTypes = {
 /** React component responsibile for rendering a new shake button */
 export function NewShakeButton(props) {
     return <button idName="new_shake_button" onClick={props.onClick}>{props.buttonText}</button>
+}
+
+export function FiveMinWarning() {
+
+    let msgpt1 = "Five minute warning! If the cubes have been rolled, ";
+    let msgpt2 = "continue your game -- you have five minutes left. ";
+    let msgpt3 = "Do not start a new shake.";
+    return <ChatMessage
+        name = "Server"
+        message = {`${msgpt1}${msgpt2}${msgpt3}`}
+        type = "five_min_warning"/>
 }

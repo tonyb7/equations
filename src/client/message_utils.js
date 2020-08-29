@@ -1,7 +1,7 @@
 // Helper functions for sending messages
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {ChatMessage, NewShakeButton} from './components/ChatMessage';
+import {ChatMessage, NewShakeButton, FiveMinWarning} from './components/ChatMessage';
 
 /** render message component and keep chat-list scrolled to the bottom */
 function renderAndScroll(new_message_li, component) {
@@ -271,8 +271,9 @@ export function appendEndShakeNoGoal(socket) {
 }
 
 export function printFiveMinWarningMsg() {
-    let msgpt1 = "Five minute warning! If the cubes have been rolled, ";
-    let msgpt2 = "continue your game -- you have five minutes left. ";
-    let msgpt3 = "Do not start a new shake.";
-    appendServerMessage(`${msgpt1}${msgpt2}${msgpt3}`);
+    let li = document.createElement('li');
+
+    renderAndScroll(
+        li,
+        <FiveMinWarning/>);
 }
