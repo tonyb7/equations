@@ -1,7 +1,7 @@
 // Helper functions for sending messages
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {ChatMessage, NewShakeButton, FiveMinWarning} from './components/ChatMessages';
+import {ChatMessage, NewShakeButton, FiveMinWarning, ConfirmationButtons, SolutionCheck} from './components/ChatMessages';
 
 /** render message component and keep chat-list scrolled to the bottom */
 function renderAndScroll(new_message_li, component) {
@@ -49,35 +49,14 @@ export function appendSidingOptions(socket) {
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let yes_button = document.createElement("button");
-    yes_button.innerHTML = "Yes";
-    options.appendChild(yes_button);
-
-    let no_button = document.createElement("button");
-    no_button.innerHTML = "No";
-    options.appendChild(no_button);
-
-    yes_button.onclick = () => {
-        socket.emit("sided", true);
-        deregisterChatButtons([yes_button, no_button]);
-        yes_button.classList.add("button-clicked");
-        appendSolutionPrompt(socket);
-    };
-
-    no_button.onclick = () => {
-        socket.emit("sided", false);
-        deregisterChatButtons([yes_button, no_button]);
-        no_button.classList.add("button-clicked");
-    };
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(options);
-}
-
-function deregisterChatButtons(buttons) {
-    for (let button of buttons) {
-        button.onclick = () => {};
-    }
+    renderAndScroll(options,
+        <ConfirmationButtons
+            onYesClick={() => {
+                socket.emit("sided", true);
+                appendSolutionPrompt(socket);
+            }}
+            onNoClick={() => socket.emit("sided", false)}
+        />);
 }
 
 export function appendSolutionPrompt(socket) {
@@ -131,35 +110,14 @@ export function appendAcceptPrompt(socket, name, solution, reevaluate, for_game_
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let solution_p = document.createElement('p');
-    solution_p.innerHTML = solution;
-    options.append(solution_p);
-
-    if (for_game_player) {
-        let yes_button = document.createElement("button");
-        yes_button.innerHTML = "Yes";
-        options.appendChild(yes_button);
-
-        let no_button = document.createElement("button");
-        no_button.innerHTML = "No";
-        options.appendChild(no_button);
-
-        yes_button.onclick = () => {
-            socket.emit("decided", {"name": name, "accepted": true});
-            deregisterChatButtons([yes_button, no_button]);
-            yes_button.classList.add("button-clicked");
-        };
-
-        no_button.onclick = () => {
-            socket.emit("decided", {"name": name, "accepted": false});
-            deregisterChatButtons([yes_button, no_button]);
-            no_button.classList.add("button-clicked");
-        };
-    }
-    
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(options);
+    renderAndScroll(
+        options,
+        <SolutionCheck
+            solution={solution}
+            isGamePlayer={for_game_player}
+            onYesClick={() => socket.emit("decided", {"name": name, "accepted": true})}
+            onNoClick={() => socket.emit("decided", {"name": name, "accepted": false})}
+        />);
 }
 
 export function appendAssentToRejectPrompt(socket, name) {
@@ -172,28 +130,12 @@ export function appendAssentToRejectPrompt(socket, name) {
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let yes_button = document.createElement("button");
-    yes_button.innerHTML = "Yes";
-    options.appendChild(yes_button);
-
-    let no_button = document.createElement("button");
-    no_button.innerHTML = "No";
-    options.appendChild(no_button);
-
-    yes_button.onclick = () => {
-        socket.emit("assented", {"rejecter": name, "assented": true});
-        deregisterChatButtons([yes_button, no_button]);
-        yes_button.classList.add("button-clicked");
-    };
-
-    no_button.onclick = () => {
-        socket.emit("assented", {"rejecter": name, "assented": false});
-        deregisterChatButtons([yes_button, no_button]);
-        no_button.classList.add("button-clicked");
-    };
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(options);
+    renderAndScroll(
+        options,
+        <ConfirmationButtons
+            onYesClick={ () => socket.emit("assented", {"rejecter": name, "assented": true})}
+            onNoClick={ () => socket.emit("assented", {"rejecter": name, "assented": false})}
+            /> );
 }
 
 export function appendStartNewShakeButton(socket) {
@@ -227,29 +169,17 @@ export function appendNoGoalButtons(socket, caller) {
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let yes_button = document.createElement("button");
-    yes_button.innerHTML = "Agree";
-    options.appendChild(yes_button);
 
-    let no_button = document.createElement("button");
-    no_button.innerHTML = "Disagree & Write";
-    options.appendChild(no_button);
-
-    yes_button.onclick = () => {
-        socket.emit("no_goal_sided", true);
-        deregisterChatButtons([yes_button, no_button]);
-        yes_button.classList.add("button-clicked");
-    };
-
-    no_button.onclick = () => {
-        socket.emit("no_goal_sided", false);
-        deregisterChatButtons([yes_button, no_button]);
-        no_button.classList.add("button-clicked");
-        appendSolutionPrompt(socket);
-    };
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(options);
+    renderAndScroll(
+        options,
+        <ConfirmationButtons
+            onYesClick = {() => socket.emit("no_goal_sided", true)}
+            onNoClick = {() => {
+                socket.emit("no_goal_sided", false);
+                appendSolutionPrompt(socket);
+            }} 
+        />
+    );
 }
 
 export function appendEndShakeNoGoal(socket) {
