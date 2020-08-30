@@ -10,6 +10,7 @@ const MESSAGE_TYPES = [
     "new_shake",
     "five_min_warning",
     "solution_check",
+    "solution_prompt",
 ];
 
 ChatMessage.propTypes = {
@@ -110,6 +111,41 @@ export function SolutionCheck(props) {
             onYesClick = {props.onYesClick}
             onNoClick = {props.onNoClick}
         />
+    </>
+}
+
+SolutionPrompt.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+}
+export function SolutionPrompt(props) {
+
+    const [value, setValue] = useState('');
+    const [submitted, setSubmitted] = useState(false);
+
+    let buttonClassNames = ['solution_submit'];
+    if (submitted) {
+        buttonClassNames.push('hidden');
+    }
+
+    function submitButtonClick() {
+        if (submitted) {
+            return;
+        }
+        setSubmitted(true);
+        props.onSubmit(value);
+    }
+
+    return <>
+        <input 
+            className='solution_box'
+            placeholder='Type your solution here...'
+            onChange={(e) => setValue(e.target.value)}
+            disabled={submitted} 
+            />
+        <button
+            className={buttonClassNames.join(' ')}
+            onClick={submitButtonClick}
+            >Submit Solution</button>
     </>
 
 }

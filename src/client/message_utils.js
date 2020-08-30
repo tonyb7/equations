@@ -1,7 +1,7 @@
 // Helper functions for sending messages
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {ChatMessage, NewShakeButton, FiveMinWarning, ConfirmationButtons, SolutionCheck} from './components/ChatMessages';
+import {ChatMessage, NewShakeButton, FiveMinWarning, ConfirmationButtons, SolutionCheck, SolutionPrompt} from './components/ChatMessages';
 
 /** render message component and keep chat-list scrolled to the bottom */
 function renderAndScroll(new_message_li, component) {
@@ -69,26 +69,12 @@ export function appendSolutionPrompt(socket) {
     let solution_area = document.createElement('li');
     solution_area.classList.add("solution_li");
 
-    let input_area = document.createElement('input');
-    input_area.classList.add("solution_box");
-    input_area.placeholder = "Type your solution here...";
-
-    let submit_button = document.createElement('button');
-    submit_button.classList.add("solution_submit");
-    submit_button.innerHTML = "Submit Solution";
-
-    submit_button.onclick = () => {
-        socket.emit("solution_submitted", input_area.value);
-        input_area.disabled = true;
-        submit_button.onclick = () => {};
-        submit_button.classList.add("hidden");
-    };
-
-    solution_area.appendChild(input_area);
-    solution_area.appendChild(submit_button);
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(solution_area);
+    renderAndScroll(
+        solution_area,
+        <SolutionPrompt
+            onSubmit={(solution) => socket.emit("solution_submitted", solution)}
+        />
+    )
 }
 
 export function appendAcceptPrompt(socket, name, solution, reevaluate, for_game_player) {
@@ -168,7 +154,6 @@ export function appendNoGoalButtons(socket, caller) {
 
     let options = document.createElement('li');
     options.classList.add("chat-button");
-
 
     renderAndScroll(
         options,
