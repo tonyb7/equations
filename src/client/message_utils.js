@@ -1,36 +1,41 @@
 // Helper functions for sending messages
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {ChatMessage, NewShakeButton, FiveMinWarning, ConfirmationButtons, SolutionCheck, SolutionPrompt} from './components/ChatMessages';
 
-function appendChatDOM(innerhtml) {
-    let new_message = document.createElement('li');
-    new_message.innerHTML = innerhtml;
-
+/** render message component and keep chat-list scrolled to the bottom */
+function renderAndScroll(new_message_li, component) {
     let messages = document.getElementById('message-list');
-    messages.appendChild(new_message);
-    
+    messages.appendChild(new_message_li);
+    ReactDOM.render(component, new_message_li);
+
     let messages_div = document.getElementById('message-list-div');
     messages_div.scrollTop = messages_div.scrollHeight;
 }
 
-export function appendMessage(name, message) {
-    let message_html = `<b>${name}: </b> ${message}`;
-    appendChatDOM(message_html);
+export function appendMessage(name, message, type = "player_message") {
+    let new_message = document.createElement('li');
+    renderAndScroll(new_message, 
+        <ChatMessage 
+            name={name} 
+            message={message} 
+            type={type}/>);
 }
 
-function appendBoldedMessage(name, message) {
-    let message_html = `<b>${name}: </b> <b><em>${message}</em></b>`;
-    appendChatDOM(message_html);
+function appendInstruction(name, message) {
+    appendMessage(name, message, "instruction");
 }
 
 export function appendServerMessage(message) {
-    appendMessage("Server", message);
+    appendMessage("Server", message, "server_message");
 }
 
 export function appendInstructions() {
-    appendBoldedMessage("Server", "Move cubes by clicking a cube in resources, then clicking the " +
+    appendInstruction("Server", "Move cubes by clicking a cube in resources, then clicking the " +
                     "area on the mat you want to move it to.");
-    appendBoldedMessage("Server", "For goalsetting, once cubes are on the goal line, you can " +
+    appendInstruction("Server", "For goalsetting, once cubes are on the goal line, you can " +
                     "rearrange them (by dragging them horizontally) and rotate them (by right clicking on the cube you want to rotate).");
-    appendBoldedMessage("Server", "If you can bonus on your turn, a bonus button will appear in the " + 
+    appendInstruction("Server", "If you can bonus on your turn, a bonus button will appear in the " + 
                     "upper right corner of resources. To bonus, first click the bonus button, then move the " + 
                     "bonused cube to forbidden, and continue with the rest of your turn.");
 }
@@ -44,35 +49,14 @@ export function appendSidingOptions(socket) {
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let yes_button = document.createElement("button");
-    yes_button.innerHTML = "Yes";
-    options.appendChild(yes_button);
-
-    let no_button = document.createElement("button");
-    no_button.innerHTML = "No";
-    options.appendChild(no_button);
-
-    yes_button.onclick = () => {
-        socket.emit("sided", true);
-        deregisterChatButtons([yes_button, no_button]);
-        yes_button.classList.add("button-clicked");
-        appendSolutionPrompt(socket);
-    };
-
-    no_button.onclick = () => {
-        socket.emit("sided", false);
-        deregisterChatButtons([yes_button, no_button]);
-        no_button.classList.add("button-clicked");
-    };
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(options);
-}
-
-function deregisterChatButtons(buttons) {
-    for (let button of buttons) {
-        button.onclick = () => {};
-    }
+    renderAndScroll(options,
+        <ConfirmationButtons
+            onYesClick={() => {
+                socket.emit("sided", true);
+                appendSolutionPrompt(socket);
+            }}
+            onNoClick={() => socket.emit("sided", false)}
+        />);
 }
 
 export function appendSolutionPrompt(socket) {
@@ -85,26 +69,12 @@ export function appendSolutionPrompt(socket) {
     let solution_area = document.createElement('li');
     solution_area.classList.add("solution_li");
 
-    let input_area = document.createElement('input');
-    input_area.classList.add("solution_box");
-    input_area.placeholder = "Type your solution here...";
-
-    let submit_button = document.createElement('button');
-    submit_button.classList.add("solution_submit");
-    submit_button.innerHTML = "Submit Solution";
-
-    submit_button.onclick = () => {
-        socket.emit("solution_submitted", input_area.value);
-        input_area.disabled = true;
-        submit_button.onclick = () => {};
-        submit_button.classList.add("hidden");
-    };
-
-    solution_area.appendChild(input_area);
-    solution_area.appendChild(submit_button);
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(solution_area);
+    renderAndScroll(
+        solution_area,
+        <SolutionPrompt
+            onSubmit={(solution) => socket.emit("solution_submitted", solution)}
+        />
+    )
 }
 
 export function appendAcceptPrompt(socket, name, solution, reevaluate, for_game_player) {
@@ -126,35 +96,14 @@ export function appendAcceptPrompt(socket, name, solution, reevaluate, for_game_
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let solution_p = document.createElement('p');
-    solution_p.innerHTML = solution;
-    options.append(solution_p);
-
-    if (for_game_player) {
-        let yes_button = document.createElement("button");
-        yes_button.innerHTML = "Yes";
-        options.appendChild(yes_button);
-
-        let no_button = document.createElement("button");
-        no_button.innerHTML = "No";
-        options.appendChild(no_button);
-
-        yes_button.onclick = () => {
-            socket.emit("decided", {"name": name, "accepted": true});
-            deregisterChatButtons([yes_button, no_button]);
-            yes_button.classList.add("button-clicked");
-        };
-
-        no_button.onclick = () => {
-            socket.emit("decided", {"name": name, "accepted": false});
-            deregisterChatButtons([yes_button, no_button]);
-            no_button.classList.add("button-clicked");
-        };
-    }
-    
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(options);
+    renderAndScroll(
+        options,
+        <SolutionCheck
+            solution={solution}
+            isGamePlayer={for_game_player}
+            onYesClick={() => socket.emit("decided", {"name": name, "accepted": true})}
+            onNoClick={() => socket.emit("decided", {"name": name, "accepted": false})}
+        />);
 }
 
 export function appendAssentToRejectPrompt(socket, name) {
@@ -167,28 +116,12 @@ export function appendAssentToRejectPrompt(socket, name) {
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let yes_button = document.createElement("button");
-    yes_button.innerHTML = "Yes";
-    options.appendChild(yes_button);
-
-    let no_button = document.createElement("button");
-    no_button.innerHTML = "No";
-    options.appendChild(no_button);
-
-    yes_button.onclick = () => {
-        socket.emit("assented", {"rejecter": name, "assented": true});
-        deregisterChatButtons([yes_button, no_button]);
-        yes_button.classList.add("button-clicked");
-    };
-
-    no_button.onclick = () => {
-        socket.emit("assented", {"rejecter": name, "assented": false});
-        deregisterChatButtons([yes_button, no_button]);
-        no_button.classList.add("button-clicked");
-    };
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(options);
+    renderAndScroll(
+        options,
+        <ConfirmationButtons
+            onYesClick={ () => socket.emit("assented", {"rejecter": name, "assented": true})}
+            onNoClick={ () => socket.emit("assented", {"rejecter": name, "assented": false})}
+            /> );
 }
 
 export function appendStartNewShakeButton(socket) {
@@ -198,18 +131,13 @@ export function appendStartNewShakeButton(socket) {
 
     let li = document.createElement('li');
     li.classList.add("chat-button");
-
-    let start_button = document.createElement("button");
-    start_button.innerHTML = "Start New Shake";
-    start_button.id = "new_shake_button";
-
-    li.appendChild(start_button);
-
-    start_button.onclick = () => {
-        socket.emit("new_shake");
-    };
-
-    document.getElementById('message-list').appendChild(li);
+    renderAndScroll(
+        li,
+        <NewShakeButton
+            buttonText = "Start New Shake"
+            onClick = {() => socket.emit("new_shake")}
+            />
+    );
 }
 
 export function appendNoGoalButtons(socket, caller) {
@@ -227,29 +155,16 @@ export function appendNoGoalButtons(socket, caller) {
     let options = document.createElement('li');
     options.classList.add("chat-button");
 
-    let yes_button = document.createElement("button");
-    yes_button.innerHTML = "Agree";
-    options.appendChild(yes_button);
-
-    let no_button = document.createElement("button");
-    no_button.innerHTML = "Disagree & Write";
-    options.appendChild(no_button);
-
-    yes_button.onclick = () => {
-        socket.emit("no_goal_sided", true);
-        deregisterChatButtons([yes_button, no_button]);
-        yes_button.classList.add("button-clicked");
-    };
-
-    no_button.onclick = () => {
-        socket.emit("no_goal_sided", false);
-        deregisterChatButtons([yes_button, no_button]);
-        no_button.classList.add("button-clicked");
-        appendSolutionPrompt(socket);
-    };
-
-    let messages = document.getElementById('message-list');
-    messages.appendChild(options);
+    renderAndScroll(
+        options,
+        <ConfirmationButtons
+            onYesClick = {() => socket.emit("no_goal_sided", true)}
+            onNoClick = {() => {
+                socket.emit("no_goal_sided", false);
+                appendSolutionPrompt(socket);
+            }} 
+        />
+    );
 }
 
 export function appendEndShakeNoGoal(socket) {
@@ -262,22 +177,18 @@ export function appendEndShakeNoGoal(socket) {
     let li = document.createElement('li');
     li.classList.add("chat-button");
 
-    let start_button = document.createElement("button");
-    start_button.innerHTML = "Restart Shake";
-    start_button.id = "new_shake_button";
-
-    li.appendChild(start_button);
-
-    start_button.onclick = () => {
-        socket.emit("restart_shake");
-    };
-
-    document.getElementById('message-list').appendChild(li);
+    renderAndScroll(
+        li,
+        <NewShakeButton
+            buttonText = "Restart Shake"
+            onClick = {() => socket.emit("restart_shake")}
+            />);
 }
 
 export function printFiveMinWarningMsg() {
-    let msgpt1 = "Five minute warning! If the cubes have been rolled, ";
-    let msgpt2 = "continue your game -- you have five minutes left. ";
-    let msgpt3 = "Do not start a new shake.";
-    appendServerMessage(`${msgpt1}${msgpt2}${msgpt3}`);
+    let li = document.createElement('li');
+
+    renderAndScroll(
+        li,
+        <FiveMinWarning/>);
 }

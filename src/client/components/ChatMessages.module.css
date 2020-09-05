@@ -1,0 +1,9 @@
+
+.boldMessageText {
+    font-weight: bold;
+    font-style: italics;
+}
+
+.messageSender {
+    font-weight: bold;
+}
