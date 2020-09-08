@@ -314,9 +314,6 @@ body {
 }
 
 #variations-inner {
-    /* border:dotted;
-    border-color: white; */
-
     height: 70%;
     width: 90%;
     position: absolute;
@@ -329,9 +326,6 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-
-    /* border: dotted;	
-    border-color: white; */
 }
 
 #variations-inner input {
@@ -362,9 +356,6 @@ body {
 .buttons {
     height: 45%;
     position: relative;
-
-    /* border: dotted;	
-    border-color: white;  */
 }
 
 .buttons-inner {

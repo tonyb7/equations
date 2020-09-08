@@ -93,8 +93,6 @@ def join_game():
                 return flask.redirect(flask.url_for('show_index'))
 
             game_started = len(game_info.cube_index) > 0
-            print("GAME_STARTED IS ", game_started)
-            print("CUBE INDEX IS ", game_info.cube_index)
 
             if game_started or game_info.ended or len(game_info.players) >= 3:
                 flask.flash(f"You cannot join as a player in that room ({room}) "
