@@ -172,14 +172,15 @@ def handle_cube_click(pos):
     MapsLock()
     [user, room] = get_name_and_room(flask.request.sid)
 
-    # Cannot move cubes before finishing calling variations
-    if rooms_info[room]['variations_state']['num_players_called'] < len(rooms_info[room]['players']):
-        return
-
     turn_user = get_current_mover(room)
     if rooms_info[room]["game_finished"] or rooms_info[room]["challenge"] \
             or rooms_info[room]["resources"][pos] == MOVED_CUBE_IDX \
             or turn_user != user:
+        return
+
+    # Cannot move cubes before finishing calling variations
+    if rooms_info[room]['variations_state']['num_players_called'] < len(rooms_info[room]['players']):
+        emit("server_message", "Please wait for variations to be called before moving a cube!")
         return
 
     do_not_rehighlight = False
