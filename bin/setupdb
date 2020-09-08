@@ -1,5 +1,6 @@
 #!/bin/bash
 # Set up a postgres database locally for development
+# Run with "update" as the first argument to update the database schema
 
 set -Eeuo pipefail
 set -x

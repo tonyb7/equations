@@ -35,7 +35,8 @@ def show_index():
 
         for gameroom in gamerooms:
             if gameroom in rooms_info and rooms_info[gameroom]["game_started"] \
-                    and not rooms_info[gameroom]["game_finished"]:
+                    and not rooms_info[gameroom]["game_finished"] \
+                    and context['username'] in rooms_info[gameroom]['players']:
                 context["gamerooms"].append(gameroom)
 
     return flask.render_template("index.html", **context)
@@ -92,6 +93,9 @@ def join_game():
                 return flask.redirect(flask.url_for('show_index'))
 
             game_started = len(game_info.cube_index) > 0
+            print("GAME_STARTED IS ", game_started)
+            print("CUBE INDEX IS ", game_info.cube_index)
+
             if game_started or game_info.ended or len(game_info.players) >= 3:
                 flask.flash(f"You cannot join as a player in that room ({room}) "
                          "because either the game has started, the game has ended,  "

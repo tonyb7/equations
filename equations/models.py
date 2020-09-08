@@ -30,6 +30,7 @@ class Game(db.Model):
     p1scores = db.Column(JSON)
     p2scores = db.Column(JSON)
     p3scores = db.Column(JSON)
+    variations_state = db.Column(JSON) # variations of the most recent shake
     cube_index = db.Column(JSON)
     resources = db.Column(JSON)
     goal = db.Column(JSON)
@@ -40,7 +41,7 @@ class Game(db.Model):
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, nonce, ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
-                 p3scores=[], cube_index=[], resources=[], goal=[],
+                 p3scores=[], variations_state = {}, cube_index=[], resources=[], goal=[],
                  required=[], permitted=[], forbidden=[], turn=None):
         self.nonce = nonce
         self.ended = ended
@@ -49,6 +50,7 @@ class Game(db.Model):
         self.p1scores = p1scores
         self.p2scores = p2scores
         self.p3scores = p3scores
+        self.variations_state = variations_state
         self.cube_index = cube_index
         self.resources = resources
         self.goal = goal

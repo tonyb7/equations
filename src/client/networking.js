@@ -15,6 +15,7 @@ import { updateClientOnEndgame, handleChallenge,
          handleForceOut, reviewSolutions, handleRejectionAssent,
          handleReevaluateSolution, handleShakeFinish } from './endgame';
 import { initializeElapsedTimer } from './timing';
+import { renderVariations } from './variations';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 export const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -57,6 +58,7 @@ function registerSocketCallbacks(name) {
     // Required only if game has started
     socket.on("render_spectator_state", (game) => {
         renderGameVisuals(game);
+        renderVariations(socket, game['variations_state'], game['players'], name);
         updateClientOnEndgame(socket, name, game['endgame'], game['players']);
     });
 
@@ -71,6 +73,8 @@ function registerSocketCallbacks(name) {
         if (game['game_started']) {
             initializeBoardCallbacks(socket, show_bonus_for(game, name));
             registerGoalSetting(socket, name, game['players'][game['turn']], !game["goalset"]);
+
+            renderVariations(socket, game['variations_state'], game['players'], name);
             updateClientOnEndgame(socket, name, game['endgame'], game['players']);
 
             console.log("challenge recorded: ", game['challenge']);
@@ -94,14 +98,8 @@ function registerSocketCallbacks(name) {
         
         appendServerMessage(`${data['starter']} started the game! The cubes have been rolled!`);
         appendServerMessage(`${data['goalsetter']} is chosen to be the goalsetter.`);
-        appendInstructions();
-
-        if (data['starter'] === name) {
-            appendServerMessage("Press \"Goal Set!\" when you're done!");
-        }
-        else {
-            appendServerMessage(`Waiting for ${data['goalsetter']} to finish setting the goal...`);
-        }
+        
+        renderVariations(socket, data['variations_state'], data['players'], name);
         
         initializeElapsedTimer(data['starttime']);
         renderResources(cubes);
@@ -109,7 +107,6 @@ function registerSocketCallbacks(name) {
 
         let firstmover = data['goalsetter'];
         initializeBoardCallbacks(socket, firstmover === name);
-        updateTurnText(firstmover);
         registerGoalSetting(socket, name, firstmover, true);
     });
 
@@ -123,9 +120,10 @@ function registerSocketCallbacks(name) {
         clearBoard();
         renderResources(data['cubes']);
 
+        renderVariations(socket, data['variations_state'], data['players'], name);
+
         let firstmover = data['goalsetter'];
         initializeBoardCallbacks(socket, firstmover === name && data['show_bonus']);
-        updateTurnText(firstmover);
         registerGoalSetting(socket, name, firstmover, true);
     });
 
@@ -164,6 +162,22 @@ function registerSocketCallbacks(name) {
         appendServerMessage("The game has finished!");
         updateTurnText("Game Ended");
         deregisterBoardCallbacks();
+    });
+
+    socket.on("update_variations", (info) => 
+        renderVariations(socket, info['variations_state'], info['players'], name));
+    
+    socket.on("variations_finished", (data) => {
+        if (data["is_first_shake"]) {
+            appendInstructions();
+            if (data['goalsetter'] === name) {
+                appendServerMessage("Press \"Goal Set!\" when you're done!");
+            }
+            else {
+                appendServerMessage(`Waiting for ${data['goalsetter']} to finish setting the goal...`);
+            }
+        }
+        updateTurnText(data['goalsetter']);
     });
 }
 

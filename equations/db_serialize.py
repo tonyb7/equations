@@ -9,7 +9,6 @@ def db_insert(room, game_info):
     print("calling db insert!")
 
     ended = 1 if game_info["game_finished"] else 0
-    assert ended == 1
 
     games = Game.query.filter_by(nonce=room).all()
     assert len(games) == 1
@@ -21,6 +20,7 @@ def db_insert(room, game_info):
     game.p1scores = game_info["p1scores"] if "p1scores" in game_info else []
     game.p2scores = game_info["p2scores"] if "p2scores" in game_info else []
     game.p3scores = game_info["p3scores"] if "p3scores" in game_info else []
+    game.variations_state = game_info["variations_state"] if "variations_state" in game_info else []
     game.cube_index = game_info["cube_index"] if "cube_index" in game_info else []
     game.resources = game_info["resources"] if "resources" in game_info else []
     game.goal = game_info["goal"] if "goal" in game_info else []
@@ -44,6 +44,7 @@ def db_deserialize(db_result):
         "p1scores": db_result.p1scores,
         "p2scores": db_result.p2scores,
         "p3scores": db_result.p3scores,
+        "variations_state": db_result.variations_state,
         "starttime": json.dumps(db_result.created, sort_keys=True, default=str),  
         "cube_index": db_result.cube_index,
         "resources":  db_result.resources,
