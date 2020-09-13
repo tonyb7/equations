@@ -74,6 +74,7 @@ def start_shake(new_game, is_restart):
                 "caller_index": None,
             },
             "starttime": time.time(),
+            "last_timer_flip": None,
             # cube_index is poorly named. fixed length of 24, index is cube's id.
             # first six are red, next six are blue, next six are green, last six are black.
             # so if the first element of cube_index was x (where 0 <= x <= 5), the
@@ -114,6 +115,7 @@ def start_shake(new_game, is_restart):
 
         emit("begin_game", game_begin_instructions, room=room)
     else:
+        rooms_info[room]["last_timer_flip"] = None
         rooms_info[room]["cube_index"] = rolled_cubes[:]
         rooms_info[room]["resources"] = rolled_cubes
         rooms_info[room]["goal"] = []

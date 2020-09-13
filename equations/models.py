@@ -38,11 +38,12 @@ class Game(db.Model):
     permitted = db.Column(JSON)
     forbidden = db.Column(JSON)
     turn = db.Column(db.Integer)
+    last_timer_flip = db.Column(db.Float)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, nonce, ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
                  p3scores=[], variations_state = {}, cube_index=[], resources=[], goal=[],
-                 required=[], permitted=[], forbidden=[], turn=None):
+                 required=[], permitted=[], forbidden=[], turn=None, last_timer_flip=0):
         self.nonce = nonce
         self.ended = ended
         self.tournament = tournament
@@ -58,6 +59,7 @@ class Game(db.Model):
         self.permitted = permitted
         self.forbidden = forbidden
         self.turn = turn
+        self.last_timer_flip = last_timer_flip
 
     def __repr__(self):
         return f"<Game {nonce}>"

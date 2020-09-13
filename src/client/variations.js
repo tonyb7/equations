@@ -13,7 +13,7 @@ export function renderVariations(socket, variations_state, players, name) {
     variations_text_div.innerHTML = variations_state['variations'].join(", ");
 
     if (variations_state['num_players_called'] < players.length) {
-        updateTurnText("Variations");
+        updateTurnText("Calling Variations");
 
         if (players[variations_state['caller_index']] === name) {
             let variations_input = document.getElementById("variations-input-div");

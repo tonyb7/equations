@@ -1,5 +1,6 @@
 """Functions to handle time control."""
 
+import time
 import flask
 import equations
 from equations.data import get_name_and_room, MapsLock, rooms_info
@@ -34,16 +35,45 @@ def handle_flip_timer():
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed flip_timer!")
 
+    current_time = time.time()
+    if rooms_info[room]["last_timer_flip"] is None:
+        rooms_info[room]["last_timer_flip"] = current_time
+    else:
+        time_since_flip = current_time - rooms_info[room]["last_timer_flip"]
+        if time_since_flip < 5:
+            # TODO to prevent cases where multiple players click at the same time
+            # Right now, enforce 5 sec cooldown. There may be a better solution.
+            emit("server_message", "Please wait at least 5 seconds between timer flips!")
+            return
+
+        if time_since_flip > 60:
+            rooms_info[room]["last_timer_flip"] = current_time
+        else:
+            rooms_info[room]["last_timer_flip"] = current_time - (60 - time_since_flip)
+    
+    info = {
+        "last_timer_flip": rooms_info[room]["last_timer_flip"],
+        "flipper": name,
+    }
+    emit("timer_flip", info, room=room)
+
 @equations.socketio.on('claim_warning')
 def handle_claim_warning():
-    """Player pressed claim_warning."""
+    """Player claims a 10 second warning."""
+
+    # TODO for more complicated timer flipping 
+
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed claim_warning!")
 
 @equations.socketio.on('claim_minus_one')
 def handle_claim_minus_one():
-    """Player pressed claim_minus_one."""
+    """Player claims a minus one."""
+
+    # TODO for more complicated timer flipping
+    # have a judge sign off on -1?
+
     MapsLock()
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed claim_minus_one!")

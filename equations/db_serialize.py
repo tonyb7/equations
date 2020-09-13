@@ -28,6 +28,7 @@ def db_insert(room, game_info):
     game.permitted = game_info["permitted"] if "permitted" in game_info else []
     game.forbidden = game_info["forbidden"] if "forbidden" in game_info else []
     game.turn = game_info["turn"] if "turn" in game_info else None
+    game.last_timer_flip = game_info["last_timer_flip"] if "last_timer_flip" in game_info else 0
 
     equations.db.session.add(game)
     equations.db.session.commit()
@@ -46,6 +47,7 @@ def db_deserialize(db_result):
         "p3scores": db_result.p3scores,
         "variations_state": db_result.variations_state,
         "starttime": json.dumps(db_result.created, sort_keys=True, default=str),  
+        "last_timer_flip": db_result.last_timer_flip if db_result.last_timer_flip != 0 else None,
         "cube_index": db_result.cube_index,
         "resources":  db_result.resources,
         "goal":  db_result.goal,

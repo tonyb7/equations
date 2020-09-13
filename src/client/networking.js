@@ -14,7 +14,7 @@ import { updateGoalline } from './goal';
 import { updateClientOnEndgame, handleChallenge,
          handleForceOut, reviewSolutions, handleRejectionAssent,
          handleReevaluateSolution, handleShakeFinish } from './endgame';
-import { initializeElapsedTimer } from './timing';
+import { initializeElapsedTimer, updateGameTimer } from './timing';
 import { renderVariations } from './variations';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
@@ -178,6 +178,11 @@ function registerSocketCallbacks(name) {
             }
         }
         updateTurnText(data['goalsetter']);
+    });
+
+    socket.on("timer_flip", (info) => {
+        appendServerMessage(`${info['flipper']} flipped the timer.`);
+        updateGameTimer(info["last_timer_flip"]);
     });
 }
 
