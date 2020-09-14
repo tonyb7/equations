@@ -4,7 +4,10 @@ import { socket } from './networking';
 
 let starting_time;
 let elapsed_div;
+let timer_div;
 let five_min_warning_called = false;
+
+let turnTimer;
 
 export function initializeElapsedTimer(starttime) {
     starting_time = starttime;
@@ -43,4 +46,39 @@ export function initializeElapsedTimer(starttime) {
         }
         elapsed_div.innerHTML = time_str;
     }, 1000);
+}
+
+export function updateGameTimer(time) {
+    // Timer should display 60 - (currentTime - time) seconds left
+
+    if (!time) {
+        return;
+    }
+
+    clearInterval(turnTimer);
+    turnTimer = setInterval(() => {
+        let current_time = new Date();
+
+        let seconds_passed = Math.floor((current_time.getTime()/1000) - time);
+        let display_time = 60 - seconds_passed;
+
+        let seconds_leading_zero_str = "";
+        if (display_time < 10) {
+            seconds_leading_zero_str = "0";
+        }
+
+        let time_str = `0:${seconds_leading_zero_str}${display_time}`;
+        
+        if (display_time <= 0) {
+            clearInterval(turnTimer);
+            time_str = "0:00";
+        }
+
+        if (!timer_div) {
+            timer_div = document.getElementsByClassName("display-time-div")[0];
+        }
+        
+        timer_div.innerHTML = `<p>${time_str}</p>`;
+    }, 1000);
+
 }

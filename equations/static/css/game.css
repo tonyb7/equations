@@ -221,12 +221,12 @@ body {
 }
 
 .time {
-    height: 20%;
+    height: 18%;
     position: relative;
 }
 
 .time.inner {
-    height: 80%;
+    height: 100%;
     width: 92%;
 
     position: absolute;
@@ -289,8 +289,68 @@ body {
     overflow: hidden;
 }
 
+.variations {
+    height: 20%;
+    position: relative;
+    
+    /* border:dotted;
+    border-color: white; */
+}
+
+#variations-header {
+    height: 16%;
+}
+
+#variations-header p {
+    font-family: monospace;
+    text-align: center;
+    font-size: 1.1vw;
+    transform: translateY(-75%);
+    color: white;
+}
+
+#variations-inner {
+    height: 70%;
+    width: 90%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -35%);
+}
+
+.variations-input {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#variations-inner input {
+    font-family: monospace;
+    font-size: 1vw;
+
+    border-radius: 20px;
+    width: 70%;
+
+    padding-left: 7px;
+}
+
+#variations-inner button {
+    border-radius: 2.1vw;
+    font-size: 0.7vw;
+    font-family: monospace;
+}
+
+#called-variations {
+    font-size: 1vw;
+    font-family: monospace;
+    color: white;
+    
+    text-align: center;
+    padding-bottom: 2%;
+}
+
 .buttons {
-    height: 50%;
+    height: 45%;
     position: relative;
 }
 

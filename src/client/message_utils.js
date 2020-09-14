@@ -31,8 +31,10 @@ export function appendServerMessage(message) {
 }
 
 export function appendInstructions() {
-    appendInstruction("Server", "Move cubes by clicking a cube in resources, then clicking the " +
-                    "area on the mat you want to move it to.");
+    appendInstruction("Server", "All the players have called variations. Now it is time to set the goal. " +
+                    "Before you start, here are some basic instructions.");
+    appendInstruction("Server", "Move cubes by clicking a cube in resources, " +
+                    "then clicking the area on the mat you want to move it to.");
     appendInstruction("Server", "For goalsetting, once cubes are on the goal line, you can " +
                     "rearrange them (by dragging them horizontally) and rotate them (by right clicking on the cube you want to rotate).");
     appendInstruction("Server", "If you can bonus on your turn, a bonus button will appear in the " + 

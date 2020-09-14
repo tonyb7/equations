@@ -4,7 +4,7 @@ import copy
 import flask
 import equations
 from equations.data import rooms_info, user_info, socket_info, MapsLock, get_name_and_room
-from equations.db_serialize import db_insert, db_deserialize
+from equations.db_serialize import db_deserialize
 from flask_socketio import join_room, leave_room, emit
 from equations.models import Game
 

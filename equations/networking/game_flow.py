@@ -7,6 +7,8 @@ import flask
 import equations
 import random
 import time
+import re
+from equations.db_serialize import db_insert
 from equations.data import rooms_info, user_info, socket_info, MapsLock
 from equations.data import get_name_and_room, get_current_mover
 from equations.networking.challenge import handle_force_out
@@ -66,7 +68,13 @@ def start_shake(new_game, is_restart):
             "p1scores": [0],
             "p2scores": [0],
             "p3scores": [0],
+            "variations_state": {
+                "variations": [],
+                "num_players_called": 0,
+                "caller_index": None,
+            },
             "starttime": time.time(),
+            "last_timer_flip": None,
             # cube_index is poorly named. fixed length of 24, index is cube's id.
             # first six are red, next six are blue, next six are green, last six are black.
             # so if the first element of cube_index was x (where 0 <= x <= 5), the
@@ -92,6 +100,9 @@ def start_shake(new_game, is_restart):
         }
 
         rooms_info[room]['goalsetter_index'] = rooms_info[room]['turn']
+        rooms_info[room]["variations_state"]["caller_index"] = rooms_info[room]['turn']
+
+        db_insert(room, rooms_info[room])
 
         game_begin_instructions = {
             'cubes': rolled_cubes,
@@ -99,10 +110,12 @@ def start_shake(new_game, is_restart):
             'starter': name,
             'goalsetter': get_current_mover(room),
             'starttime': rooms_info[room]['starttime'],
+            'variations_state': rooms_info[room]['variations_state'],
         }
 
         emit("begin_game", game_begin_instructions, room=room)
     else:
+        rooms_info[room]["last_timer_flip"] = None
         rooms_info[room]["cube_index"] = rolled_cubes[:]
         rooms_info[room]["resources"] = rolled_cubes
         rooms_info[room]["goal"] = []
@@ -121,6 +134,13 @@ def start_shake(new_game, is_restart):
         rooms_info[room]["started_move"] = False
         rooms_info[room]["endgame"] = None
         rooms_info[room]["shake_ongoing"] = True
+        rooms_info[room]["variations_state"] = {
+            "variations": [],
+            "num_players_called": 0,
+            "caller_index": rooms_info[room]["goalsetter_index"],
+        }
+
+        db_insert(room, rooms_info[room])
 
         goalsetter = get_current_mover(room)
         shake_begin_instructions = {
@@ -128,9 +148,9 @@ def start_shake(new_game, is_restart):
             'players': current_players,
             'goalsetter': goalsetter,
             'show_bonus': not is_leading(room, goalsetter),
+            'variations_state': rooms_info[room]['variations_state'],
         }
     
-
         emit("begin_shake", shake_begin_instructions, room=room)
 
 @equations.socketio.on('start_game')
@@ -158,6 +178,11 @@ def handle_cube_click(pos):
     if rooms_info[room]["game_finished"] or rooms_info[room]["challenge"] \
             or rooms_info[room]["resources"][pos] == MOVED_CUBE_IDX \
             or turn_user != user:
+        return
+
+    # Cannot move cubes before finishing calling variations
+    if rooms_info[room]['variations_state']['num_players_called'] < len(rooms_info[room]['players']):
+        emit("server_message", "Please wait for variations to be called before moving a cube!")
         return
 
     do_not_rehighlight = False
@@ -328,3 +353,39 @@ def handle_bonus_click():
 def handle_call_judge():
     """Player requested to call a judge."""
     pass
+
+@equations.socketio.on("variation_called")
+def handle_variation_called(info):
+    """A player submitted variations."""
+    MapsLock()
+    [name, room] = get_name_and_room(flask.request.sid)
+
+    assert info["player"] == name
+
+    # Split provided string into variations. A variation in the string is considered
+    # to be a consecutive sequence of numbers, letters, underscore, hyphen, and apostrophe.
+    # This operation also serves to sufficiently sanitize what's being added to the DOM.
+    variations = re.findall(r"[-\w']+", info["content"])
+    variations = [x.upper() for x in variations] # Convert every string to all uppercase
+
+    rooms_info[room]['variations_state']['variations'].extend(variations)
+    rooms_info[room]['variations_state']['num_players_called'] += 1
+    rooms_info[room]['variations_state']['caller_index'] = \
+        (rooms_info[room]['variations_state']['caller_index'] + 1) % len(rooms_info[room]['players'])
+
+    emit("server_message", f"{name} has submitted \"{info['content']}\" for variations. "
+        "These variations have been recorded in the variations section.", room=room)
+    update_info = {
+        "variations_state": rooms_info[room]['variations_state'],
+        "players": rooms_info[room]['players'],
+    }
+    emit("update_variations", update_info, room=room)
+    if (rooms_info[room]['variations_state']['num_players_called'] >= len(rooms_info[room]['players'])):
+        assert rooms_info[room]['variations_state']['num_players_called'] == len(rooms_info[room]['players'])
+        variations_finished_info = {
+            "is_first_shake": rooms_info[room]["p1scores"][0] == 0,
+            "goalsetter": get_current_mover(room),
+        }
+        emit("variations_finished", variations_finished_info, room=room)
+
+    
