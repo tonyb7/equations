@@ -367,6 +367,7 @@ def handle_variation_called(info):
     # This operation also serves to sufficiently sanitize what's being added to the DOM.
     variations = re.findall(r"[-\w'!+ ]+", info["content"])
     variations = [x.strip().upper() for x in variations] # Convert every string to all uppercase
+    variations = list(filter(None, variations))
 
     if len(variations) > 0:
         rooms_info[room]['variations_state']['variations'].extend(variations)
