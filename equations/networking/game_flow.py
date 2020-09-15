@@ -363,9 +363,10 @@ def handle_variation_called(info):
     assert info["player"] == name
 
     # Split provided string into variations. A variation in the string is considered
-    # to be a consecutive sequence of numbers, letters, underscore, hyphen, and apostrophe.
+    # to be a consecutive sequence of numbers, letters, underscore, hyphen, 
+    # exclamation mark, operation signs, apostrophe, and spaces.
     # This operation also serves to sufficiently sanitize what's being added to the DOM.
-    variations = re.findall(r"[-\w'!+ ]+", info["content"])
+    variations = re.findall(r"[-\w'!_+*^\/ ]+", info["content"])
     variations = [x.strip().upper() for x in variations] # Convert every string to all uppercase
     variations = list(filter(None, variations))
 
