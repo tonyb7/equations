@@ -365,16 +365,19 @@ def handle_variation_called(info):
     # Split provided string into variations. A variation in the string is considered
     # to be a consecutive sequence of numbers, letters, underscore, hyphen, and apostrophe.
     # This operation also serves to sufficiently sanitize what's being added to the DOM.
-    variations = re.findall(r"[-\w']+", info["content"])
-    variations = [x.upper() for x in variations] # Convert every string to all uppercase
+    variations = re.findall(r"[-\w'!+ ]+", info["content"])
+    variations = [x.strip().upper() for x in variations] # Convert every string to all uppercase
 
-    rooms_info[room]['variations_state']['variations'].extend(variations)
-    rooms_info[room]['variations_state']['num_players_called'] += 1
-    rooms_info[room]['variations_state']['caller_index'] = \
-        (rooms_info[room]['variations_state']['caller_index'] + 1) % len(rooms_info[room]['players'])
+    if len(variations) > 0:
+        rooms_info[room]['variations_state']['variations'].extend(variations)
+        rooms_info[room]['variations_state']['num_players_called'] += 1
+        rooms_info[room]['variations_state']['caller_index'] = \
+            (rooms_info[room]['variations_state']['caller_index'] + 1) % len(rooms_info[room]['players'])
+        emit("server_message", f"{name} has submitted \"{info['content']}\" for variations. "
+            "These variations have been recorded in the variations section.", room=room)
+    else:
+        emit("server_message", f"{name} has submitted nothing for variations. Please call at least one variation!", room=room)
 
-    emit("server_message", f"{name} has submitted \"{info['content']}\" for variations. "
-        "These variations have been recorded in the variations section.", room=room)
     update_info = {
         "variations_state": rooms_info[room]['variations_state'],
         "players": rooms_info[room]['players'],
