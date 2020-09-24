@@ -118,7 +118,7 @@ def on_disconnect():
         
         # Leave the room if the player requested to leave the room, and the game hasn't started yet.
         if username in rooms_info[room]['players'] and room in user_info[username]['leave_requests'] \
-                and not rooms_info[room]['game_started']:
+                and not rooms_info[room]['game_started'] and rooms_info[room]["tournament"] is None:
             # Button should not be clickable if this is a tournament match
             assert rooms_info[room]['tournament'] is None
             # Remove the user as a player from the database

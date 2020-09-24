@@ -94,7 +94,7 @@ def edit_tournament(tourid):
         if len(players) > 0:
             gameid = generate_gameid()
 
-            new_game = Game(nonce=gameid, ended=False, players=players)
+            new_game = Game(nonce=gameid, ended=False, players=players, tournament=tourid)
             equations.db.session.add(new_game)
             
             new_table = {
