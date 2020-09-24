@@ -8,6 +8,7 @@ import equations
 from equations.data import rooms_info, user_info, MapsLock
 from equations.models import Game
 
+
 @equations.app.route("/favicon.ico")
 def show_favicon():
     """Deliver the favicon asset."""
@@ -41,15 +42,7 @@ def show_index():
 
     return flask.render_template("index.html", **context)
 
-@equations.app.route("/create/", methods=['POST'])
-def create_game():
-    """Create a new game."""
-    if 'username' not in flask.session:
-        flask.flash("Please log in before creating a game.")
-        return flask.redirect(flask.url_for('show_index'))
-
-    name = flask.session['username']
-
+def generate_gameid():
     # Generate a unique game id
     game_nonce = None
     while game_nonce is None:
@@ -61,6 +54,19 @@ def create_game():
         if len(conflicting_games) == 0:
             game_nonce = proposed_nonce
     assert game_nonce not in rooms_info
+
+    return game_nonce
+
+@equations.app.route("/create/", methods=['POST'])
+def create_game():
+    """Create a new game."""
+    if 'username' not in flask.session:
+        flask.flash("Please log in before creating a game.")
+        return flask.redirect(flask.url_for('show_index'))
+
+    name = flask.session['username']
+
+    game_nonce = generate_gameid()
 
     # Commit the game to the database
     new_game = Game(nonce=game_nonce, ended=False, players=[name])
