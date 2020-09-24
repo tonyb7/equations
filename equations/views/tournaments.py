@@ -4,7 +4,8 @@ import re
 import copy
 import flask
 import equations
-from equations.models import Groups, Tournaments
+from equations.models import Groups, Tournaments, Game, User
+from equations.views.index import generate_gameid
 
 
 @equations.app.route("/create_tournament/<groupid>/", methods=['GET', 'POST'])
@@ -51,27 +52,90 @@ def create_tournament(groupid):
 
         return flask.redirect(flask.url_for('edit_tournament', tourid=tourid))
 
-    return flask.render_template('create_tournament.html', **context) 
+    return flask.render_template('create_tournament.html', **context)
+
+def construct_tournament_context(tournament, group, editor):
+    context = {
+        "tourid": tournament.id,
+        "tourname": tournament.name,
+        "groupname": group.name,
+        "editor": editor,
+        "owner": 'username' in flask.session and flask.session['username'] in group.owners["owners"],
+        "unassigned": "None",
+        "tables": [] if "tables" not in tournament.table_info else tournament.table_info["tables"],
+    }
+
+    return context
 
 @equations.app.route("/tournament/<tourid>/edit/", methods=['GET', 'POST'])
 def edit_tournament(tourid):
-
-    # TODO Implement a page for a coach to be able to assign tables
-    # https://github.com/tonyb7/equations/issues/103
-    
-    return flask.render_template('edit_tournament.html', **{"tourname": tourid})
-
-@equations.app.route("/tournament/<tourid>/", methods=['GET'])
-def show_tournament(tourid):
-
-    # TODO Implement a page where a tournament's information can be viewed
-    # The table assignments, a button to view the game of each table, etc.
-    # https://github.com/tonyb7/equations/issues/104
-
     tournament = Tournaments.query.filter_by(id=tourid).first()
     if tournament is None:
         flask.flash(f"Tournament with id {tourid} doesn't exist")
         return flask.redirect(flask.url_for('show_index'))
     
-    return flask.render_template('tournament.html', **{"tourname": tournament.name})
+    group = Groups.query.filter_by(id=tournament.group_id).first()
+    assert group is not None
+
+    if 'username' not in flask.session or flask.session['username'] not in group.owners["owners"]:
+        flask.flash(f"You cannot edit a tournament if you are not logged in as an owner of the group which created it!")
+        return flask.redirect(flask.url_for('show_tournament', tourid=tourid))
+    
+    if flask.request.method == 'POST':
+        inputted_players = [flask.request.form["player1"], flask.request.form["player2"], flask.request.form["player3"]]
+        players = []
+        for player in inputted_players:
+            if not player or player in players:
+                continue
+            user = User.query.filter_by(username=player).first()
+            if user is not None:
+                players.append(player)
+            
+        if len(players) > 0:
+            gameid = generate_gameid()
+
+            new_game = Game(nonce=gameid, ended=False, players=players, tournament=tourid)
+            equations.db.session.add(new_game)
+            
+            new_table = {
+                "player1": players[0],
+                "player2": players[1] if len(players) > 1 else "",
+                "player3": players[2] if len(players) > 2 else "",
+                "gameid": gameid,
+            }
+
+            table_info = copy.deepcopy(tournament.table_info)
+            if "tables" not in table_info:
+                table_info["tables"] = []
+
+            table_info["tables"].append(new_table)
+            tournament.table_info = table_info
+            equations.db.session.commit()
+    
+    context = construct_tournament_context(tournament, group, True)
+
+    player_keys = ["player1", "player2", "player3"]
+    assigned = []
+    for table in context["tables"]:
+        for key in player_keys:
+            if len(table[key]) > 0:
+                assigned.append(table[key])
+    
+    unassigned = list(set(group.players["players"]).difference(set(assigned)))
+    if len(unassigned) > 0:
+        context["unassigned"] = ', '.join(unassigned)
+
+    return flask.render_template('tournament.html', **context)
+
+@equations.app.route("/tournament/<tourid>/", methods=['GET'])
+def show_tournament(tourid):
+    tournament = Tournaments.query.filter_by(id=tourid).first()
+    if tournament is None:
+        flask.flash(f"Tournament with id {tourid} doesn't exist")
+        return flask.redirect(flask.url_for('show_index'))
+    
+    group = Groups.query.filter_by(id=tournament.group_id).first()
+    assert group is not None
+
+    return flask.render_template('tournament.html', **construct_tournament_context(tournament, group, False))
 

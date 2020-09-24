@@ -2,8 +2,51 @@
 {% block content %}
 
     <div id="show-tournament">
-        <h2>Tournament {{ tourname }}</h2>
+        <h2>{{ tourname }}</h2>
+        <h3>A Tournament Hosted by {{ groupname }}</h3>
+        {% if editor %}
+            <h4><em>You are a judge and you are currently in "Edit Tables" mode</em></h4>
+            <p>Unassigned players in {{ groupname }}: {{ unassigned }}</p>
+        {% elif owner %}
+            <a href="/tournament/{{ tourid }}/edit/"><button>Assign Tables</button></a>
+        {% endif %}
         
+        <table>
+            <tr>
+                <th><u>Player 1</u></th>
+                <th><u>Player 2</u></th>
+                <th><u>Player 3</u></th>
+                <th><u>Game ID</u></th>
+            </tr>
+            {% for table in tables %}
+                <tr>
+                    <th>{{ table.player1 }}</th>
+                    <th>{{ table.player2 }}</th>
+                    <th>{{ table.player3 }}</th>
+                    <th>{{ table.gameid }}</th>
+                    <th>
+                        <a href="/game/{{ table.gameid }}/"><button>View</button></a>
+                    </th>
+                </tr>
+            {% endfor %}
+
+            {% if editor %}
+                <tr>
+                    <form action="/tournament/{{ tourid }}/edit/" method="post" enctype="multipart/form-data">
+                        <th><input type="text" name="player1"/></th>
+                        <th><input type="text" name="player2"/></th>
+                        <th><input type="text" name="player3"/></th>
+                        <th></th>
+                        <th>
+                            <input type="submit" name="create_table" value="Create Table"/>
+                        </th>
+                    </form>
+                </tr>
+            {% endif %}
+        </table>
+        {% if editor %}
+            <a href="/tournament/{{ tourid }}"><button>Finish Editing</button></a>
+        {% endif %}
     </div>
 
 {% endblock %}
