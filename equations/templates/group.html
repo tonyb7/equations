@@ -18,6 +18,16 @@
     <p>Group ID: {{ id }}</p>
     <p>Group Name: {{ name }}</p>
     <p>Owners: {{ owners }}</p>
+
+    {% if is_owner %}
+        <form action="/group/{{ id }}/" method="post" enctype="multipart/form-data">
+            <th><input type="text" name="new_owner"/></th>
+            <th>
+                <input type="submit" name="add_owner" value="Add New Owner"/>
+            </th>
+        </form>
+    {% endif %}
+
     <p>Players: {{ players }}</p>
 
     {% if is_owner %}

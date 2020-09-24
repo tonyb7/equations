@@ -2,7 +2,7 @@
 
 import flask
 import equations
-from equations.models import Groups, Tournaments
+from equations.models import Groups, Tournaments, User
 import copy
 import re
 
@@ -60,12 +60,23 @@ def construct_group_context(group):
 
 @equations.app.route("/group/<group_id>/", methods=['GET', 'POST'])
 def show_group(group_id):
-    group_info = Groups.query.filter_by(id=group_id).first()
-    if group_info is None:
+    group = Groups.query.filter_by(id=group_id).first()
+    if group is None:
         flask.flash(f"Group with ID {group_id} doesn't exist!")
         return flask.redirect(flask.url_for('show_index'))
-    
-    return flask.render_template("group.html", **construct_group_context(group_info))
+
+    if flask.request.method == 'POST':
+        if 'username' in flask.session and flask.session['username'] in group.owners["owners"]:
+            new_owner = flask.request.form['new_owner']
+            user = User.query.filter_by(username=new_owner).first()
+            if user is not None:
+                owners = copy.deepcopy(group.owners)
+                if new_owner not in owners["owners"]:
+                    owners["owners"].append(new_owner)
+                group.owners = owners
+                equations.db.session.commit()
+
+    return flask.render_template("group.html", **construct_group_context(group))
 
 @equations.app.route("/join_group/", methods=['POST'])
 def join_group():
