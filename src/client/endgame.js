@@ -10,7 +10,7 @@ import { addScoreboardScore, updateTurnText } from './board';
 
 const challengeTextMap = new Map([
     ["a_flub", "Challenge Now"],
-    ["p_flub", "Challenge Never"],
+    ["p_flub", "Challenge Impossible"],
     ["no_goal", "No Goal Declared"],
 ]);
 

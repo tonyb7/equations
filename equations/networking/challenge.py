@@ -16,7 +16,7 @@ REVIEWSTATUS_REJECTED = "REJECTED"
 
 challenge_translation = {
     "a_flub": "Challenge Now",
-    "p_flub": "Challenge Never",
+    "p_flub": "Challenge Impossible",
     "no_goal": "a No Goal",
     "force_out": "Force Out",
 }
