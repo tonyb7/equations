@@ -67,6 +67,58 @@ def construct_tournament_context(tournament, group, editor):
 
     return context
 
+def create_table(tourid, tournament, players, new_table):
+    gameid = generate_gameid()
+    new_table["gameid"] = gameid
+
+    new_game = Game(nonce=gameid, ended=False, players=players, tournament=tourid)
+    equations.db.session.add(new_game)
+
+    table_info = copy.deepcopy(tournament.table_info)
+    print("table info: ", table_info)
+    if "tables" not in table_info:
+        table_info["tables"] = []
+
+    table_info["tables"].append(new_table)
+    tournament.table_info = table_info
+    equations.db.session.commit()
+
+def update_table(tourid, tournament, players, updated_table, gameid):
+    game = Game.query.filter_by(nonce=gameid).first()
+    assert game is not None
+
+    if len(game.cube_index) > 0: # game has started
+        return False
+    
+    game.players = players
+
+    updated_table["gameid"] = gameid
+    table_info = copy.deepcopy(tournament.table_info)
+    for i, table in enumerate(table_info["tables"]):
+        if table["gameid"] == gameid:
+            table_info["tables"][i] = updated_table
+            break
+    tournament.table_info = table_info
+
+    equations.db.session.commit()
+    return True
+
+def delete_table(tourid, tournament, players, gameid):
+    game = Game.query.filter_by(nonce=gameid).first()
+    assert game is not None
+
+    if len(game.cube_index) > 0: # game has started
+        return False
+    
+    equations.db.session.delete(game)
+
+    table_info = copy.deepcopy(tournament.table_info)
+    table_info["tables"] = [table for table in table_info["tables"] if table["gameid"] != gameid]
+    tournament.table_info = table_info
+
+    equations.db.session.commit()
+    return True
+
 @equations.app.route("/tournament/<tourid>/edit/", methods=['GET', 'POST'])
 def edit_tournament(tourid):
     tournament = Tournaments.query.filter_by(id=tourid).first()
@@ -81,7 +133,7 @@ def edit_tournament(tourid):
         flask.flash(f"You cannot edit a tournament if you are not logged in as an owner of the group which created it!")
         return flask.redirect(flask.url_for('show_tournament', tourid=tourid))
     
-    if flask.request.method == 'POST':
+    if flask.request.method == 'POST':        
         inputted_players = [flask.request.form["player1"], flask.request.form["player2"], flask.request.form["player3"]]
         players = []
         for player in inputted_players:
@@ -92,25 +144,26 @@ def edit_tournament(tourid):
                 players.append(player)
             
         if len(players) > 0:
-            gameid = generate_gameid()
-
-            new_game = Game(nonce=gameid, ended=False, players=players, tournament=tourid)
-            equations.db.session.add(new_game)
-            
-            new_table = {
+            table_info = {
                 "player1": players[0],
                 "player2": players[1] if len(players) > 1 else "",
                 "player3": players[2] if len(players) > 2 else "",
-                "gameid": gameid,
+                "gameid": None,
             }
 
-            table_info = copy.deepcopy(tournament.table_info)
-            if "tables" not in table_info:
-                table_info["tables"] = []
-
-            table_info["tables"].append(new_table)
-            tournament.table_info = table_info
-            equations.db.session.commit()
+            if "create_table" in flask.request.form:
+                create_table(tourid, tournament, players, table_info)
+                flask.flash("Successfully created a new table!")
+            elif "update_table" in flask.request.form:
+                if not update_table(tourid, tournament, players, table_info, flask.request.form["gameid"]):
+                    flask.flash(f"Could not update players for game {flask.request.form['gameid']} since that game has started!")
+                else:
+                    flask.flash(f"Successfully updated players for game {flask.request.form['gameid']}")
+            elif "delete_table" in flask.request.form:
+                if not delete_table(tourid, tournament, players, flask.request.form["gameid"]):
+                    flask.flash(f"Could not delete game {flask.request.form['gameid']} since that game has started!")
+                else:
+                    flask.flash(f"Successfully deleted game {flask.request.form['gameid']}")
     
     context = construct_tournament_context(tournament, group, True)
 
