@@ -12,6 +12,7 @@ const challengeTextMap = new Map([
     ["a_flub", "Challenge Now"],
     ["p_flub", "Challenge Impossible"],
     ["no_goal", "No Goal Declared"],
+    ["force_out", "Last Cube Procedure"]
 ]);
 
 export function updateClientOnEndgame(socket, name, endgame_info, players) {
