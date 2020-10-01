@@ -64,3 +64,14 @@ table th button {
 table th input {
     margin-top: 10px;
 }
+
+.button-link {
+    display: block;
+    text-decoration: underline;
+    /* background: #05A6FC; */
+    padding: 10px;
+    text-align: center;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+}

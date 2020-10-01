@@ -94,7 +94,10 @@ function registerSocketCallbacks(name) {
     socket.on("begin_game", (data) => {
         let cubes = data['cubes']
         document.getElementById("start_game").remove();
-        document.getElementById("leave_game_anchor").remove();
+        let leave_game_anchor = document.getElementById("leave_game_anchor");
+        if (leave_game_anchor) {
+            leave_game_anchor.remove();
+        }
         
         appendServerMessage(`${data['starter']} started the game! The cubes have been rolled!`);
         appendServerMessage(`${data['goalsetter']} is chosen to be the goalsetter.`);

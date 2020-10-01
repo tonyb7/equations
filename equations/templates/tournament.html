@@ -17,16 +17,44 @@
                 <th><u>Player 2</u></th>
                 <th><u>Player 3</u></th>
                 <th><u>Game ID</u></th>
+                <th></th>
+                {% if editor %}
+                    <th></th>
+                    <th></th>
+                {% endif %}
             </tr>
             {% for table in tables %}
                 <tr>
-                    <th>{{ table.player1 }}</th>
-                    <th>{{ table.player2 }}</th>
-                    <th>{{ table.player3 }}</th>
-                    <th>{{ table.gameid }}</th>
-                    <th>
-                        <a href="/game/{{ table.gameid }}/"><button>View</button></a>
-                    </th>
+                    {% if editor %}
+                        <tr>
+                            <form action="/tournament/{{ tourid }}/edit/" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="gameid" value="{{ table.gameid }}"/>
+                                <th><input type="text" name="player1" value="{{ table.player1 }}"/></th>
+                                <th><input type="text" name="player2" value="{{ table.player2 }}"/></th>
+                                <th><input type="text" name="player3" value="{{ table.player3 }}"/></th>
+                                <th>{{ table.gameid }}</th>
+                                <th>
+                                    <a href="/game/{{ table.gameid }}/" target="_blank" class="button-link">View</a>
+                                </th>
+                                <th>
+                                    <input type="submit" name="update_table" value="Update"/>
+                                </th>
+                                <th>
+                                    <input type="submit" name="delete_table" value="Delete"/>
+                                </th>
+                            </form>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <th>{{ table.player1 }}</th>
+                            <th>{{ table.player2 }}</th>
+                            <th>{{ table.player3 }}</th>
+                            <th>{{ table.gameid }}</th>
+                            <th>
+                                <a href="/game/{{ table.gameid }}/" target="_blank" class="button-link">View</a>
+                            </th>
+                        </tr>
+                    {% endif %}
                 </tr>
             {% endfor %}
 
@@ -36,7 +64,6 @@
                         <th><input type="text" name="player1"/></th>
                         <th><input type="text" name="player2"/></th>
                         <th><input type="text" name="player3"/></th>
-                        <th></th>
                         <th>
                             <input type="submit" name="create_table" value="Create Table"/>
                         </th>
