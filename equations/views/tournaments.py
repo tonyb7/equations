@@ -42,7 +42,7 @@ def create_tournament(groupid):
             flask.flash(f"A tournament with id {tourid} already exists. Please choose another id.")
             return flask.redirect(flask.url_for('create_tournament', groupid=groupid))
         
-        new_tour = Tournaments(id=tourid, name=tourname, group_id=groupid)
+        new_tour = Tournaments(id=tourid, name=tourname, group_id=groupid, groups=[groupid])
         equations.db.session.add(new_tour)
 
         tournament_dict = copy.deepcopy(group.tournaments)
@@ -61,8 +61,12 @@ def construct_tournament_context(tournament, group, editor):
         "groupname": group.name,
         "editor": editor,
         "owner": 'username' in flask.session and flask.session['username'] in group.owners["owners"],
-        "unassigned": "None",
+        "unassigned": [],
         "tables": [] if "tables" not in tournament.table_info else tournament.table_info["tables"],
+        "can_register": False if tournament.players is None else 
+            'username' in flask.session and flask.session['username'] not in tournament.players,
+        "can_deregister": False if tournament.players is None else 
+            'username' in flask.session and flask.session['username'] in tournament.players,
     }
 
     return context
@@ -78,10 +82,18 @@ def create_table(tourid, tournament, players, new_table):
     print("table info: ", table_info)
     if "tables" not in table_info:
         table_info["tables"] = []
+    
+    print("here 1")
 
     table_info["tables"].append(new_table)
     tournament.table_info = table_info
+
+    print("here 2")
+
     equations.db.session.commit()
+
+    print("here 3")
+
 
 def update_table(tourid, tournament, players, updated_table, gameid):
     game = Game.query.filter_by(nonce=gameid).first()
@@ -167,6 +179,10 @@ def edit_tournament(tourid):
     
     context = construct_tournament_context(tournament, group, True)
 
+    # The rest of this function is code to generate unassigned messages to help the 
+    # tournament editor see who is yet to be assigned from which group, and
+    # whether that player has registered for the tournament or not.
+
     player_keys = ["player1", "player2", "player3"]
     assigned = []
     for table in context["tables"]:
@@ -174,9 +190,32 @@ def edit_tournament(tourid):
             if len(table[key]) > 0:
                 assigned.append(table[key])
     
-    unassigned = list(set(group.players["players"]).difference(set(assigned)))
-    if len(unassigned) > 0:
-        context["unassigned"] = ', '.join(unassigned)
+    assigned_set = set(assigned)
+    registered_set = set(tournament.players)
+
+    assignment_info = []
+    for tournament_group_id in tournament.groups:
+        tournament_group = Groups.query.filter_by(id=tournament_group_id).first()
+        if tournament_group is None:
+            continue
+        
+        unassigned_from_group = set(tournament_group.players["players"]).difference(assigned_set)
+        unregistered_unassigned = unassigned_from_group.difference(registered_set)
+        registered_unassigned = unassigned_from_group.difference(unregistered_unassigned)
+        
+        registered_info = {
+            "label": f"Unassigned registered players from {tournament_group.name}",
+            "unassigned": ', '.join(list(registered_unassigned)) if len(registered_unassigned) > 0 else 'None',    
+        }
+        assignment_info.append(registered_info)
+
+        unregistered_info = {
+            "label": f"Unassigned unregistered players from {tournament_group.name}",
+            "unassigned": ', '.join(list(unregistered_unassigned)) if len(unregistered_unassigned) > 0 else 'None',    
+        }
+        assignment_info.append(unregistered_info)
+
+    context["unassigned"] = assignment_info
 
     return flask.render_template('tournament.html', **context)
 
@@ -191,4 +230,83 @@ def show_tournament(tourid):
     assert group is not None
 
     return flask.render_template('tournament.html', **construct_tournament_context(tournament, group, False))
+
+@equations.app.route("/tournament_register/", methods=['POST'])
+def tournament_register():
+    if 'username' not in flask.session:
+        flask.flash("Please log in before registering for a tournament.")
+        return flask.redirect(flask.url_for('show_index'))
+        
+    tourid = flask.request.form['tourid']
+
+    tournament = Tournaments.query.filter_by(id=tourid).first()
+    if tournament is None:
+        flask.flash(f"Tried to register for tournament with ID {tourid}, but tournament doesn't exist!")
+        return flask.redirect(flask.url_for('show_index'))
+
+    player_list = copy.deepcopy(tournament.players)
+    if flask.session['username'] not in player_list:
+        player_list.append(flask.session['username'])
+    tournament.players = player_list
+
+    equations.db.session.commit()
+
+    return flask.redirect(flask.url_for('show_tournament', tourid=tourid))
+
+@equations.app.route("/tournament_deregister/", methods=['POST'])
+def tournament_deregister():
+    if 'username' not in flask.session:
+        flask.flash("Please log in before deregistering from a tournament.")
+        return flask.redirect(flask.url_for('show_index'))
+
+    tourid = flask.request.form['tourid']
+    
+    tournament = Tournaments.query.filter_by(id=tourid).first()
+    if tournament is None:
+        flask.flash(f"Tried to deregister from tournament with ID {tourid}, but tournament doesn't exist!")
+        return flask.redirect(flask.url_for('show_index'))
+
+    player_list = copy.deepcopy(tournament.players)
+    player_list.remove(flask.session['username'])
+    tournament.players = player_list
+
+    equations.db.session.commit()
+    
+    return flask.redirect(flask.url_for('show_tournament', tourid=tourid))
+
+@equations.app.route("/modify_tournament_groups/", methods=['POST'])
+def modify_tournament_groups():
+    tourid = flask.request.form['tourid']
+    tournament = Tournaments.query.filter_by(id=tourid).first()
+    if tournament is None: 
+        flask.flash(f"Tried to add or remove groups from tournament with ID {tourid}, tournament doesn't exist!")
+        return flask.redirect(flask.url_for('show_index'))
+
+    group = Groups.query.filter_by(id=tournament.group_id).first()
+    assert group is not None
+
+    if 'username' not in flask.session or flask.session['username'] not in group.owners['owners']:
+        flask.flash("You must be logged in as an owner of the group which owns the tournament to add or remove groups")
+        return flask.redirect(flask.url_for('show_tournament', tourid=tourid))
+    
+    groupid = flask.request.form['groupid']
+    group_to_modify = Groups.query.filter_by(id=groupid).first()
+    if group_to_modify is None:
+        flask.flash(f"You tried to add or remove a group with ID {groupid} to tournament "
+                    f"{tourid} but a group with that ID doesn't exist!")
+        return flask.redirect(flask.url_for('edit_tournament', tourid=tourid))
+
+    group_list = copy.deepcopy(tournament.groups)
+    if 'add_group' in flask.request.form:
+        if groupid not in group_list:
+            group_list.append(groupid)
+        flask.flash(f"Successfully added group {groupid} to this tournament")
+    elif 'remove_group' in flask.request.form:
+        group_list.remove(groupid)
+        flask.flash(f"Successfully removed group {groupid} from this tournament")
+    tournament.groups = group_list
+    
+    equations.db.session.commit()
+
+    return flask.redirect(flask.url_for('edit_tournament', tourid=tourid))
 
