@@ -192,6 +192,7 @@ def edit_tournament(tourid):
     
     assigned_set = set(assigned)
     registered_set = set(tournament.players)
+    registered_but_unassigned = registered_set.difference(assigned_set)
 
     assignment_info = []
     for tournament_group_id in tournament.groups:
@@ -202,6 +203,7 @@ def edit_tournament(tourid):
         unassigned_from_group = set(tournament_group.players["players"]).difference(assigned_set)
         unregistered_unassigned = unassigned_from_group.difference(registered_set)
         registered_unassigned = unassigned_from_group.difference(unregistered_unassigned)
+        registered_but_unassigned = registered_but_unassigned.difference(unassigned_from_group)
         
         registered_info = {
             "label": f"Unassigned registered players from {tournament_group.name}",
@@ -214,6 +216,12 @@ def edit_tournament(tourid):
             "unassigned": ', '.join(list(unregistered_unassigned)) if len(unregistered_unassigned) > 0 else 'None',    
         }
         assignment_info.append(unregistered_info)
+    
+    registered_unassigned_nogroup_info = {
+        "label": f"Unassigned registered players who are not part of a group",
+        "unassigned": ', '.join(list(registered_but_unassigned)) if len(registered_but_unassigned) > 0 else 'None',    
+    }
+    assignment_info.append(registered_unassigned_nogroup_info)
 
     context["unassigned"] = assignment_info
 
