@@ -99,12 +99,17 @@ class Tournaments(db.Model):
     name = db.Column(db.String())
     group_id = db.Column(db.String())
     table_info = db.Column(JSON)
+    groups = db.Column(JSON) # ids of groups included in this tournament
+    players = db.Column(JSON) # players who have signed up
 
-    def __init__(self, id=None, name=None, group_id=None, table_info={}):
+    def __init__(self, id=None, name=None, group_id=None, table_info={}, groups=[],
+                 players = []):
         self.id = id
         self.name = name
         self.group_id = group_id
         self.table_info = table_info
+        self.groups = groups
+        self.players = players
     
     def __repr__(self):
         return f"<Tournament {self.id}"

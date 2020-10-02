@@ -15,3 +15,6 @@ from equations.views.groups import create_group
 from equations.views.tournaments import create_tournament
 from equations.views.tournaments import edit_tournament
 from equations.views.tournaments import show_tournament
+from equations.views.tournaments import tournament_register
+from equations.views.tournaments import tournament_deregister
+from equations.views.tournaments import modify_tournament_groups

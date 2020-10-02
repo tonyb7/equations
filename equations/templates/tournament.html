@@ -4,9 +4,33 @@
     <div id="show-tournament">
         <h2>{{ tourname }}</h2>
         <h3>A Tournament Hosted by {{ groupname }}</h3>
+        
+        {% if can_register %}
+            <form action="/tournament_register/" method="post" enctype="multipart/form-data">
+                <input type="submit" name="buttontext" value="Register for Tournament"/>
+                <input type="hidden" name="tourid" value="{{ tourid }}"/>
+            </form>
+        {% endif %}
+        {% if can_deregister %}
+            <form action="/tournament_deregister/" method="post" enctype="multipart/form-data">
+                <input type="submit" name="buttontext" value="Deregister from Tournament"/>
+                <input type="hidden" name="tourid" value="{{ tourid }}"/>
+            </form>
+        {% endif %}
+
         {% if editor %}
-            <h4><em>You are a judge and you are currently in "Edit Tables" mode</em></h4>
-            <p>Unassigned players in {{ groupname }}: {{ unassigned }}</p>
+            <h4><em>You are a judge and you are currently in "Edit Tables" mode</em></h4> <br/>
+            <form action="/modify_tournament_groups/" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="tourid" value="{{ tourid }}"/>
+                <input type="text" name="groupid" />
+                <input type="submit" name="add_group" value="Add Group by ID"/>
+                <input type="submit" name="remove_group" value="Remove Group by ID"/> <br/>
+                (Adding a group will update the unassigned players list to include players from that group)
+            </form> <br/>
+
+            {% for unassigned_info in unassigned %}
+                <p>{{ unassigned_info.label }}: {{ unassigned_info.unassigned }}</p>
+            {% endfor %}
         {% elif owner %}
             <a href="/tournament/{{ tourid }}/edit/"><button>Assign Tables</button></a>
         {% endif %}
