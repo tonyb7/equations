@@ -62,7 +62,7 @@ def construct_tournament_context(tournament, group, editor):
         "editor": editor,
         "owner": 'username' in flask.session and flask.session['username'] in group.owners["owners"],
         "unassigned": [],
-        "registered_players": ', '.join(tournament.players) if len(tournament.players) > 0 else 'None',
+        "registered_players": ', '.join(tournament.players) if tournament.players is not None and len(tournament.players) > 0 else 'None',
         "participating_groups": 'None',
         "tables": [] if "tables" not in tournament.table_info else tournament.table_info["tables"],
         "can_register": False if tournament.players is None else 
@@ -72,11 +72,12 @@ def construct_tournament_context(tournament, group, editor):
     }
 
     participating_groups = []
-    for groupid in tournament.groups:
-        group_obj = Groups.query.filter_by(id=groupid).first()
-        if group_obj is None:
-            continue
-        participating_groups.append(group_obj.name)
+    if tournament.groups is not None:  # to make sure old tournaments (which had no group column) don't break...
+        for groupid in tournament.groups:
+            group_obj = Groups.query.filter_by(id=groupid).first()
+            if group_obj is None:
+                continue
+            participating_groups.append(group_obj.name)
     
     if len(participating_groups) > 0:
         context["participating_groups"] = ', '.join(participating_groups)

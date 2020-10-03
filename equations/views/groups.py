@@ -49,12 +49,13 @@ def construct_group_context(group):
 
     for tourid in group.tournaments["tournaments"]:
         tournament = Tournaments.query.filter_by(id=tourid).first()
-        assert tournament is not None
-        tour_dict = {
-            "id": tournament.id,
-            "name": tournament.name,
-        }
-        context["tournaments"].append(tour_dict)
+        # assert tournament is not None
+        if tournament is not None:  # to make sure old groups don't break...
+            tour_dict = {
+                "id": tournament.id,
+                "name": tournament.name,
+            }
+            context["tournaments"].append(tour_dict)
 
     return context
 
