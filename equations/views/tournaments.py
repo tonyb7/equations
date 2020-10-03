@@ -259,6 +259,8 @@ def tournament_register():
         return flask.redirect(flask.url_for('show_index'))
 
     player_list = copy.deepcopy(tournament.players)
+    if player_list is None:
+        player_list = []
     if flask.session['username'] not in player_list:
         player_list.append(flask.session['username'])
     tournament.players = player_list
@@ -281,6 +283,8 @@ def tournament_deregister():
         return flask.redirect(flask.url_for('show_index'))
 
     player_list = copy.deepcopy(tournament.players)
+    if player_list is None:
+        player_list = []
     player_list.remove(flask.session['username'])
     tournament.players = player_list
 
@@ -311,6 +315,8 @@ def modify_tournament_groups():
         return flask.redirect(flask.url_for('edit_tournament', tourid=tourid))
 
     group_list = copy.deepcopy(tournament.groups)
+    if group_list is None:
+        group_list = []
     if 'add_group' in flask.request.form:
         if groupid not in group_list:
             group_list.append(groupid)
