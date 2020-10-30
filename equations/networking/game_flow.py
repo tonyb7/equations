@@ -366,7 +366,9 @@ def handle_variation_called(info):
     # to be a consecutive sequence of numbers, letters, underscore, hyphen, 
     # exclamation mark, operation signs, apostrophe, and spaces.
     # This operation also serves to sufficiently sanitize what's being added to the DOM.
-    variations = re.findall(r"[-\w'!_+*^\/ ]+", info["content"])
+    # Enforce max inputs string length of 20 (needed if player changed HTML to try 
+    # to outsmart the front-end input box limitation)
+    variations = re.findall(r"[-\w'!_+*^\/ ]+", info["content"][0:20])
     variations = [x.strip().upper() for x in variations] # Convert every string to all uppercase
     variations = list(filter(None, variations))
 
