@@ -147,11 +147,12 @@ body {
     align-items: stretch;
 }
 
-.stats.header p {
+.stats.header {
     font-family: monospace;
     text-align: center;
     font-size: 1.5vw;
     color: white;
+    padding: 1vh;
 }
 
 .stats.the-stats-inner {
@@ -179,7 +180,11 @@ body {
 }
 
 .time-elapsed #elapsed-text {
-    width: 45%;
+    width: 50%;
+}
+
+#scoreboard {
+    padding-bottom: 3vh;
 }
 
 .scores table {
@@ -207,7 +212,7 @@ body {
 }
 
 .time {
-    height: 10vh;
+    height: 12vh;
     
     display: flex;
     flex-direction: row;
@@ -234,7 +239,7 @@ body {
 }
 
 .time-inner-first {
-    height: 50%;
+    height: 55%;
     width: 97%;
 
     display: flex;
@@ -258,7 +263,7 @@ body {
 }
 
 .time-inner-second {
-    height: 50%;
+    height: 45%;
     width: 97%;
 
     display: flex;
@@ -280,6 +285,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-bottom: 3vh;
 }
 
 #variations-header {
@@ -355,26 +361,24 @@ body {
 
 .game {
     width: 75%;
-    /* overflow-y: scroll; */
+    overflow-y: scroll;
 
     display: flex;
     flex-direction: column;
     align-items: stretch;
+}
+
+.wooden-table {
+    background-image: url(../images/wood-horizontal.jpg);
 }
 
 .resources {
-    background-image: url(../images/wood-horizontal.jpg);
-    height: fit-content;
+    height: 24vh;
 
     display: flex;
     flex-direction: column;
     align-items: stretch;
 }
-
-/* .on-sets-cards {
-    height: 100px;
-    overflow-y: scroll;
-} */
 
 .resources.heading {
     height: fit-content;
@@ -399,6 +403,7 @@ body {
 
 #res-button {
     width: 15%;
+    height: 3vh;
 }
 
 .resources.heading button {
@@ -406,6 +411,10 @@ body {
     font-family: monospace;
     transform: translate(50%, 40%);
     border-radius: 2vw;
+}
+
+.resources.cards {
+    height: 900px; /* placeholder height for now */
 }
 
 .button-clicked {
@@ -420,6 +429,8 @@ body {
 .resources.cubes.playable-area {
     height: 88%;
     width: 97%;
+
+    transform: translateY(20%); /* center cubes in resources */
 
     display: flex;
     flex-direction: row;
@@ -454,7 +465,7 @@ body {
 
 .board-outer {
     background-color: wheat;
-    height: 60vh;
+    height: 55vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -661,4 +672,9 @@ body {
 
 button {
     background-color: white !important;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
 }
