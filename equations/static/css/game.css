@@ -525,8 +525,11 @@ body {
 .goal-area.goal-cubes {
     width: 84%;
     height: auto;
-
-    position: relative;
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .goal-area.goal-cubes.play-area {
@@ -535,11 +538,6 @@ body {
 
     width: 95%;
     height: 55%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
 
     display: flex;
     flex-direction: row;
