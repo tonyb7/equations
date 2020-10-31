@@ -364,7 +364,7 @@ body {
 
 .resources {
     background-image: url(../images/wood-horizontal.jpg);
-    height: 30%;
+    height: fit-content;
 
     display: flex;
     flex-direction: column;
@@ -377,7 +377,7 @@ body {
 } */
 
 .resources.heading {
-    height: 20%;
+    height: fit-content;
 
     display: flex;
     flex-direction: row;
@@ -414,7 +414,7 @@ body {
 }
 
 .resources.cubes {
-    height: 80%;
+    height: fit-content%;
 }
 
 .resources.cubes.playable-area {
