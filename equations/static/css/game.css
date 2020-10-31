@@ -330,18 +330,16 @@ body {
 }
 
 .buttons {
-    height: 45%;
-    position: relative;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1vh;
 }
 
 .buttons-inner {
-    height: 90%;
-    width: 90%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -45%);
+    height: fit-content;
+    width: 100%;
 
     text-align: center;
 }
