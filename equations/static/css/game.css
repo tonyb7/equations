@@ -207,18 +207,18 @@ body {
 }
 
 .time {
-    height: 18%;
-    position: relative;
+    height: 10vh;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 .time.inner {
     height: 100%;
-    width: 92%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    width: 100%;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
 
     display: flex;
     flex-direction: column;
