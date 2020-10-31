@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Equations</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/game.css">
-        <!-- <link rel="stylesheet" type="text/css" href="../static/css/game.css"> -->
+        <title>On-Sets</title>
+        <!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css"> -->
+        <link rel="stylesheet" type="text/css" href="../static/css/game.css">
         <style>
-            /* Colors specific to Equations */
+            /* Colors specific to On-Sets */
             .goal-color {
-                background-color: #488CCD;
+                background-color: #743a3f;
             }
             .cube-area-color {
-                background-color: #00CBAE;
+                background-color: #fccf38;
             }
         </style>
         <script language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
@@ -36,7 +36,7 @@
                         <a href="/"><button>Home</button></a>
                     </div>
                     <div id="topbar-right">
-                        <h3>Equations Game Room</h3>
+                        <h3>On-Sets Game Room</h3>
                         <p>Welcome <a id="name">{{ name }}</a>!</p>
                         <p>Share this Room ID for friends to join: <a id="room-nonce">{{ nonce }}</a></p>
                     </div>
@@ -138,17 +138,17 @@
                                     </div>
                                 </div>
                                 <div class="goal-area goal-color">
-                                    <div class="goal-area goal-text">
-                                        <p><b>Goal:</b></p>
-                                    </div>
-                                    <div class="goal-area goal-cubes">
-                                        <div class="goal-area goal-cubes play-area hide-border">
-                                            <canvas class="playable-area hide-border" id="goal-sector"></canvas>
-                                            <div id="btn-div">
-                                                <button id="set-goal-button" class="hidden">Goal Set!</button>
+                                        <div class="goal-area goal-text">
+                                            <p><b>Goal:</b></p>
+                                        </div>
+                                        <div class="goal-area goal-cubes">
+                                            <div class="goal-area goal-cubes play-area hide-border">
+                                                <canvas class="playable-area hide-border" id="goal-sector"></canvas>
+                                                <div id="btn-div">
+                                                    <button id="set-goal-button" class="hidden">Goal Set!</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -175,7 +175,11 @@
                                     </table>
                                 </div>
                             </div>
+                            <!-- <div class="on-sets-cards">
+                                
+                            </div> -->
                         </div>
+                        <!-- <div class="onsets-cards" -->
                     </div>
                     <div class="info">
                         <div class="stats">
@@ -248,7 +252,7 @@
                 </div>
                 <div class="main right mid" id="message-list-div">
                     <ul class="messages" id="message-list">
-                        <li><b>Server: </b>Welcome to Equations!</li>
+                        <li><b>Server: </b>Welcome to On-Sets!</li>
                         <!-- <li><b>Server: </b>Do you wish to write a solution?</li>
                         <li class="chat-button"><button>Yes</button><button>No</button></li> -->
                         <!-- <li><b>Server: </b>Please submit your solution here:</li>

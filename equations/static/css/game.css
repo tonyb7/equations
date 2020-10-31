@@ -378,6 +378,7 @@ body {
 .game {
     height: auto;
     width: 75%;
+    /* overflow-y: scroll; */
 
     display: flex;
     flex-direction: column;
@@ -392,6 +393,11 @@ body {
     flex-direction: column;
     align-items: stretch;
 }
+
+/* .on-sets-cards {
+    height: 100px;
+    overflow-y: scroll;
+} */
 
 .resources.heading {
     height: 20%;
@@ -500,8 +506,6 @@ body {
 }
 
 .goal-area {
-    background-color: #488CCD;
-
     border-top: solid;
     border-color: white;
 
@@ -579,8 +583,6 @@ body {
 }
 
 .play-sector {
-    background-color: #00CBAE;
-
     border-left: solid;
     border-right: solid;
     border-color: white;
