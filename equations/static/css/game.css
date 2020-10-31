@@ -478,7 +478,10 @@ body {
 .board-outer {
     background-color: wheat;
     height: 70%;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .board-inner {
@@ -488,11 +491,6 @@ body {
 
     width: 95%;
     height: 90%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
 
     display: flex;
     flex-direction: column;
