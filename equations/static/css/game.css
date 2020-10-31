@@ -79,29 +79,33 @@ body {
 }
 
 .main.left.top {
-    width: auto;
-    height: 17%;
+    width: 100%;
+    height: fit-content;
 
     text-align: center;
+    margin-bottom: 2vh;
 }
 
 #topbar {
     display: flex;
     flex-direction: row;
+    align-self: center;
 }
 
-#topbar-left {
-    width: 8%;
+#home-link {
+    position: absolute;
+    width: fit-content;
 }
 
-#topbar-left button {
-    transform: translate(-17%, 50%);
+#home-link button {
     border-radius: 2.1vw;
 }
 
-#topbar-right {
-    width: 92%;
-    transform: translate(-5%, 0%);
+#topbar-text {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .main.left.top p, h3 {
@@ -114,7 +118,7 @@ body {
 
 .main.left.bot {
     width: auto;
-    height: 83%;
+    height: fit-content;
 
     display: flex;
     flex-direction: row;
@@ -376,7 +380,6 @@ body {
 }
 
 .game {
-    height: auto;
     width: 75%;
     /* overflow-y: scroll; */
 
