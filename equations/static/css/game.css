@@ -276,32 +276,26 @@ body {
 }
 
 .variations {
-    height: 20%;
-    position: relative;
-
-    /* border:dotted;
-    border-color: white; */
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #variations-header {
-    height: 16%;
+    height: fit-content;
 }
 
 #variations-header p {
     font-family: monospace;
     text-align: center;
     font-size: 1.1vw;
-    transform: translateY(-75%);
     color: white;
 }
 
 #variations-inner {
-    height: 70%;
+    height: fit-content;
     width: 90%;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -35%);
 }
 
 .variations-input {
