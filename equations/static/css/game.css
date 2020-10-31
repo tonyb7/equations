@@ -69,7 +69,7 @@ body {
     margin-top: 2vh;
 }
 
-.main.left {    
+.main.left {
     width: 75%;
 
     display: flex;
@@ -140,39 +140,23 @@ body {
 }
 
 .stats {
-    height: 30%;
+    height: fit-content;
 
     display: flex;
     flex-direction: column;
     align-items: stretch;
 }
 
-.stats.header {
-    height: 16%;
-}
-
 .stats.header p {
     font-family: monospace;
     text-align: center;
     font-size: 1.5vw;
-    transform: translateY(-75%);
     color: white;
 }
 
-.stats.the-stats-outer {
-    height: 84%;
-
-    position: relative;
-}
-
 .stats.the-stats-inner {
-    height: 88%;
-    width: 99%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    margin-right: 0.5vw;
+    margin-left: 0.5vw;
 
     display: flex;
     flex-direction: column;
@@ -180,13 +164,12 @@ body {
 }
 
 .time-elapsed {
-    height: 15%;
+    height: fit-content;
 
     text-align: left;
     font-family: monospace;
     color: white;
     font-size: 1vw;
-    transform: translate(5%, -40%);
 
     display: flex;
     flex-direction: row;
@@ -201,7 +184,7 @@ body {
 
 .scores table {
     height: 85%;
-    width: 95%;
+    width: 100%;
 
     font-family: monospace;
     color: white;
@@ -210,7 +193,6 @@ body {
     overflow-y: scroll;
 
     table-layout: fixed;
-    transform: translate(2.5%, -27%);
 }
 
 .scores table th {
@@ -296,7 +278,7 @@ body {
 .variations {
     height: 20%;
     position: relative;
-    
+
     /* border:dotted;
     border-color: white; */
 }
@@ -348,7 +330,7 @@ body {
     font-size: 1vw;
     font-family: monospace;
     color: white;
-    
+
     text-align: center;
     padding-bottom: 2%;
 }
@@ -528,7 +510,7 @@ body {
 .goal-area.goal-cubes {
     width: 84%;
     height: auto;
-    
+
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -567,7 +549,7 @@ body {
     transform: translate(15%, 90%);
 }
 
-.cube-area {    
+.cube-area {
     height: 65%;
 
     display: flex;
