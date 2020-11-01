@@ -1,5 +1,6 @@
 // Handle timer stuff
 
+import { appendServerMessage } from './message_utils';
 import { socket } from './networking';
 
 let starting_time;
@@ -81,4 +82,9 @@ export function updateGameTimer(time) {
         timer_div.innerHTML = `<p>${time_str}</p>`;
     }, 1000);
 
+}
+
+export function updateTimerOnFlip(info) {
+    appendServerMessage(`${info['flipper']} flipped the timer.`);
+    updateGameTimer(info["last_timer_flip"]);
 }

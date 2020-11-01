@@ -1,7 +1,7 @@
 // Functions to print instructions for variation setting and manage how the
 // variation section looks
 
-import { appendServerMessage } from './message_utils';
+import { appendInstructions, appendServerMessage } from './message_utils';
 import { updateTurnText } from './board';
 
 export function renderVariations(socket, variations_state, players, name) {
@@ -43,5 +43,18 @@ export function renderVariations(socket, variations_state, players, name) {
         console.log("The variation calling stage has already finished");
     }
     
+}
+
+export function handleVariationsFinished(data) {
+    if (data["is_first_shake"]) {
+        appendInstructions();
+        if (data['goalsetter'] === name) {
+            appendServerMessage("Press \"Goal Set!\" when you're done!");
+        }
+        else {
+            appendServerMessage(`Waiting for ${data['goalsetter']} to finish setting the goal...`);
+        }
+    }
+    updateTurnText(data['goalsetter']);
 }
 
