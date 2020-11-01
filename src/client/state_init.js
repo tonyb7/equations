@@ -4,10 +4,11 @@ import { hideGoalSettingButtons, num_resources_cubes, renderGameVisuals } from "
 import { initializeBoardCallbacks, registerGoalSetting, registerLeaveButton, registerStartButton } from "./callbacks";
 import { updateClientOnEndgame } from "./endgame";
 import { renderVariations } from "./variations";
+import { socket } from "./networking";
 
 // Render every visual aspect of the board correctly for a spectator.
 // Required only if game has started
-export function renderSpectatorState(game) {
+export function renderSpectatorState(game, name) {
 
     renderGameVisuals(game);
     renderVariations(socket, game['variations_state'], game['players'], name);
@@ -17,7 +18,7 @@ export function renderSpectatorState(game) {
 
 // Joined as player. Render visuals as well as register callbacks as
 // appropriate (according to whether game has started)
-export function renderPlayerState(game) {
+export function renderPlayerState(game, name) {
     renderGameVisuals(game);
     if (game['game_finished']) {
         return;

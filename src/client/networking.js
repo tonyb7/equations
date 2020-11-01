@@ -9,7 +9,7 @@ import { updateGoalline } from './goal';
 import { handleChallenge, handleForceOut, reviewSolutions, handleRejectionAssent,
          handleReevaluateSolution, handleShakeFinish } from './endgame';
 import { updateTimerOnFlip } from './timing';
-import { renderVariations } from './variations';
+import { handleVariationsFinished, renderVariations } from './variations';
 import { renderPlayerState, renderSpectatorState } from './state_init';
 import { handleGameBegin, handleShakeBegin, handleNextTurn, handleGameOver } from './game_flow';
 
@@ -50,15 +50,15 @@ function registerSocketCallbacks(name) {
                                                          message_info['message']));
     socket.on("server_message", (message) => appendServerMessage(message));
 
-    socket.on("render_spectator_state", (game) => renderSpectatorState(game));
-    socket.on("render_player_state", (game) => renderPlayerState(game));
+    socket.on("render_spectator_state", (game) => renderSpectatorState(game, name));
+    socket.on("render_player_state", (game) => renderPlayerState(game, name));
 
     socket.on("new_player", initializeScoreboard);
     socket.on("player_left", initializeScoreboard);
     
-    socket.on("begin_game", (data) => handleGameBegin(data));
-    socket.on("begin_shake", (data) => handleShakeBegin(data));
-    socket.on("next_turn", (command) => handleNextTurn(command));
+    socket.on("begin_game", (data) => handleGameBegin(data, name));
+    socket.on("begin_shake", (data) => handleShakeBegin(data, name));
+    socket.on("next_turn", (command) => handleNextTurn(command, name));
     socket.on("game_over_clientside", () => handleGameOver());
 
     socket.on("end_shake_no_goal", () => appendEndShakeNoGoal(socket));
@@ -83,8 +83,7 @@ function registerSocketCallbacks(name) {
 
     socket.on("update_variations", (info) => 
         renderVariations(socket, info['variations_state'], info['players'], name));
-    
-    socket.on("variations_finished", (data) => handleVariationsFinished(data));
+    socket.on("variations_finished", (data) => handleVariationsFinished(data, name));
 
     socket.on("timer_flip", (info) => updateTimerOnFlip(info));
 }

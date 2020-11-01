@@ -5,7 +5,6 @@ import { appendInstructions, appendServerMessage } from './message_utils';
 import { updateTurnText } from './board';
 
 export function renderVariations(socket, variations_state, players, name) {
-
     let variations_section = document.getElementById("variations");
     variations_section.classList.remove("hidden");
 
@@ -45,7 +44,7 @@ export function renderVariations(socket, variations_state, players, name) {
     
 }
 
-export function handleVariationsFinished(data) {
+export function handleVariationsFinished(data, name) {
     if (data["is_first_shake"]) {
         appendInstructions();
         if (data['goalsetter'] === name) {

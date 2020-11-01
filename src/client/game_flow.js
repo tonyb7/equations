@@ -6,8 +6,9 @@ import { deregisterBoardCallbacks, initializeBoardCallbacks, registerGoalSetting
 import { appendServerMessage } from "./message_utils";
 import { initializeElapsedTimer } from "./timing";
 import { renderVariations } from "./variations";
+import { socket } from "./networking";
 
-export function handleGameBegin(data) {
+export function handleGameBegin(data, name) {
     let cubes = data['cubes']
     document.getElementById("start_game").remove();
     let leave_game_anchor = document.getElementById("leave_game_anchor");
@@ -30,7 +31,7 @@ export function handleGameBegin(data) {
 
 }
 
-export function handleShakeBegin(data) {
+export function handleShakeBegin(data, name) {
     let new_shake_button = document.getElementById("new_shake_button");
     if (new_shake_button) {
         new_shake_button.remove();
@@ -48,7 +49,7 @@ export function handleShakeBegin(data) {
 
 }
 
-export function handleNextTurn(command) {
+export function handleNextTurn(command, name) {
     let player = command["player"];
     let show_bonus = command["show_bonus"];
     
