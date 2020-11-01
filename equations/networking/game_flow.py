@@ -59,6 +59,7 @@ def start_shake(new_game, is_restart):
     
     if new_game:
         rooms_info[room] = {
+            "gametype": 'eq', # TODO adding os...
             "game_started": True,
             "game_finished": False,
             "tournament": None,

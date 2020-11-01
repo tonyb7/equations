@@ -24,6 +24,7 @@ class Game(db.Model):
     __tablename__ = 'games'
 
     nonce = db.Column(db.String(), primary_key=True)
+    gametype = db.Column(db.String()) # Options: eq, os,
     ended = db.Column(db.Boolean, nullable=False)
     tournament = db.Column(db.String())
     players = db.Column(JSON)
@@ -41,10 +42,11 @@ class Game(db.Model):
     last_timer_flip = db.Column(db.Float)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, nonce, ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
+    def __init__(self, nonce, gametype='eq', ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
                  p3scores=[], variations_state = {}, cube_index=[], resources=[], goal=[],
                  required=[], permitted=[], forbidden=[], turn=None, last_timer_flip=0):
         self.nonce = nonce
+        self.gametype = gametype
         self.ended = ended
         self.tournament = tournament
         self.players = players

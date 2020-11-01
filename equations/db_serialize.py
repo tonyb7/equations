@@ -14,6 +14,7 @@ def db_insert(room, game_info):
     assert len(games) == 1
     game = games[0]
 
+    game.gametype = game_info["gametype"]
     game.ended = ended
     game.tournament = game_info["tournament"]
     game.players = game_info["players"]
@@ -36,6 +37,7 @@ def db_insert(room, game_info):
 def db_deserialize(db_result):
     """Translate db result to game_info dict. Kinda dupe down there."""
     game_info = {
+        "gametype": 'eq' if len(db_result.gametype) == 0 else db_result.gametype,
         "game_started": len(db_result.cube_index) > 0,
         "game_finished": db_result.ended,
         "tournament": db_result.tournament,
