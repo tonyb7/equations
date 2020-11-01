@@ -69,7 +69,7 @@ body {
     margin-top: 2vh;
 }
 
-.main.left {    
+.main.left {
     width: 75%;
 
     display: flex;
@@ -79,29 +79,33 @@ body {
 }
 
 .main.left.top {
-    width: auto;
-    height: 17%;
+    width: 100%;
+    height: fit-content;
 
     text-align: center;
+    margin-bottom: 2vh;
 }
 
 #topbar {
     display: flex;
     flex-direction: row;
+    align-self: center;
 }
 
-#topbar-left {
-    width: 8%;
+#home-link {
+    position: absolute;
+    width: fit-content;
 }
 
-#topbar-left button {
-    transform: translate(-17%, 50%);
+#home-link button {
     border-radius: 2.1vw;
 }
 
-#topbar-right {
-    width: 92%;
-    transform: translate(-5%, 0%);
+#topbar-text {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .main.left.top p, h3 {
@@ -114,7 +118,7 @@ body {
 
 .main.left.bot {
     width: auto;
-    height: 83%;
+    height: fit-content;
 
     display: flex;
     flex-direction: row;
@@ -136,7 +140,7 @@ body {
 }
 
 .stats {
-    height: 30%;
+    height: fit-content;
 
     display: flex;
     flex-direction: column;
@@ -144,31 +148,16 @@ body {
 }
 
 .stats.header {
-    height: 16%;
-}
-
-.stats.header p {
     font-family: monospace;
     text-align: center;
     font-size: 1.5vw;
-    transform: translateY(-75%);
     color: white;
-}
-
-.stats.the-stats-outer {
-    height: 84%;
-
-    position: relative;
+    padding: 1vh;
 }
 
 .stats.the-stats-inner {
-    height: 88%;
-    width: 99%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    margin-right: 0.5vw;
+    margin-left: 0.5vw;
 
     display: flex;
     flex-direction: column;
@@ -176,13 +165,12 @@ body {
 }
 
 .time-elapsed {
-    height: 15%;
+    height: fit-content;
 
     text-align: left;
     font-family: monospace;
     color: white;
     font-size: 1vw;
-    transform: translate(5%, -40%);
 
     display: flex;
     flex-direction: row;
@@ -192,12 +180,16 @@ body {
 }
 
 .time-elapsed #elapsed-text {
-    width: 45%;
+    width: 50%;
+}
+
+#scoreboard {
+    padding-bottom: 3vh;
 }
 
 .scores table {
     height: 85%;
-    width: 95%;
+    width: 100%;
 
     font-family: monospace;
     color: white;
@@ -206,7 +198,6 @@ body {
     overflow-y: scroll;
 
     table-layout: fixed;
-    transform: translate(2.5%, -27%);
 }
 
 .scores table th {
@@ -221,18 +212,18 @@ body {
 }
 
 .time {
-    height: 18%;
-    position: relative;
+    height: 12vh;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 .time.inner {
     height: 100%;
-    width: 92%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    width: 100%;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
 
     display: flex;
     flex-direction: column;
@@ -248,7 +239,7 @@ body {
 }
 
 .time-inner-first {
-    height: 50%;
+    height: 55%;
     width: 97%;
 
     display: flex;
@@ -272,7 +263,7 @@ body {
 }
 
 .time-inner-second {
-    height: 50%;
+    height: 45%;
     width: 97%;
 
     display: flex;
@@ -290,32 +281,27 @@ body {
 }
 
 .variations {
-    height: 20%;
-    position: relative;
-    
-    /* border:dotted;
-    border-color: white; */
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 3vh;
 }
 
 #variations-header {
-    height: 16%;
+    height: fit-content;
 }
 
 #variations-header p {
     font-family: monospace;
     text-align: center;
     font-size: 1.1vw;
-    transform: translateY(-75%);
     color: white;
 }
 
 #variations-inner {
-    height: 70%;
+    height: fit-content;
     width: 90%;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -35%);
 }
 
 .variations-input {
@@ -344,24 +330,22 @@ body {
     font-size: 1vw;
     font-family: monospace;
     color: white;
-    
+
     text-align: center;
     padding-bottom: 2%;
 }
 
 .buttons {
-    height: 45%;
-    position: relative;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1vh;
 }
 
 .buttons-inner {
-    height: 90%;
-    width: 90%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -45%);
+    height: fit-content;
+    width: 100%;
 
     text-align: center;
 }
@@ -376,31 +360,28 @@ body {
 }
 
 .game {
-    height: auto;
     width: 75%;
-    /* overflow-y: scroll; */
+    overflow-y: scroll;
 
     display: flex;
     flex-direction: column;
     align-items: stretch;
+}
+
+.wooden-table {
+    background-image: url(../images/wood-horizontal.jpg);
 }
 
 .resources {
-    background-image: url(../images/wood-horizontal.jpg);
-    height: 30%;
+    height: 24vh;
 
     display: flex;
     flex-direction: column;
     align-items: stretch;
 }
 
-/* .on-sets-cards {
-    height: 100px;
-    overflow-y: scroll;
-} */
-
 .resources.heading {
-    height: 20%;
+    height: fit-content;
 
     display: flex;
     flex-direction: row;
@@ -422,6 +403,7 @@ body {
 
 #res-button {
     width: 15%;
+    height: 3vh;
 }
 
 .resources.heading button {
@@ -431,34 +413,34 @@ body {
     border-radius: 2vw;
 }
 
+.resources.cards {
+    height: 900px; /* placeholder height for now */
+}
+
 .button-clicked {
     background-color: #c6c6c6;
     border: inset;
 }
 
 .resources.cubes {
-    height: 80%;
-    position: relative;
+    height: fit-content;
 }
 
 .resources.cubes.playable-area {
     height: 88%;
     width: 97%;
 
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-49%, -48%);
+    transform: translateY(20%); /* center cubes in resources */
 
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    align-self: center;
 }
 
 .resources.cubes.playable-area table {
     height: 100%;
-    width: 97%;
-    transform: translate(0%, -6%);
+    width: 100%;
 }
 
 .resources.cubes.playable-area th {
@@ -483,8 +465,11 @@ body {
 
 .board-outer {
     background-color: wheat;
-    height: 70%;
-    position: relative;
+    height: 55vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .board-inner {
@@ -494,11 +479,6 @@ body {
 
     width: 95%;
     height: 90%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
 
     display: flex;
     flex-direction: column;
@@ -534,7 +514,10 @@ body {
     width: 84%;
     height: auto;
 
-    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .goal-area.goal-cubes.play-area {
@@ -543,11 +526,6 @@ body {
 
     width: 95%;
     height: 55%;
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
 
     display: flex;
     flex-direction: row;
@@ -574,7 +552,7 @@ body {
     transform: translate(15%, 90%);
 }
 
-.cube-area {    
+.cube-area {
     height: 65%;
 
     display: flex;
@@ -611,8 +589,6 @@ body {
 .play-sector.cubes {
     height: 90%;
     width: 100%;
-
-    position: relative;
 }
 
 .play-sector.cubes.playable-area {
@@ -622,10 +598,7 @@ body {
     width: 90%;
     height: 93%;
 
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -53%);
+    align-self: center;
 
     overflow-y: scroll;
 }
@@ -699,4 +672,9 @@ body {
 
 button {
     background-color: white !important;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
 }

@@ -32,10 +32,10 @@
         <div id="main">
             <div class="main left">
                 <div class="main left top" id="topbar">
-                    <div id="topbar-left">
+                    <div id="home-link">
                         <a href="/"><button>Home</button></a>
                     </div>
-                    <div id="topbar-right">
+                    <div id="topbar-text">
                         <h3>Equations Game Room</h3>
                         <p>Welcome <a id="name">{{ name }}</a>!</p>
                         <p>Share this Room ID for friends to join: <a id="room-nonce">{{ nonce }}</a></p>
@@ -152,7 +152,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="resources">
+                        <div class="resources wooden-table">
                             <div class="resources heading">
                                 <div id="res-text">
                                 </div>
@@ -180,23 +180,21 @@
                     <div class="info">
                         <div class="stats">
                             <div class="stats header">
-                                <p>Game Stats</p>
+                                Game Stats
                             </div>
-                            <div class="stats the-stats-outer">
-                                <div class="stats the-stats-inner">
-                                    <div class="time-elapsed">
-                                        <div id="elapsed-text">Time Elapsed: </div>
-                                        <div id="elapsed">00:00</div>
-                                    </div>
-                                    <div class="scores">
-                                        <table id="scoreboard">
-                                            <tr>
-                                                <th>--------</th>
-                                                <th>--------</th>
-                                                <th>--------</th>
-                                            </tr>
-                                        </table>
-                                    </div>
+                            <div class="stats the-stats-inner">
+                                <div class="time-elapsed">
+                                    <div id="elapsed-text">Time Elapsed: </div>
+                                    <div id="elapsed">00:00</div>
+                                </div>
+                                <div class="scores">
+                                    <table id="scoreboard">
+                                        <tr>
+                                            <th>--------</th>
+                                            <th>--------</th>
+                                            <th>--------</th>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -229,14 +227,14 @@
                         <div class="buttons">
                             <div class="buttons-inner" id="buttons-div">
                                 <!-- hidden ones are unimplemented buttons -->
-                                <button id="start_game">Start Game</button> <br/>
-                                <button id="flip_timer">Flip Timer</button> <br/>
-                                <button id="call_judge" class="hidden">Call a Judge</button> <br/>
-                                <button id="a_flub">Challenge Now</button> <br/>
-                                <button id="p_flub">Challenge Impossible</button> <br/>
-                                <button id="no_goal">Declare No Goal</button> <br/>
-                                <button id="claim_warning" class="hidden">Call 10 Second Warning</button> <br/>
-                                <button id="claim_minus_one" class="hidden">Claim -1</button> <br/>
+                                <button id="start_game">Start Game</button>
+                                <button id="flip_timer">Flip Timer</button>
+                                <button id="call_judge" class="hidden">Call a Judge</button>
+                                <button id="a_flub">Challenge Now</button>
+                                <button id="p_flub">Challenge Impossible</button>
+                                <button id="no_goal">Declare No Goal</button>
+                                <button id="claim_warning" class="hidden">Call 10 Second Warning</button>
+                                <button id="claim_minus_one" class="hidden">Claim -1</button>
                             </div>
                         </div>
                     </div>
