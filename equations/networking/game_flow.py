@@ -12,6 +12,7 @@ from equations.db_serialize import db_insert
 from equations.data import rooms_info, user_info, socket_info, MapsLock
 from equations.data import get_name_and_room, get_current_mover
 from equations.networking.challenge import handle_force_out
+from equations.models import Game
 from flask_socketio import emit
 
 # Constant to represent index of a moved cube in resources list
@@ -58,8 +59,11 @@ def start_shake(new_game, is_restart):
             (rooms_info[room]['goalsetter_index'] - 1) % len(rooms_info[room]['players'])
     
     if new_game:
+        game = Game.query.filter_by(nonce=room).first()
+        assert game is not None
+
         rooms_info[room] = {
-            "gametype": 'eq', # TODO adding os...
+            "gametype": game.gametype,
             "game_started": True,
             "game_finished": False,
             "tournament": None,
