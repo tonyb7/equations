@@ -18,3 +18,5 @@ from equations.views.tournaments import show_tournament
 from equations.views.tournaments import tournament_register
 from equations.views.tournaments import tournament_deregister
 from equations.views.tournaments import modify_tournament_groups
+
+from equations.views.index import show_cease_and_desist
