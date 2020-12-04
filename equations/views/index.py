@@ -16,10 +16,6 @@ def show_favicon():
         equations.app.root_path, 'static', 'images'), 'favicon.ico')
 
 @equations.app.route("/", methods=['GET'])
-def show_cease_and_desist():
-    return flask.render_template("takedown.html")
-
-@equations.app.route("/kxmasaaweioijefkd/", methods=['GET'])
 def show_index():
     """Show homepage."""
     context = {
