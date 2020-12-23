@@ -10,36 +10,58 @@ import { socket } from "./networking";
 // Required only if game has started
 export function renderSpectatorState(game, name) {
 
-    renderGameVisuals(game);
-    renderVariations(socket, game['variations_state'], game['players'], name);
-    updateClientOnEndgame(socket, name, game['endgame'], game['players']);
+    if (game['gametype'] == 'eq') {
+        renderGameVisuals(game);
+        renderVariations(socket, game['variations_state'], game['players'], name);
+        updateClientOnEndgame(socket, name, game['endgame'], game['players']);    
+    }
+    else if (game['gametype'] == 'os') {
+        // TODO
+
+
+    }
+    else {
+        console.log("Error: Can't render spectator state, unrecognized game type ", game['gametype']);
+    }
 
 }
 
 // Joined as player. Render visuals as well as register callbacks as
 // appropriate (according to whether game has started)
 export function renderPlayerState(game, name) {
-    renderGameVisuals(game);
-    if (game['game_finished']) {
-        return;
-    }
 
-    if (game['game_started']) {
-        initializeBoardCallbacks(socket, show_bonus_for(game, name));
-        registerGoalSetting(socket, name, game['players'][game['turn']], !game["goalset"]);
+    if (game['gametype'] == 'eq') {
+        renderGameVisuals(game);
+        if (game['game_finished']) {
+            return;
+        }
 
-        renderVariations(socket, game['variations_state'], game['players'], name);
-        updateClientOnEndgame(socket, name, game['endgame'], game['players']);
+        if (game['game_started']) {
+            initializeBoardCallbacks(socket, show_bonus_for(game, name));
+            registerGoalSetting(socket, name, game['players'][game['turn']], !game["goalset"]);
 
-        console.log("challenge recorded: ", game['challenge']);
-        if (game['challenge'] === "no_goal") {
-            hideGoalSettingButtons();
+            renderVariations(socket, game['variations_state'], game['players'], name);
+            updateClientOnEndgame(socket, name, game['endgame'], game['players']);
+
+            console.log("challenge recorded: ", game['challenge']);
+            if (game['challenge'] === "no_goal") {
+                hideGoalSettingButtons();
+            }
+        }
+        else {
+            registerStartButton(socket);
+            registerLeaveButton(socket, game, name);
         }
     }
-    else {
-        registerStartButton(socket);
-        registerLeaveButton(socket, game, name);
+    else if (game['gametype'] == 'os') {
+        // TODO ONSETS
+
+
     }
+    else {
+        console.log("Error: Can't render player state, unrecognized game type ", game['gametype']);
+    }
+
 }
 
 // Determine whether bonus button should be rendered for player in game

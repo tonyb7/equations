@@ -187,6 +187,24 @@ export function appendEndShakeNoGoal(socket) {
             />);
 }
 
+export function appendUniverseSizePrompt(socket) {
+    // // <li><b>Server: </b>Please indicate how many cards you would like to set in the universe:</li>
+    // // <li class="universe_li">
+    // //     <input class="solution_box" placeholder="" maxlength="2">
+    // //     <button class="solution_submit">Set Universe</button>
+    // // </li>
+    appendServerMessage("Please indicate how many cards you would like to set in the universe:");
+    let universe_prompt_area = document.createElement('li');
+    universe_prompt_area.classList.add("universe_li");
+
+    renderAndScroll(
+        universe_prompt_area,
+        <UniversePrompt
+            onSubmit={(numCardsStr) => socket.emit("universe_set", numCardsStr)}
+        />
+    );
+}
+
 export function printFiveMinWarningMsg() {
     let li = document.createElement('li');
 

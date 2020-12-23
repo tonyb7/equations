@@ -10,7 +10,7 @@ import time
 import re
 from equations.db_serialize import db_insert
 from equations.data import rooms_info, user_info, socket_info, MapsLock
-from equations.data import get_name_and_room, get_current_mover
+from equations.data import get_name_and_room, get_current_mover, get_previous_mover
 from equations.networking.challenge import handle_force_out
 from equations.models import Game
 from flask_socketio import emit
@@ -116,10 +116,12 @@ def start_shake(new_game, is_restart):
         db_insert(room, rooms_info[room])
 
         game_begin_instructions = {
+            'gametype': rooms_info[room]["gametype"],
             'cubes': rolled_cubes,
             'players': current_players,
             'starter': name,
             'goalsetter': get_current_mover(room),
+            'cardsetter': get_previous_mover(room),
             'starttime': rooms_info[room]['starttime'],
             'variations_state': rooms_info[room]['variations_state'],
         }
@@ -156,10 +158,13 @@ def start_shake(new_game, is_restart):
         db_insert(room, rooms_info[room])
 
         goalsetter = get_current_mover(room)
+        cardsetter = get_previous_mover(room)
         shake_begin_instructions = {
+            'gametype': rooms_info[room]["gametype"],
             'cubes': rolled_cubes,
             'players': current_players,
             'goalsetter': goalsetter,
+            'cardsetter': cardsetter,
             'show_bonus': not is_leading(room, goalsetter),
             'variations_state': rooms_info[room]['variations_state'],
         }
@@ -193,6 +198,10 @@ def handle_cube_click(pos):
             or turn_user != user:
         return
 
+    if rooms_info[room]['gametype'] == 'os' and rooms_info[room]['onsets_cards_dealt'] == 0:
+        emit("server_message", f"Please wait for cards to be dealt and variations to be called before moving a cube!")
+        return
+    
     # Cannot move cubes before finishing calling variations
     if rooms_info[room]['variations_state']['num_players_called'] < len(rooms_info[room]['players']):
         emit("server_message", "Please wait for variations to be called before moving a cube!")
@@ -375,6 +384,10 @@ def handle_variation_called(info):
 
     assert info["player"] == name
 
+    if rooms_info[room]['gametype'] == 'os' and rooms_info[room]['onsets_cards_dealt'] == 0:
+        emit("server_message", f"{name} tried to call variations, but cards have not been dealt yet. Variation not recorded.")
+        return
+
     # Split provided string into variations. A variation in the string is considered
     # to be a consecutive sequence of numbers, letters, underscore, hyphen, 
     # exclamation mark, operation signs, apostrophe, and spaces.
@@ -406,4 +419,33 @@ def handle_variation_called(info):
         }
         emit("variations_finished", variations_finished_info, room=room)
 
+@equations.socketio.on("universe_set")
+def handle_universe_set(numCardsStr):
+    """Player specified how many cards to set in the universe."""
+    MapsLock()
+    [name, room] = get_name_and_room(flask.request.sid)
+
+    assert room in rooms_info
+    if rooms_info[room]['onsets_cards_dealt'] != 0:
+        print("Can't set universe if universe is already set")
+        return
     
+    if int(numCardsStr) < 6 or int(numCardsStr) > 14:
+        error_info = {
+            'cardsetter': name,
+            'numCardsStr': numCardsStr,
+        }
+        emit("universe_wrong_size", error_info, room=room)
+        return
+    
+    rooms_info[room]['onsets_cards_dealt'] = int(numCardsStr)
+
+    univ_set_info = {
+        'cardsetter': name,
+        'numCardsStr': numCardsStr,
+        'onsets_cards': rooms_info[room]['onsets_cards'],
+        'variations_state': rooms_info[room]['variations_state'],
+        'players': rooms_info[room]['players'],
+    }
+    emit("universe_set", univ_set_info, room=room)
+

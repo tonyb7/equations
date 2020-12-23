@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import PropTypes from 'prop-types';
 import styles from './ChatMessages.module.css';
+import { appendUniverseSizePrompt } from "../message_utils";
 
 /** Keeping track of the different UI types that can show up in the chat log */
 const MESSAGE_TYPES = [
@@ -148,4 +149,40 @@ export function SolutionPrompt(props) {
             >Submit Solution</button>
     </>
 
+}
+
+UniversePrompt.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+}
+export function UniversePrompt(props) {
+
+    const [value, setValue] = useState('');
+    const [submitted, setSubmitted] = useState(false);
+
+    let buttonClassNames = ['solution_submit'];
+    if (submitted) {
+        buttonClassNames.push('hidden');
+    }
+
+    function submitButtonClick() {
+        if (submitted) {
+            return;
+        }
+        setSubmitted(true);
+        props.onSubmit(value);
+    }
+
+    return <>
+        <input 
+        className='solution_box'
+        placeholder=''
+        onChange={(e) => setValue(e.target.value)}
+        maxLength='2'
+        disabled={submitted}
+        />
+        <button
+            className={buttonClassNames.join(' ')}
+            onClick={submitButtonClick}
+            >Set Universe</button>
+    </>
 }

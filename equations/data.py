@@ -80,11 +80,16 @@ def get_current_mover(room):
     turn_idx = rooms_info[room]['turn']
     return rooms_info[room]['players'][turn_idx]
 
+def get_next_mover(room):
+    """Return the next mover in the room."""
+    assert room in rooms_info
+    assert rooms_info[room]['game_started']
+    next_mover_idx = (rooms_info[room]['turn'] + 1) % len(rooms_info[room]["players"])
+    return rooms_info[room]['players'][next_mover_idx]
+
 def get_previous_mover(room):
     """Return whoever just moved. Returns None if no moves have been made yet."""
     assert room in rooms_info
-    if not rooms_info[room]["goalset"]:
-        return None 
-    
+    assert rooms_info[room]['game_started']
     previous_mover_index = (rooms_info[room]['turn'] - 1) % (len(rooms_info[room]["players"]))
     return rooms_info[room]['players'][previous_mover_index]

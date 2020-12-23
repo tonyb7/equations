@@ -676,6 +676,10 @@ body {
     transform: translateX(85%);
 }
 
+.universe_li {
+    width: 35%;
+}
+
 button {
     background-color: white !important;
 }

@@ -23,6 +23,7 @@ from equations.networking.game_flow import handle_set_goal
 from equations.networking.game_flow import handle_bonus_click
 from equations.networking.game_flow import handle_call_judge
 from equations.networking.game_flow import handle_variation_called
+from equations.networking.game_flow import handle_universe_set
 
 from equations.networking.goalsetting import update_cube_xpos
 from equations.networking.goalsetting import update_cube_orientation
