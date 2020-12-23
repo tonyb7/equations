@@ -16,7 +16,8 @@ export function renderSpectatorState(game, name) {
         updateClientOnEndgame(socket, name, game['endgame'], game['players']);    
     }
     else if (game['gametype'] == 'os') {
-        // TODO
+        
+        // TODO ONSETS
 
 
     }

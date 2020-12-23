@@ -30,6 +30,10 @@ export function universeWrongSize(errorInfo, name) {
     }
 }
 
+// This function should render the first numCards elements of the onsets_cards
+// array in the appropriate section of the game page.
+// numCards: integer 
+// onsets_cards: array of the card filenames
 export function displayUniverse(numCards, onsets_cards) {
 
     // TODO ONSETS
