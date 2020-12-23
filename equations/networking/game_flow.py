@@ -91,6 +91,7 @@ def start_shake(new_game, is_restart):
             "cube_index": rolled_cubes[:], 
             "resources": rolled_cubes,  # fixed length of 24
             "onsets_cards": onsets_cards if game.gametype == 'os' else [],
+            "onsets_cards_dealt": 0,
             "goal": [],  # stores cube id, x pos on canvas, orientation of cube
             "required": [], # stores cube ids (based on cube_index); same for 2 below
             "permitted": [],
@@ -129,6 +130,7 @@ def start_shake(new_game, is_restart):
         rooms_info[room]["cube_index"] = rolled_cubes[:]
         rooms_info[room]["resources"] = rolled_cubes
         rooms_info[room]["onsets_cards"] = onsets_cards if rooms_info[room]['gametype'] == 'os' else []
+        rooms_info[room]["onsets_cards_dealt"] = 0
         rooms_info[room]["goal"] = []
         rooms_info[room]["required"] = []
         rooms_info[room]["permitted"] = []
