@@ -141,7 +141,7 @@ def show_game(nonce):
     
     context = {
         "nonce": nonce,
-        "name": flask.session['username'],
+        "name": name,
     }
 
     if len(game_info.gametype) == 0 or game_info.gametype == 'eq':

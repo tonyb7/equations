@@ -23,6 +23,7 @@ def db_insert(room, game_info):
     game.p3scores = game_info["p3scores"] if "p3scores" in game_info else []
     game.variations_state = game_info["variations_state"] if "variations_state" in game_info else []
     game.cube_index = game_info["cube_index"] if "cube_index" in game_info else []
+    game.onsets_cards = game_info["onsets_cards"] if "onsets_cards" in game_info else []
     game.resources = game_info["resources"] if "resources" in game_info else []
     game.goal = game_info["goal"] if "goal" in game_info else []
     game.required = game_info["required"] if "required" in game_info else []
@@ -51,6 +52,7 @@ def db_deserialize(db_result):
         "starttime": json.dumps(db_result.created, sort_keys=True, default=str),  
         "last_timer_flip": db_result.last_timer_flip if db_result.last_timer_flip != 0 else None,
         "cube_index": db_result.cube_index,
+        "onsets_cards": db_result.onsets_cards if db_result.onsets_cards else [],
         "resources":  db_result.resources,
         "goal":  db_result.goal,
         "required":  db_result.required,

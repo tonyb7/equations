@@ -53,6 +53,10 @@ def start_shake(new_game, is_restart):
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
 
+    # Take the first n cards when player specifies they want to deal n cards
+    onsets_cards = ['card' + (str(x) if x > 9 else '0' + str(x)) + '.png' for x in range(16)]
+    random.shuffle(onsets_cards)
+
     if is_restart:
         # Goalsetter needs to be the same as the previous shake.
         rooms_info[room]['goalsetter_index'] = \
@@ -86,6 +90,7 @@ def start_shake(new_game, is_restart):
             # corresponding cube is given by the file "rx.png" (where x is replaced w/#)
             "cube_index": rolled_cubes[:], 
             "resources": rolled_cubes,  # fixed length of 24
+            "onsets_cards": onsets_cards if game.gametype == 'os' else [],
             "goal": [],  # stores cube id, x pos on canvas, orientation of cube
             "required": [], # stores cube ids (based on cube_index); same for 2 below
             "permitted": [],
@@ -123,6 +128,7 @@ def start_shake(new_game, is_restart):
         rooms_info[room]["last_timer_flip"] = None
         rooms_info[room]["cube_index"] = rolled_cubes[:]
         rooms_info[room]["resources"] = rolled_cubes
+        rooms_info[room]["onsets_cards"] = onsets_cards if rooms_info[room]['gametype'] == 'os' else []
         rooms_info[room]["goal"] = []
         rooms_info[room]["required"] = []
         rooms_info[room]["permitted"] = []
