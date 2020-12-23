@@ -14,18 +14,18 @@ export function setUniverse(univ_set_info, name) {
     renderVariations(socket, univ_set_info['variations_state'], univ_set_info['players'], name);
 }
 
-export function universeWrongSize(errorInfo, name) {
+export function universeError(errorInfo, name) {
     let cardsetter = errorInfo['cardsetter'];
-    let numCards = parseInt(errorInfo['numCardsStr']);
+    let numCardsStr = errorInfo['numCardsStr'];
  
     if (cardsetter == name) {
-        appendServerMessage(`You set a universe with ${numCards} cards, which is invalid.`);
+        appendServerMessage(`You tried to set a universe with ${numCardsStr} cards, which is invalid.`);
         appendServerMessage(`If you are not in Senior Division, please set a universe between 6 and 12 cards.`);
         appendServerMessage(`If you are in Senior Division, please set a universe between 10 and 14 cards.`);
         appendUniverseSizePrompt(socket);
     }
     else {
-        appendServerMessage(`${cardsetter} set ${numCards} cards in the universe, which is invalid.`);
+        appendServerMessage(`${cardsetter} tried to set ${numCardsStr} cards in the universe, which is invalid.`);
         appendServerMessage(`Waiting for ${cardsetter} to set a universe with valid size...`);
     }
 }

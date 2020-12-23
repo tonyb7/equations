@@ -10,7 +10,7 @@ import { handleChallenge, handleForceOut, reviewSolutions, handleRejectionAssent
          handleReevaluateSolution, handleShakeFinish } from './endgame';
 import { updateTimerOnFlip } from './timing';
 import { handleVariationsFinished, renderVariations } from './variations';
-import { setUniverse, universeWrongSize } from './universe';
+import { setUniverse, universeError } from './universe';
 import { renderPlayerState, renderSpectatorState } from './state_init';
 import { handleGameBegin, handleShakeBegin, handleNextTurn, handleGameOver } from './game_flow';
 
@@ -89,7 +89,7 @@ function registerSocketCallbacks(name) {
     socket.on("timer_flip", (info) => updateTimerOnFlip(info));
 
     socket.on("universe_set", (univ_set_info) => setUniverse(univ_set_info, name));
-    socket.on("universe_wrong_size", (error_info) => universeWrongSize(error_info, name));
+    socket.on("universe_error", (error_info) => universeError(error_info, name));
 }
 
 export function sendChatMessage(text) {

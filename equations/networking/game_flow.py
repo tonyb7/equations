@@ -430,15 +430,21 @@ def handle_universe_set(numCardsStr):
         print("Can't set universe if universe is already set")
         return
     
-    if int(numCardsStr) < 6 or int(numCardsStr) > 14:
+    numCards = 0
+    try:
+        numCards = int(numCardsStr)
+    except:
+        numCards = -1
+
+    if numCards < 6 or numCards > 14:
         error_info = {
             'cardsetter': name,
             'numCardsStr': numCardsStr,
         }
-        emit("universe_wrong_size", error_info, room=room)
+        emit("universe_error", error_info, room=room)
         return
     
-    rooms_info[room]['onsets_cards_dealt'] = int(numCardsStr)
+    rooms_info[room]['onsets_cards_dealt'] = numCards
 
     univ_set_info = {
         'cardsetter': name,
