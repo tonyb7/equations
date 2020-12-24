@@ -35,6 +35,8 @@ export function handleGameBegin(data, name) {
     }
     else if (gametype == 'os') {
 
+        /* ON-SETS SPECIFIC */
+
         let cardsetter = data['cardsetter'];
 
         // TODO: Should cubes be rolled first, or universe set first? Rulebook seems to say they happen simulatneously...
@@ -84,7 +86,10 @@ export function handleShakeBegin(data, name) {
         registerGoalSetting(socket, name, firstmover, true);
     }
     else if (gametype == 'os') {
+       
+        /* ON-SETS SPECIFIC */
         // TODO ONSETS
+
 
 
     }

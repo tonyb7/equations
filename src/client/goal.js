@@ -3,7 +3,7 @@
 // Dragging functionality taken from https://stackoverflow.com/a/24938627/8157027
 // drawRotated taken from // https://stackoverflow.com/a/17412387/8157027
 
-import { getAssetClone } from './assets';
+import { getEquationsAssetClone } from './assets';
 import { socket } from './networking';
 
 let canvas;
@@ -285,12 +285,12 @@ export function initializeGoalCanvas(game_info, cube_idx) {
     window.onresize = resizeGoalsettingCanvas;
 
     for (let cube_info of game_info) {
-        let image = getAssetClone(cube_info['idx'], cube_idx);
+        let image = getEquationsAssetClone(cube_info['idx'], cube_idx);
         image.onload = drawCubes;
         cubes.push({
             order: cubes.length,  // index within the cubes array 
             idx: cube_info['idx'],
-            cube: getAssetClone(cube_info['idx'], cube_idx),
+            cube: getEquationsAssetClone(cube_info['idx'], cube_idx),
             cube_pos_x: getBoundedXPos(cube_info['x'] * canvas.width/1000),
             isDragging: false,
             orientation: cube_info['orientation'],

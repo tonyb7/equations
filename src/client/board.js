@@ -1,5 +1,5 @@
 // Functions related to moving cubes around the board
-import { getAssetClone } from './assets';
+import { getEquationsAssetClone } from './assets';
 import { emitCubeClicked, bonusButtonCallback } from './networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
          clearGoalCanvas, addCubeToGoal, initializeGoalsettingGlobals } from './goal';
@@ -29,7 +29,7 @@ export function renderResources(cubes) {
         }
 
         let relevant_th = resources_div.querySelector(`#r${i}`);
-        let image_clone = getAssetClone(i, cubes);
+        let image_clone = getEquationsAssetClone(i, cubes);
 
         image_clone.onmouseover = () => {
             image_clone.classList.add("show-border");
@@ -71,7 +71,7 @@ function fillSector(cubes, sectorid, cube_idx) {
         let relevant_th = document.getElementById(`${sector_code_map.get(sectorid)}${i}`);
         let idx = cubes[i]; // idx is the position that cube was in resources originally
 
-        relevant_th.appendChild(getAssetClone(idx, cube_idx));
+        relevant_th.appendChild(getEquationsAssetClone(idx, cube_idx));
     }
 }
 

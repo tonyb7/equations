@@ -17,6 +17,8 @@ export function renderSpectatorState(game, name) {
     }
     else if (game['gametype'] == 'os') {
         
+        /* ON-SETS SPECIFIC */
+
         // TODO ONSETS
 
 
@@ -55,6 +57,9 @@ export function renderPlayerState(game, name) {
         }
     }
     else if (game['gametype'] == 'os') {
+
+        /* ON-SETS SPECIFIC */
+
         // TODO ONSETS
 
 

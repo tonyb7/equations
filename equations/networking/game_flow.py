@@ -84,10 +84,14 @@ def start_shake(new_game, is_restart):
             },
             "starttime": time.time(),
             "last_timer_flip": None,
-            # cube_index is poorly named. fixed length of 24, index is cube's id.
-            # first six are red, next six are blue, next six are green, last six are black.
-            # so if the first element of cube_index was x (where 0 <= x <= 5), the
-            # corresponding cube is given by the file "rx.png" (where x is replaced w/#)
+            # cube_index: fixed length of 24, index is cube's id.
+            # For equations, the first six are red, next six are blue, next six are green, 
+            # last six are black. So if the first element of cube_index was x 
+            # (where 0 <= x <= 5), the corresponding cube is given by the file "rx.png" 
+            # (where x is replaced w/#).
+            # For On-Sets, only the first 18 elements of this array are considered.
+            # The first 8 are colors, next 4 are operations, next 3 are restrictions,
+            # and last 3 are digits.
             "cube_index": rolled_cubes[:], 
             "resources": rolled_cubes,  # fixed length of 24
             "onsets_cards": onsets_cards if game.gametype == 'os' else [],
@@ -448,7 +452,7 @@ def handle_universe_set(numCardsStr):
 
     univ_set_info = {
         'cardsetter': name,
-        'numCardsStr': numCardsStr,
+        'numCards': numCards,
         'onsets_cards': rooms_info[room]['onsets_cards'],
         'variations_state': rooms_info[room]['variations_state'],
         'players': rooms_info[room]['players'],

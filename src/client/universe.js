@@ -1,10 +1,13 @@
+import { getOnsetsCardAssetClone } from "./assets";
 import { appendServerMessage, appendUniverseSizePrompt } from "./message_utils";
 import { socket } from "./networking";
 import { renderVariations } from "./variations";
 
+/* ON-SETS SPECIFIC */
+
 export function setUniverse(univ_set_info, name) {
     let cardsetter = univ_set_info['cardsetter'];
-    let numCards = parseInt(univ_set_info['numCardsStr']);
+    let numCards = univ_set_info['numCards'];
     let onsets_cards = univ_set_info['onsets_cards'];
 
     appendServerMessage(`${cardsetter} set ${numCards} cards in the universe!`);
@@ -36,6 +39,20 @@ export function universeError(errorInfo, name) {
 // onsets_cards: array of the card filenames
 export function displayUniverse(numCards, onsets_cards) {
 
-    // TODO ONSETS
+    // TODO ONSETS: Allow player to rearrange cards? Or calculate
+    // shape of cards that is most easy to the eye? (Rather than just a
+    // straight layout)
+    console.log("Displaying On-Sets Universe");
+    let cards_div = document.getElementById("resources-cards");
+
+    for (let i = 0; i < numCards; ++i) {
+        let relevant_th = cards_div.querySelector(`#c${i}`);
+        let card_clone = getOnsetsCardAssetClone(onsets_cards[i]);
+
+        relevant_th.appendChild(card_clone);
+    }
+
+    console.log("Finished displaying On-Sets universe");
 
 }
+

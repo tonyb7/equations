@@ -88,6 +88,7 @@ function registerSocketCallbacks(name) {
 
     socket.on("timer_flip", (info) => updateTimerOnFlip(info));
 
+    /* ON-SETS SPECIFIC */
     socket.on("universe_set", (univ_set_info) => setUniverse(univ_set_info, name));
     socket.on("universe_error", (error_info) => universeError(error_info, name));
 }
