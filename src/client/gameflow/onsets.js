@@ -5,6 +5,7 @@ import { clearBoard } from "../board/clear";
 import { renderResources } from "../board/board";
 import { initializeBoardCallbacks } from "../callbacks/callbacks";
 import { registerGoalSettingCallbacks } from "../callbacks/goal";
+import { renderUniversePrompt } from "../universe";
 
 // TODO ONSETS: Should cubes be rolled first, or universe set first? 
 // Rulebook seems to say they happen simulatneously...
