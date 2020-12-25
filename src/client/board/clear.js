@@ -44,3 +44,11 @@ function clearResources() {
         th.innerHTML = '';
     }
 }
+
+export function clearCards() {
+    let cards_div = document.getElementById("resources-cards");
+    for (let i = 0; i < 18; ++i) {
+        let th = cards_div.querySelector(`#c${i}`);
+        th.innerHTML = '';
+    }
+}

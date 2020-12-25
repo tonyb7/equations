@@ -15,7 +15,9 @@ export function displayUniverse(game, name) {
         renderCards(game['onsets_cards_dealt'], game['onsets_cards']);
     }
     else {
-        let cidx = (game['turn'] - 1) % game['players'].length;
+        let num_players = game['players'].length;
+        let cidx = (game['turn'] - 1) % num_players;
+        cidx = (cidx + num_players) % num_players;
         let cardsetter = game['players'][cidx];
 
         renderUniversePrompt(name, cardsetter);

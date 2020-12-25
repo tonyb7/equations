@@ -173,7 +173,7 @@ def start_shake(new_game, is_restart):
             'show_bonus': not is_leading(room, goalsetter),
             'variations_state': rooms_info[room]['variations_state'],
         }
-    
+
         emit("begin_shake", shake_begin_instructions, room=room)
 
 @equations.socketio.on('start_game')

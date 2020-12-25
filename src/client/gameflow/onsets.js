@@ -1,7 +1,7 @@
 import { appendServerMessage } from "../message_utils";
 import { addScoreboardScore, initializeScoreboard } from "../scoreboard";
 import { initializeElapsedTimer } from "../timing";
-import { clearBoard } from "../board/clear";
+import { clearBoard, clearCards } from "../board/clear";
 import { renderResources } from "../board/board";
 import { initializeBoardCallbacks } from "../callbacks/callbacks";
 import { registerGoalSettingCallbacks } from "../callbacks/goal";
@@ -33,6 +33,7 @@ export function handleShakeBeginOnsets(data, name) {
 function setUpNewShakeOnsets(data, name, cardsetter) {
     // Display board visuals
     clearBoard();
+    clearCards();
     renderResources(data['gametype'], data['cubes']);
 
     // Move to appropriate game phase (setting the universe)
