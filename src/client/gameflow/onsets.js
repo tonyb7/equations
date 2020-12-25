@@ -2,6 +2,9 @@ import { appendServerMessage } from "../message_utils";
 import { addScoreboardScore, initializeScoreboard } from "../scoreboard";
 import { initializeElapsedTimer } from "../timing";
 import { clearBoard } from "../board/clear";
+import { renderResources } from "../board/board";
+import { initializeBoardCallbacks } from "../callbacks/callbacks";
+import { registerGoalSettingCallbacks } from "../callbacks/goal";
 
 // TODO ONSETS: Should cubes be rolled first, or universe set first? 
 // Rulebook seems to say they happen simulatneously...
@@ -28,17 +31,13 @@ export function handleShakeBeginOnsets(data, name) {
 
 function setUpNewShakeOnsets(data, name, cardsetter) {
     // Display board visuals
-
-    // TODO: Need onsets versions of these
     clearBoard();
-    // renderResources(data['cubes']);
+    renderResources(data['gametype'], data['cubes']);
 
     // Move to appropriate game phase (setting the universe)
     renderUniversePrompt(name, cardsetter);
 
     // Register callbacks
-
-    // TODO: Need onsets versions of these
-    // initializeBoardCallbacks(data['goalsetter'] === name && data['show_bonus']);
-    // registerGoalSettingCallbacks(name, data['goalsetter'], true);
+    initializeBoardCallbacks(data['goalsetter'] === name && data['show_bonus']);
+    registerGoalSettingCallbacks(name, data['goalsetter'], true);
 }

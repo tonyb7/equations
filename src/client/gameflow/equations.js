@@ -33,7 +33,7 @@ export function handleShakeBeginEquations(data, name) {
 function setUpNewShakeEquations(data, name) {
     // Display board visuals
     clearBoard();
-    renderResources(data['cubes']);
+    renderResources(data['gametype'], data['cubes']);
 
     // Move to appropriate game phase (calling variations)
     renderVariations(data['variations_state'], data['players'], name);

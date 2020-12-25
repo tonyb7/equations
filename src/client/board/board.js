@@ -1,5 +1,7 @@
 // Functions related to moving cubes around the board
 import { getEquationsAssetClone } from '../assets/equations';
+import { getOnsetsCubeAssetClone } from '../assets/onsets';
+
 import { emitCubeClicked, bonusButtonCallback } from '../networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
          addCubeToGoal, initializeGoalsetting } from '../goal';
@@ -18,27 +20,38 @@ export let sector_cube_count = {
     "goal-sector": 0,
 };
 
+const gametype_to_num_cubes_map = new Map([
+    ["eq", 24],
+    ["os", 18],
+]);
+
+const gametype_to_asset_cloner_map = new Map([
+    ["eq", getEquationsAssetClone],
+    ["os", getOnsetsCubeAssetClone],
+]);
+
 export function displayCubes(game) {
     initializeGoalsetting(game);
     renderGoal(game['goal'], game['cube_index']);
 
-    renderResources(game['resources']);
-    renderSector(game['forbidden'], "forbidden-sector", game['cube_index']);
-    renderSector(game['permitted'], "permitted-sector", game['cube_index']);
-    renderSector(game['required'], "required-sector", game['cube_index']);
+    renderResources(game['gametype'], game['resources']);
+    renderSector(game['gametype'], game['forbidden'], "forbidden-sector", game['cube_index']);
+    renderSector(game['gametype'], game['permitted'], "permitted-sector", game['cube_index']);
+    renderSector(game['gametype'], game['required'], "required-sector", game['cube_index']);
 }
 
-export function renderResources(cubes) {
+export function renderResources(gametype, cubes) {
     
     console.log("Rolling cubes!");
     let resources_div = document.getElementById("resources-cubes");
-    for (let i = 0; i < cubes.length; ++i) {
+    for (let i = 0; i < gametype_to_num_cubes_map.get(gametype); ++i) {
         if (cubes[i] === -1) { // TODO -1 is a magic number...
             continue;
         }
 
         let relevant_th = resources_div.querySelector(`#r${i}`);
-        let image_clone = getEquationsAssetClone(i, cubes);
+        let image_cloner = gametype_to_asset_cloner_map.get(gametype);
+        let image_clone = image_cloner(i, cubes);
 
         image_clone.onmouseover = () => {
             image_clone.classList.add("show-border");
@@ -63,7 +76,7 @@ export function renderGoal(goal_info, cube_idx) {
     initializeGoalCanvas(goal_info, cube_idx);
 }
 
-export function renderSector(cubes, sectorid, cube_idx) {
+function renderSector(gametype, cubes, sectorid, cube_idx) {
     let length_limits = [12, 16, 20];
     for (const length of length_limits) {
         if (cubes.length > length) {
@@ -72,15 +85,16 @@ export function renderSector(cubes, sectorid, cube_idx) {
     }
 
     sector_cube_count[sectorid] = cubes.length;
-    fillSector(cubes, sectorid, cube_idx);
+    fillSector(gametype, cubes, sectorid, cube_idx);
 }
 
-function fillSector(cubes, sectorid, cube_idx) {
+function fillSector(gametype, cubes, sectorid, cube_idx) {
     for (let i = 0; i < cubes.length; ++i) {
         let relevant_th = document.getElementById(`${sector_code_map.get(sectorid)}${i}`);
         let idx = cubes[i]; // idx is the position that cube was in resources originally
 
-        relevant_th.appendChild(getEquationsAssetClone(idx, cube_idx));
+        let asset_cloner = gametype_to_asset_cloner_map.get(gametype);
+        relevant_th.appendChild(asset_cloner(idx, cube_idx));
     }
 }
 
@@ -175,8 +189,11 @@ export function hideGoalSettingButtons() {
     deregisterGoalsettingCanvas();
 }
 
-export function num_resources_cubes() {
+export function num_resources_cubes(gametype) {
     let not_in_resources = Object.values(sector_cube_count).reduce((a, b) => a + b);
-    console.log("cubes not in resources: ", not_in_resources);
-    return 24 - not_in_resources;
+    // console.log("cubes not in resources: ", not_in_resources);
+
+    let total_cubes = gametype_to_num_cubes_map.get(gametype);
+    return total_cubes - not_in_resources;
 }
+

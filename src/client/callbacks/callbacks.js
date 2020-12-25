@@ -57,7 +57,7 @@ function show_bonus_for(game, player) {
         return false;
     }
     
-    if (num_resources_cubes() < 2) {
+    if (num_resources_cubes(game['gametype']) < 2) {
         // console.log("Can't bonus with less than 2 cubes in resources");
         return false;
     }
