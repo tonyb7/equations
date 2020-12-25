@@ -393,17 +393,17 @@ body {
     width: 30%;
 }
 
-.resources.heading p {
+/* .resources.heading p {
     color: #2B4162;
     text-align: left;
     font-size: 1.7vw;
     font-family: monospace;
     transform: translate(6%, -60%);
-}
+} */
 
 #res-button {
     width: 15%;
-    height: 3vh;
+    height: fit-content;
 }
 
 .resources.heading button {

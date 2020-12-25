@@ -6,7 +6,7 @@ import { emitCubeClicked, bonusButtonCallback } from '../networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
          addCubeToGoal, initializeGoalsetting } from '../goal';
 
-const sector_code_map = new Map([
+export const sector_code_map = new Map([
     ["forbidden-sector", 'f'],
     ["permitted-sector", 'p'],
     ["required-sector", 'q'],
@@ -31,6 +31,11 @@ const gametype_to_asset_cloner_map = new Map([
 ]);
 
 export function displayCubes(game) {
+    if (!game['game_started']) {
+        return;
+    }
+    console.assert(game['cube_index'].length > 0);
+
     initializeGoalsetting(game);
     renderGoal(game['goal'], game['cube_index']);
 
@@ -41,7 +46,6 @@ export function displayCubes(game) {
 }
 
 export function renderResources(gametype, cubes) {
-    
     console.log("Rolling cubes!");
     let resources_div = document.getElementById("resources-cubes");
     for (let i = 0; i < gametype_to_num_cubes_map.get(gametype); ++i) {

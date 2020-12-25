@@ -1,5 +1,5 @@
 import { clearGoalCanvas } from "../goal";
-import { sector_cube_count } from "./board";
+import { sector_code_map, sector_cube_count } from "./board";
 
 export function clearBoard() {
     let sectorids = ['forbidden-sector', 'permitted-sector', 'required-sector'];

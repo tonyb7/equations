@@ -272,6 +272,10 @@ def handle_solution_submit(solution):
 # TODO need handle: no goal
 def finish_shake(room):
     """Handle when all solutions have been reviewed."""
+
+    print("FINISHE SHAKE CALLED")
+    print(rooms_info[room])
+    
     rooms_info[room]["endgame"]["endgame_stage"] = "finished"
 
     players = rooms_info[room]['players']

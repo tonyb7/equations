@@ -99,7 +99,7 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
 }
 
 function mouseDown(e) {
-    console.log("mouse down");
+    // console.log("mouse down");
 
     e.preventDefault();
     e.stopPropagation();
@@ -124,7 +124,7 @@ function mouseDown(e) {
 }
 
 function mouseUp(e) {
-    console.log("mouse up");
+    // console.log("mouse up");
 
     e.preventDefault();
     e.stopPropagation();
@@ -207,6 +207,10 @@ function clear(context) {
 }
 
 function drawCubes() {
+    if (!canvas) {
+        initializeGoalsettingGlobals();
+    }
+
     let context = canvas.getContext('2d');
     clear(context);
 
@@ -216,7 +220,7 @@ function drawCubes() {
     // redraw each rect in the rects[] array
     for (var i = 0; i < cubes.length; i++) {
         let r = cubes[i];
-        console.log("Calling draw rotated on ", r);
+        // console.log("Calling draw rotated on ", r);
         drawRotated(context, r.cube, r.cube_pos_x, cube_pos_y, 
                     cube_dim, cube_dim, r.orientation);
     }
@@ -235,7 +239,7 @@ function drawRotated(context, image, x, y, width, height, degrees) {
 
     // draw the image
     // since the context is rotated, the image will be rotated also
-    console.log("Drawing the image!");
+    // console.log("Drawing the image!");
     context.drawImage(image,-width/2,-height/2, width, height);
     roundRect(context, -(width/2)-1, -(height/2)-1, width+3, height+2, 7);
 
@@ -244,7 +248,7 @@ function drawRotated(context, image, x, y, width, height, degrees) {
 }
 
 export function resizeGoalsettingCanvas(e) {
-    console.log("resize function called");
+    // console.log("resize function called");
 
     e.preventDefault();
     e.stopPropagation();
@@ -270,7 +274,7 @@ export function resizeGoalsettingCanvas(e) {
 
 function updateCubeXPos(old_canvas_width) {
     for (var i = 0; i < cubes.length; i++) {
-        console.log("OLD: ", cubes[i].cube_pos_x/(old_canvas_width/1000));
+        // console.log("OLD: ", cubes[i].cube_pos_x/(old_canvas_width/1000));
         cubes[i].cube_pos_x = getBoundedXPos(cubes[i].cube_pos_x * (canvas.width / old_canvas_width));
         // Emit here because goal line might not look the same after resize
         // due to getBoundedXPos
@@ -278,7 +282,7 @@ function updateCubeXPos(old_canvas_width) {
             "order": i, 
             "x_pos_per_mille":cubes[i].cube_pos_x/(canvas.width/1000),
         });
-        console.log("NEW: ", cubes[i].cube_pos_x/(canvas.width/1000));
+        // console.log("NEW: ", cubes[i].cube_pos_x/(canvas.width/1000));
     }
 }
 

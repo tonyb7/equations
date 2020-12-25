@@ -213,6 +213,9 @@ export function handleReevaluateSolution(socket, name, info) {
 }
 
 export function handleShakeFinish(socket, name, scores, game_finished) {
+
+    console.log("HANDLE SHAKE FINISH");
+    
     let p1score = scores['p1score'];
     let p2score = scores['p2score'];
     let p3score = scores['p3score'];

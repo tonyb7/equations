@@ -1,4 +1,4 @@
-import { initializeGoalsettingGlobals, registerGoalsettingCanvas } from "../goal";
+import { initializeGoalsettingGlobals, registerGoalsettingCanvas, resizeGoalsettingCanvas } from "../goal";
 import { socket } from "../networking";
 
 export function registerGoalSetting(game, name) {
