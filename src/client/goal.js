@@ -24,16 +24,15 @@ let cubes = [];
 
 export function initializeGoalsetting(game) {
     if (game['game_started']) {
-        if (game['gametype'] == 'eq') {
+        // if (game['gametype'] == 'eq') {
             initializeGoalsettingGlobals();
             if (game['goalset']) {
                 hideGoalSettingButtons();
             }
-        }
-        else if (game['gametype'] == 'os') {
-            // TODO ONSETS
-
-        }
+        // }
+        // else if (game['gametype'] == 'os') {
+        //     // TODO ONSETS
+        // }
     }
 }
 
