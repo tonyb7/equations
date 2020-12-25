@@ -3,7 +3,7 @@
 // Dragging functionality taken from https://stackoverflow.com/a/24938627/8157027
 // drawRotated taken from // https://stackoverflow.com/a/17412387/8157027
 
-import { getEquationsAssetClone } from './assets';
+import { getEquationsAssetClone } from './assets/equations';
 import { hideGoalSettingButtons, renderGoal } from './board';
 import { socket } from './networking';
 

@@ -1,4 +1,4 @@
-import { getOnsetsCardAssetClone } from "./assets";
+import { getOnsetsCardAssetClone } from "./assets/onsets";
 import { appendServerMessage, appendUniverseSizePrompt } from "./message_utils";
 import { socket } from "./networking";
 import { renderVariations } from "./variations";

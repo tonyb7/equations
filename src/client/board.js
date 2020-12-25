@@ -1,5 +1,5 @@
 // Functions related to moving cubes around the board
-import { getEquationsAssetClone } from './assets';
+import { getEquationsAssetClone } from './assets/equations';
 import { emitCubeClicked, bonusButtonCallback } from './networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
          clearGoalCanvas, addCubeToGoal, initializeGoalsettingGlobals, initializeGoalsetting } from './goal';
