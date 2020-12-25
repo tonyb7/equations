@@ -42,7 +42,7 @@ def db_insert(room, game_info):
 
 def db_deserialize(db_result):
     """Translate db result to game_info dict. Kinda dupe down there."""
-    seconds_since_created = (datetime.datetime.now() - db_result.created).total_seconds()
+    seconds_since_created = (datetime.datetime.utcnow() - db_result.created).total_seconds()
 
     game_info = {
         "gametype": 'eq' if len(db_result.gametype) == 0 else db_result.gametype,
@@ -56,7 +56,7 @@ def db_deserialize(db_result):
         "p2scores": db_result.p2scores,
         "p3scores": db_result.p3scores,
         "variations_state": db_result.variations_state,
-        "starttime": json.dumps(db_result.created, sort_keys=True, default=str),  
+        "starttime": db_result.created.timestamp(),  
         "last_timer_flip": db_result.last_timer_flip if db_result.last_timer_flip != 0 else None,
         "cube_index": db_result.cube_index,
         "resources":  db_result.resources,

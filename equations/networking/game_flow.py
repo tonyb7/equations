@@ -7,6 +7,7 @@ import flask
 import equations
 import random
 import time
+import datetime
 import re
 from equations.db_serialize import db_insert
 from equations.data import rooms_info, user_info, socket_info, MapsLock
@@ -82,7 +83,7 @@ def start_shake(new_game, is_restart):
                 "num_players_called": 0,
                 "caller_index": None,
             },
-            "starttime": time.time(),
+            "starttime": datetime.datetime.utcnow().timestamp(),
             "last_timer_flip": None,
             # cube_index: fixed length of 24, index is cube's id.
             # For equations, the first six are red, next six are blue, next six are green, 

@@ -44,6 +44,7 @@ export function initializeElapsedTimer(starttime) {
     let timer = setInterval(() => {
         let current_time = new Date();
         let seconds_since_epoch = Math.round(current_time.getTime()/1000);
+        seconds_since_epoch += current_time.getTimezoneOffset() * 60; // convert to UTC time
 
         let seconds_passed = seconds_since_epoch - starting_time;
         let minutes = Math.floor(seconds_passed/60);
@@ -87,6 +88,8 @@ export function updateGameTimer(time) {
         let current_time = new Date();
 
         let seconds_passed = Math.floor((current_time.getTime()/1000) - time);
+        seconds_passed += current_time.getTimezoneOffset() * 60; // convert to UTC time
+        
         let display_time = 60 - seconds_passed;
 
         let seconds_leading_zero_str = "";
