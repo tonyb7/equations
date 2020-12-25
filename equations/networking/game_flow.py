@@ -128,6 +128,7 @@ def start_shake(new_game, is_restart):
             'goalsetter': get_current_mover(room),
             'cardsetter': get_previous_mover(room),
             'starttime': rooms_info[room]['starttime'],
+            'show_bonus': True,
             'variations_state': rooms_info[room]['variations_state'],
         }
 
