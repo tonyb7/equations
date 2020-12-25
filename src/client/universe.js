@@ -50,13 +50,13 @@ export function universeError(errorInfo, name) {
     let numCardsStr = errorInfo['numCardsStr'];
  
     if (cardsetter == name) {
-        appendServerMessage(`You tried to set a universe with ${numCardsStr} cards, which is invalid.`);
+        appendServerMessage(`You tried to set a universe with '${numCardsStr}' cards, which is invalid.`);
         appendServerMessage(`If you are not in Senior Division, please set a universe between 6 and 12 cards.`);
         appendServerMessage(`If you are in Senior Division, please set a universe between 10 and 14 cards.`);
         appendUniverseSizePrompt(socket);
     }
     else {
-        appendServerMessage(`${cardsetter} tried to set ${numCardsStr} cards in the universe, which is invalid.`);
+        appendServerMessage(`${cardsetter} tried to set '${numCardsStr}' cards in the universe, which is invalid.`);
         appendServerMessage(`Waiting for ${cardsetter} to set a universe with valid size...`);
     }
 }
