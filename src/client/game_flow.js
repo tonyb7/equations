@@ -1,8 +1,10 @@
 // Functions relating to the flow of the game (game start, shake start,
 // shake end, next turn, etc)
 
-import { addScoreboardScore, clearBoard, initializeScoreboard, renderResources, updateBonusButton, updateTurnText } from "./board";
-import { deregisterBoardCallbacks, initializeBoardCallbacks, registerGoalSetting } from "./callbacks";
+import { clearBoard, renderResources, updateBonusButton } from "./board";
+import { updateTurnText } from './turntext';
+import { addScoreboardScore, initializeScoreboard } from './scoreboard';
+import { initializeBoardCallbacks, deregisterBoardCallbacks } from './callbacks/main';
 import { appendServerMessage } from "./message_utils";
 import { initializeElapsedTimer } from "./timing";
 import { renderVariations } from "./variations";
@@ -29,7 +31,7 @@ export function handleGameBegin(data, name) {
         addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
     
         let firstmover = data['goalsetter'];
-        initializeBoardCallbacks(socket, firstmover === name);
+        initializeBoardCallbacks(firstmover === name);
         registerGoalSetting(socket, name, firstmover, true);  
 
     }

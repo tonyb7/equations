@@ -3,16 +3,17 @@
 import io from 'socket.io-client';
 import { appendMessage, appendServerMessage, 
          printFiveMinWarningMsg, appendEndShakeNoGoal } from './message_utils';
-import { initializeScoreboard, highlightResourcesCube, unhighlightResourcesCube, 
+import { highlightResourcesCube, unhighlightResourcesCube, 
     moveCube, hideGoalSettingButtons } from './board';
+import { initializeScoreboard } from './scoreboard';
 import { updateGoalline } from './goal';
 import { handleChallenge, handleForceOut, reviewSolutions, handleRejectionAssent,
          handleReevaluateSolution, handleShakeFinish } from './endgame';
 import { updateTimerOnFlip } from './timing';
 import { handleVariationsFinished, renderVariations } from './variations';
 import { setUniverse, universeError } from './universe';
-import { renderPlayerState, renderSpectatorState } from './state_init';
 import { handleGameBegin, handleShakeBegin, handleNextTurn, handleGameOver } from './game_flow';
+import { displayState, displayStatePlayer } from './state';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
 export const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
@@ -51,8 +52,8 @@ function registerSocketCallbacks(name) {
                                                          message_info['message']));
     socket.on("server_message", (message) => appendServerMessage(message));
 
-    socket.on("render_spectator_state", (game) => renderSpectatorState(game, name));
-    socket.on("render_player_state", (game) => renderPlayerState(game, name));
+    socket.on("render_spectator_state", (game) => displayState(game, name));
+    socket.on("render_player_state", (game) => displayStatePlayer(game, name));
 
     socket.on("new_player", initializeScoreboard);
     socket.on("player_left", initializeScoreboard);

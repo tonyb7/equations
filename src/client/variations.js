@@ -2,7 +2,22 @@
 // variation section looks
 
 import { appendInstructions, appendServerMessage } from './message_utils';
-import { updateTurnText } from './board';
+import { socket } from './networking';
+import { updateTurnText } from './turntext';
+
+// TODO Find everywhere renderVariations is used and see if it can be simplified
+export function displayVariations(game, name) {
+
+    // TODO Do not show any chat messages if game has ended -- only change the variations_text_div!
+    
+    if (!game['game_started']) {
+        return;
+    }
+    if (game['gametype'] == 'os' && game['onsets_cards_dealt'] == 0) {
+        return;
+    }
+    renderVariations(socket, game['variations_state'], game['players'], name);
+}
 
 export function renderVariations(socket, variations_state, players, name) {
     let variations_section = document.getElementById("variations");

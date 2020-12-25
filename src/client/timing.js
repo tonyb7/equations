@@ -10,6 +10,35 @@ let five_min_warning_called = false;
 
 let turnTimer;
 
+export function displayTimers(game) {
+    if (game['game_finished']) {
+        setElapsedTimer("35:00");
+        setGameTimer("0:00");
+    }
+    else if (!game['game_started']) {
+        setElapsedTimer("00:00");
+        setGameTimer("0:00");
+    }
+    else {
+        initializeElapsedTimer(game['starttime']);
+        updateGameTimer(game["last_timer_flip"]);
+    }
+}
+
+function setElapsedTimer(time_str) {
+    if (!elapsed_div) {
+        elapsed_div = document.getElementById('elapsed');
+    }
+    elapsed_div.innerHTML = time_str;
+}
+
+function setGameTimer(time_str) {
+    if (!timer_div) {
+        timer_div = document.getElementsByClassName("display-time-div")[0];
+    }
+    timer_div.innerHTML = `<p>${time_str}</p>`;
+}
+
 export function initializeElapsedTimer(starttime) {
     starting_time = starttime;
     let timer = setInterval(() => {
@@ -42,10 +71,7 @@ export function initializeElapsedTimer(starttime) {
             time_str = "35:00";
         }
         
-        if (!elapsed_div) {
-            elapsed_div = document.getElementById('elapsed');
-        }
-        elapsed_div.innerHTML = time_str;
+        setElapsedTimer(time_str);
     }, 1000);
 }
 
@@ -74,12 +100,8 @@ export function updateGameTimer(time) {
             clearInterval(turnTimer);
             time_str = "0:00";
         }
-
-        if (!timer_div) {
-            timer_div = document.getElementsByClassName("display-time-div")[0];
-        }
         
-        timer_div.innerHTML = `<p>${time_str}</p>`;
+        setGameTimer(time_str);
     }, 1000);
 
 }

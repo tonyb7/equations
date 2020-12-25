@@ -4,6 +4,7 @@
 // drawRotated taken from // https://stackoverflow.com/a/17412387/8157027
 
 import { getEquationsAssetClone } from './assets';
+import { hideGoalSettingButtons, renderGoal } from './board';
 import { socket } from './networking';
 
 let canvas;
@@ -20,6 +21,21 @@ let dragok = false;
 let startX;
 
 let cubes = [];
+
+export function initializeGoalsetting(game) {
+    if (game['game_started']) {
+        if (game['gametype'] == 'eq') {
+            initializeGoalsettingGlobals();
+            if (game['goalset']) {
+                hideGoalSettingButtons();
+            }
+        }
+        else if (game['gametype'] == 'os') {
+            // TODO ONSETS
+
+        }
+    }
+}
 
 export function initializeGoalsettingGlobals() {
     canvas = document.getElementById("goal-sector");

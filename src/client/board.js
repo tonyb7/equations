@@ -2,8 +2,7 @@
 import { getEquationsAssetClone } from './assets';
 import { emitCubeClicked, bonusButtonCallback } from './networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
-         clearGoalCanvas, addCubeToGoal, initializeGoalsettingGlobals } from './goal';
-import { initializeElapsedTimer, updateGameTimer } from './timing';
+         clearGoalCanvas, addCubeToGoal, initializeGoalsettingGlobals, initializeGoalsetting } from './goal';
 
 const sector_code_map = new Map([
     ["forbidden-sector", 'f'],
@@ -18,6 +17,16 @@ let sector_cube_count = {
     "required-sector": 0,
     "goal-sector": 0,
 };
+
+export function displayCubes(game) {
+    initializeGoalsetting(game);
+    renderGoal(game['goal'], game['cube_index']);
+
+    renderResources(game['resources']);
+    renderSector(game['forbidden'], "forbidden-sector", game['cube_index']);
+    renderSector(game['permitted'], "permitted-sector", game['cube_index']);
+    renderSector(game['required'], "required-sector", game['cube_index']);
+}
 
 export function renderResources(cubes) {
     
@@ -107,42 +116,6 @@ function clearResources() {
     }
 }
 
-export function initializeScoreboard(players) {
-    let scoreboard = document.getElementById("scoreboard");
-    for (let i = 0; i < players.length; ++i) {
-        scoreboard.rows[0].cells.item(i).innerHTML = players[i];
-    }
-    for (let i = players.length; i < 3; ++i) {
-        scoreboard.rows[0].cells.item(i).innerHTML = "--------";
-    }
-    return scoreboard;
-}
-
-function fillScoreboardScores(scoreboard, p1scores, p2scores, p3scores) {
-    if (typeof p1scores === "undefined") {
-        return;
-    }
-
-    if (p1scores.length !== p2scores.length || p2scores.length != p3scores.length) {
-        console.log("Something is messed up with the scores! Not of same length!");
-    }
-
-    for (let i = 0; i < p1scores.length; ++i) {
-        addScoreboardScore(scoreboard, p1scores[i], p2scores[i], p3scores[i]);
-    }
-}
-
-export function addScoreboardScore(scoreboard, p1score, p2score, p3score) {
-    if (scoreboard.rows.length === 2 && scoreboard.rows[1].cells[0].innerHTML == 0) { // hacky
-        scoreboard.deleteRow(1);
-    }
-
-    let new_row = scoreboard.insertRow();
-    new_row.insertCell().innerHTML = p1score;
-    new_row.insertCell().innerHTML = p2score;
-    new_row.insertCell().innerHTML = p3score;
-}
-
 export function highlightResourcesCube(position) {
     // Should never receive highlight_cube on an invalid pos 
     // Server checks that pos in resources is valid
@@ -155,11 +128,6 @@ export function unhighlightResourcesCube(position) {
     let surrounding_th = document.getElementById(`r${position}`);
     let image = surrounding_th.querySelector("img");
     image.classList.remove("highlight-img");
-}
-
-export function updateTurnText(name) {
-    let turn_elt = document.getElementById("actual-turn-text");
-    turn_elt.innerHTML = `${name}`;
 }
 
 export function moveCube(directions) {
@@ -210,41 +178,6 @@ function addRowsToSector(sectorid, begin_idx) {
     }
 
     // console.log("new table ", table);
-}
-
-// Render all visuals, including the board, resources/cubes, and scoreboard
-export const renderGameVisuals = (game) => {
-    fillScoreboardScores(initializeScoreboard(game['players']), 
-        game["p1scores"], game["p2scores"], game["p3scores"]);
-    
-    if (game["game_finished"]) {
-        updateTurnText("Game Ended");
-    }
-    else if (!game["game_started"]) {
-        updateTurnText("Not Started");
-    }
-    else {
-        updateTurnText(game['players'][game['turn']]);
-        initializeElapsedTimer(game['starttime']);
-        updateGameTimer(game["last_timer_flip"]);
-    }
-
-    if (game["game_started"]) {
-        document.getElementById("start_game").remove();
-        initializeGoalsettingGlobals();
-        if (game["goalset"]) {
-            hideGoalSettingButtons();
-        }
-
-        renderResources(game['resources']);
-        renderGoal(game['goal'], game['cube_index']);
-        renderSector(game['forbidden'], "forbidden-sector", game['cube_index']);
-        renderSector(game['permitted'], "permitted-sector", game['cube_index']);
-        renderSector(game['required'], "required-sector", game['cube_index']);
-    } 
-
-    // TODO Remember to expand upon once more game features are added
-    // TODO time, scores
 }
 
 export function updateBonusButton(show) {
