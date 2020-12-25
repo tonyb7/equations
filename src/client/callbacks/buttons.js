@@ -1,12 +1,5 @@
 import { socket } from "../networking";
 
-// Given state object, derive which buttons should be *displayed*.
-export function displayButtons(game) {
-    if (game['game_started']) {
-        document.getElementById("start_game").remove();
-    }
-}
-
 // Give state object, derive which buttons should be *registered*.
 // Only relevant for players, as only players can click the buttons
 // that this function manages.

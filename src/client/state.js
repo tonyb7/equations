@@ -3,10 +3,12 @@
 import { displayScoreboard } from "./scoreboard";
 import { displayTurnText } from "./turntext";
 import { displayTimers } from "./timing";
-import { displayButtons, registerButtonsPlayer } from "./callbacks/buttons";
+import { displayButtons } from "./buttons";
 import { displayCubes } from "./board";
 import { displayPregoalProcedures } from "./pregoal";
 import { displayEndgame } from "./endgame";
+
+import { registerButtonsPlayer } from "./callbacks/buttons";
 import { registerGoalSetting } from "./callbacks/goal";
 import { registerBoardCallbacks } from "./callbacks/main";
 

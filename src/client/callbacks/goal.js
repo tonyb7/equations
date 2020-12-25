@@ -8,7 +8,7 @@ export function registerGoalSetting(game, name) {
     registerGoalSettingCallbacks(name, game['players'][game['turn']], !game["goalset"]);
 }
 
-const registerGoalSettingCallbacks = (name, firstmover, firstmove) => {
+export const registerGoalSettingCallbacks = (name, firstmover, firstmove) => {
     initializeGoalsettingGlobals();
     window.onresize = resizeGoalsettingCanvas;
 

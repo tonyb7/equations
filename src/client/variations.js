@@ -16,10 +16,10 @@ export function displayVariations(game, name) {
     if (game['gametype'] == 'os' && game['onsets_cards_dealt'] == 0) {
         return;
     }
-    renderVariations(socket, game['variations_state'], game['players'], name);
+    renderVariations(game['variations_state'], game['players'], name);
 }
 
-export function renderVariations(socket, variations_state, players, name) {
+export function renderVariations(variations_state, players, name) {
     let variations_section = document.getElementById("variations");
     variations_section.classList.remove("hidden");
 

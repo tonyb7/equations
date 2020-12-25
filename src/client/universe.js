@@ -36,7 +36,7 @@ export function setUniverse(univ_set_info, name) {
     renderCards(numCards, onsets_cards);
 
     appendServerMessage("It is now time to call variations.");
-    renderVariations(socket, univ_set_info['variations_state'], univ_set_info['players'], name);
+    renderVariations(univ_set_info['variations_state'], univ_set_info['players'], name);
 }
 
 export function universeError(errorInfo, name) {

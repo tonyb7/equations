@@ -2,7 +2,7 @@
 import { getEquationsAssetClone } from './assets/equations';
 import { emitCubeClicked, bonusButtonCallback } from './networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
-         clearGoalCanvas, addCubeToGoal, initializeGoalsettingGlobals, initializeGoalsetting } from './goal';
+         clearGoalCanvas, addCubeToGoal, initializeGoalsetting } from './goal';
 
 const sector_code_map = new Map([
     ["forbidden-sector", 'f'],

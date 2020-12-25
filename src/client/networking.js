@@ -12,7 +12,7 @@ import { handleChallenge, handleForceOut, reviewSolutions, handleRejectionAssent
 import { updateTimerOnFlip } from './timing';
 import { handleVariationsFinished, renderVariations } from './variations';
 import { setUniverse, universeError } from './universe';
-import { handleGameBegin, handleShakeBegin, handleNextTurn, handleGameOver } from './game_flow';
+import { handleGameBegin, handleShakeBegin, handleNextTurn, handleGameOver } from './gameflow/main';
 import { displayState, displayStatePlayer } from './state';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
@@ -84,7 +84,7 @@ function registerSocketCallbacks(name) {
     socket.on("five_minute_warning_message", () => printFiveMinWarningMsg());
 
     socket.on("update_variations", (info) => 
-        renderVariations(socket, info['variations_state'], info['players'], name));
+        renderVariations(info['variations_state'], info['players'], name));
     socket.on("variations_finished", (data) => handleVariationsFinished(data, name));
 
     socket.on("timer_flip", (info) => updateTimerOnFlip(info));
@@ -96,7 +96,6 @@ function registerSocketCallbacks(name) {
 
 export function sendChatMessage(text) {
     let name = document.getElementById("name").innerHTML;
-
     socket.emit('new_message', {'name': name, 'message': text});
 }
 
