@@ -1,4 +1,4 @@
-import { appendServerMessage, appendUniverseSizePrompt } from "../message_utils";
+import { appendServerMessage } from "../message_utils";
 import { addScoreboardScore, initializeScoreboard } from "../scoreboard";
 import { initializeElapsedTimer } from "../timing";
 
@@ -15,16 +15,16 @@ export function handleGameBeginOnsets(data, name) {
     addScoreboardScore(initializeScoreboard(data['players']), 0, 0, 0);
     initializeElapsedTimer(data['starttime']);
 
-    setUpNewShakeOnsets(data, name);
+    setUpNewShakeOnsets(data, name, cardsetter);
 }
 
 export function handleShakeBeginOnsets(data, name) {
     // Notify players via chat
     appendServerMessage(`A new shake has started! ${data['goalsetter']} is chosen to be the goalsetter.`);
-    setUpNewShakeOnsets(data, name);
+    setUpNewShakeOnsets(data, name, data['cardsetter']);
 }
 
-function setUpNewShakeOnsets(data, name) {
+function setUpNewShakeOnsets(data, name, cardsetter) {
     // Display board visuals
 
     // TODO: Need onsets versions of these
@@ -32,13 +32,7 @@ function setUpNewShakeOnsets(data, name) {
     // renderResources(data['cubes']);
 
     // Move to appropriate game phase (setting the universe)
-
-    if (name != cardsetter) {
-        appendServerMessage(`Waiting for ${cardsetter} to set the universe...`);
-    }
-    else {
-        appendUniverseSizePrompt(socket);
-    }
+    renderUniversePrompt(name, cardsetter);
 
     // Register callbacks
 

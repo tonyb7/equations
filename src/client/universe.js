@@ -1,9 +1,9 @@
+/* Functions related to the ON-SETS universe */
+
 import { getOnsetsCardAssetClone } from "./assets/onsets";
 import { appendServerMessage, appendUniverseSizePrompt } from "./message_utils";
 import { socket } from "./networking";
 import { renderVariations } from "./variations";
-
-/* ON-SETS SPECIFIC */
 
 export function displayUniverse(game, name) {
     console.assert(game['gametype'] == 'os');
@@ -18,12 +18,16 @@ export function displayUniverse(game, name) {
         let cidx = (game['turn'] - 1) % game['players'].length;
         let cardsetter = game['players'][cidx];
 
-        if (name != cardsetter) {
-            appendServerMessage(`Waiting for ${cardsetter} to set the universe...`);
-        }
-        else {
-            appendUniverseSizePrompt(socket);
-        }
+        renderUniversePrompt(name, cardsetter);
+    }
+}
+
+export function renderUniversePrompt(name, cardsetter) {
+    if (name != cardsetter) {
+        appendServerMessage(`Waiting for ${cardsetter} to set the universe...`);
+    }
+    else {
+        appendUniverseSizePrompt(socket);
     }
 }
 
