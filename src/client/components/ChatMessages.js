@@ -159,7 +159,7 @@ export function UniversePrompt(props) {
     const [value, setValue] = useState('');
     const [submitted, setSubmitted] = useState(false);
 
-    let buttonClassNames = ['solution_submit'];
+    let buttonClassNames = ['universe_submit'];
     if (submitted) {
         buttonClassNames.push('hidden');
     }
@@ -174,7 +174,7 @@ export function UniversePrompt(props) {
 
     return <>
         <input 
-        className='solution_box'
+        className='universe_box'
         placeholder=''
         onChange={(e) => setValue(e.target.value)}
         maxLength='2'
