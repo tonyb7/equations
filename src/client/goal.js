@@ -4,7 +4,7 @@
 // drawRotated taken from // https://stackoverflow.com/a/17412387/8157027
 
 import { getEquationsAssetClone } from './assets/equations';
-import { hideGoalSettingButtons, renderGoal } from './board';
+import { hideGoalSettingButtons } from './board/board';
 import { socket } from './networking';
 
 let canvas;

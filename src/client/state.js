@@ -4,13 +4,13 @@ import { displayScoreboard } from "./scoreboard";
 import { displayTurnText } from "./turntext";
 import { displayTimers } from "./timing";
 import { displayButtons } from "./buttons";
-import { displayCubes } from "./board";
+import { displayCubes } from "./board/board";
 import { displayPregoalProcedures } from "./pregoal";
 import { displayEndgame } from "./endgame";
 
 import { registerButtonsPlayer } from "./callbacks/buttons";
 import { registerGoalSetting } from "./callbacks/goal";
-import { registerBoardCallbacks } from "./callbacks/main";
+import { registerBoardCallbacks } from "./callbacks/callbacks";
 
 // Render visuals on the board and output the correct chat prompts
 // for indicating what phase the game is in.

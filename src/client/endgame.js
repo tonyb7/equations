@@ -4,11 +4,11 @@ import { appendServerMessage, appendSidingOptions,
     appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
     appendStartNewShakeButton, appendNoGoalButtons,
     appendEndShakeNoGoal } from './message_utils';
-import { deregisterBoardCallbacks } from './callbacks/main';
+import { deregisterBoardCallbacks } from './callbacks/callbacks';
 import { updateTurnText } from './turntext';
 import { addScoreboardScore } from './scoreboard';
 import { socket } from './networking';
-import { hideGoalSettingButtons } from './board';
+import { hideGoalSettingButtons } from './board/board';
 
 
 const challengeTextMap = new Map([

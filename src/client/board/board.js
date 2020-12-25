@@ -1,8 +1,8 @@
 // Functions related to moving cubes around the board
-import { getEquationsAssetClone } from './assets/equations';
-import { emitCubeClicked, bonusButtonCallback } from './networking';
+import { getEquationsAssetClone } from '../assets/equations';
+import { emitCubeClicked, bonusButtonCallback } from '../networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
-         clearGoalCanvas, addCubeToGoal, initializeGoalsetting } from './goal';
+         addCubeToGoal, initializeGoalsetting } from '../goal';
 
 const sector_code_map = new Map([
     ["forbidden-sector", 'f'],
@@ -11,7 +11,7 @@ const sector_code_map = new Map([
     ["goal-sector", 'g'],
 ]);
 
-let sector_cube_count = {
+export let sector_cube_count = {
     "forbidden-sector": 0,
     "permitted-sector": 0,
     "required-sector": 0,
@@ -81,38 +81,6 @@ function fillSector(cubes, sectorid, cube_idx) {
         let idx = cubes[i]; // idx is the position that cube was in resources originally
 
         relevant_th.appendChild(getEquationsAssetClone(idx, cube_idx));
-    }
-}
-
-function clearGoal() {
-    clearGoalCanvas();
-    sector_cube_count["goal-sector"] = 0;
-}
-
-function clearSector(sectorid) {
-    let sector_table = document.getElementById(sectorid).querySelector('table');
-
-    // console.log("sector id ", sectorid);
-    // console.log("sector table: ", sector_table);
-
-    for (let i = sector_table.rows.length - 1; i >= 3; --i) {
-        // console.log("deleting row ", i);
-        sector_table.deleteRow(i);
-    }
-
-    for (let i = 0; i < 12; ++i) { // magic bad
-        let th = sector_table.querySelector(`#${sector_code_map.get(sectorid)}${i}`);
-        th.innerHTML = '';
-    }
-
-    sector_cube_count[sectorid] = 0;
-}
-
-function clearResources() {
-    let resources_div = document.getElementById("resources-cubes");
-    for (let i = 0; i < 24; ++i) {
-        let th = resources_div.querySelector(`#r${i}`);
-        th.innerHTML = '';
     }
 }
 
@@ -205,18 +173,6 @@ export function hideGoalSettingButtons() {
         console.log("Set goal button somehow clicked...");
 
     deregisterGoalsettingCanvas();
-}
-
-export function clearBoard() {
-    let sectorids = ['forbidden-sector', 'permitted-sector', 'required-sector'];
-
-    console.log("Clearing board");
-    clearGoal();
-    for (let sectorid of sectorids) {
-        clearSector(sectorid);
-    }
-
-    clearResources();
 }
 
 export function num_resources_cubes() {

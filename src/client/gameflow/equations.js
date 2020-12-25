@@ -1,6 +1,7 @@
-import { clearBoard, renderResources } from "../board";
+import { renderResources } from "../board/board";
+import { clearBoard } from "../board/clear";
 import { registerGoalSettingCallbacks } from "../callbacks/goal";
-import { initializeBoardCallbacks } from "../callbacks/main";
+import { initializeBoardCallbacks } from "../callbacks/callbacks";
 import { appendServerMessage } from "../message_utils";
 import { addScoreboardScore, initializeScoreboard } from "../scoreboard";
 import { initializeElapsedTimer } from "../timing";

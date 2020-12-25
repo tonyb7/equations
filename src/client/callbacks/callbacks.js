@@ -3,7 +3,7 @@
 
 import { registerButtonCallbacks, deregisterButtonCallbacks } from './buttons';
 import { deregisterGoalSetCallback } from './goal';
-import { num_resources_cubes, updateBonusButton } from '../board';
+import { num_resources_cubes, updateBonusButton } from '../board/board';
 import { socket } from '../networking';
 
 const board_sectors = [

@@ -1,9 +1,9 @@
 // Functions relating to the flow of the game (game start, shake start,
 // shake end, next turn, etc)
 
-import { updateBonusButton } from "../board";
+import { updateBonusButton } from "../board/board";
 import { hideNewShakeButton, hideStartAndLeaveButtons } from "../buttons";
-import { deregisterBoardCallbacks } from "../callbacks/main";
+import { deregisterBoardCallbacks } from "../callbacks/callbacks";
 import { appendServerMessage } from "../message_utils";
 import { updateTurnText } from "../turntext";
 

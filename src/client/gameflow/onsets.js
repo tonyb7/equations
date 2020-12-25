@@ -1,8 +1,10 @@
 import { appendServerMessage } from "../message_utils";
 import { addScoreboardScore, initializeScoreboard } from "../scoreboard";
 import { initializeElapsedTimer } from "../timing";
+import { clearBoard } from "../board/clear";
 
-// TODO ONSETS: Should cubes be rolled first, or universe set first? Rulebook seems to say they happen simulatneously...
+// TODO ONSETS: Should cubes be rolled first, or universe set first? 
+// Rulebook seems to say they happen simulatneously...
 export function handleGameBeginOnsets(data, name) {
 
     // Notify players via chat
@@ -28,7 +30,7 @@ function setUpNewShakeOnsets(data, name, cardsetter) {
     // Display board visuals
 
     // TODO: Need onsets versions of these
-    // clearBoard();
+    clearBoard();
     // renderResources(data['cubes']);
 
     // Move to appropriate game phase (setting the universe)

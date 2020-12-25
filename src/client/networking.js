@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import { appendMessage, appendServerMessage, 
          printFiveMinWarningMsg, appendEndShakeNoGoal } from './message_utils';
 import { highlightResourcesCube, unhighlightResourcesCube, 
-    moveCube, hideGoalSettingButtons } from './board';
+    moveCube, hideGoalSettingButtons } from './board/board';
 import { initializeScoreboard } from './scoreboard';
 import { updateGoalline } from './goal';
 import { handleChallenge, handleForceOut, reviewSolutions, handleRejectionAssent,
@@ -12,7 +12,7 @@ import { handleChallenge, handleForceOut, reviewSolutions, handleRejectionAssent
 import { updateTimerOnFlip } from './timing';
 import { handleVariationsFinished, renderVariations } from './variations';
 import { setUniverse, universeError } from './universe';
-import { handleGameBegin, handleShakeBegin, handleNextTurn, handleGameOver } from './gameflow/main';
+import { handleGameBegin, handleShakeBegin, handleNextTurn, handleGameOver } from './gameflow/gameflow';
 import { displayState, displayStatePlayer } from './state';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
