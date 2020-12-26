@@ -41,12 +41,20 @@ function setGameTimer(time_str) {
 
 export function initializeElapsedTimer(starttime) {
     starting_time = starttime;
+    console.log("initializeElapsedTimer called with starttime=", starttime);
+
     let timer = setInterval(() => {
         let current_time = new Date();
         let seconds_since_epoch = Math.round(current_time.getTime()/1000);
+
+        console.log("orig seconds_since_epoch: ", seconds_since_epoch);
+        console.log("timezone offset=", current_time.getTimezoneOffset());
         seconds_since_epoch += current_time.getTimezoneOffset() * 60; // convert to UTC time
+        console.log(" new seconds_since_epoch: ", seconds_since_epoch);
 
         let seconds_passed = seconds_since_epoch - starting_time;
+        console.log("seconds_passed=", seconds_passed);
+
         let minutes = Math.floor(seconds_passed/60);
         let seconds = Math.floor(seconds_passed % 60);
 
