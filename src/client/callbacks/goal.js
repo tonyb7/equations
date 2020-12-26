@@ -5,11 +5,11 @@ export function registerGoalSetting(game, name) {
     if (!game['game_started']) {
         return;
     }
-    registerGoalSettingCallbacks(name, game['players'][game['turn']], !game["goalset"]);
+    registerGoalSettingCallbacks(name, game['players'][game['turn']], !game["goalset"], game['gametype']);
 }
 
-export const registerGoalSettingCallbacks = (name, firstmover, firstmove) => {
-    initializeGoalsettingGlobals();
+export const registerGoalSettingCallbacks = (name, firstmover, firstmove, gametype) => {
+    initializeGoalsettingGlobals(gametype);
     window.onresize = resizeGoalsettingCanvas;
 
     if (!firstmove)

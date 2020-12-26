@@ -14,6 +14,9 @@ export function displayUniverse(game, name) {
     if (game['onsets_cards_dealt'] > 0) {
         renderCards(game['onsets_cards_dealt'], game['onsets_cards']);
     }
+    else if (game['game_finished']) {
+        return;
+    }
     else {
         let num_players = game['players'].length;
         let cidx = (game['turn'] - 1) % num_players;
@@ -42,7 +45,7 @@ export function setUniverse(univ_set_info, name) {
     renderCards(numCards, onsets_cards);
 
     appendServerMessage("It is now time to call variations.");
-    renderVariations(univ_set_info['variations_state'], univ_set_info['players'], name);
+    renderVariations(univ_set_info['variations_state'], univ_set_info['players'], name, false);
 }
 
 export function universeError(errorInfo, name) {

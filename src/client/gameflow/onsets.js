@@ -41,5 +41,5 @@ function setUpNewShakeOnsets(data, name, cardsetter) {
 
     // Register callbacks
     initializeBoardCallbacks(data['goalsetter'] === name && data['show_bonus']);
-    registerGoalSettingCallbacks(name, data['goalsetter'], true);
+    registerGoalSettingCallbacks(name, data['goalsetter'], true, data['gametype']);
 }

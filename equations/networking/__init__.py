@@ -25,7 +25,7 @@ from equations.networking.game_flow import handle_call_judge
 from equations.networking.game_flow import handle_variation_called
 from equations.networking.game_flow import handle_universe_set
 
-from equations.networking.goalsetting import update_cube_xpos
+from equations.networking.goalsetting import update_cube_xypos
 from equations.networking.goalsetting import update_cube_orientation
 
 from equations.networking.messaging import receive_message

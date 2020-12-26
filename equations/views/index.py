@@ -144,7 +144,7 @@ def show_game(nonce):
         "name": name,
     }
 
-    if len(game_info.gametype) == 0 or game_info.gametype == 'eq':
+    if game_info.gametype is None or game_info.gametype == 'eq':
         return flask.render_template("game.html", **context)
     if game_info.gametype == 'os':
         return flask.render_template("game_onsets.html", **context)

@@ -539,6 +539,14 @@ body {
     align-items: stretch;
 }
 
+.goal-os {
+    height: 90% !important;
+}
+
+.canvas-os {
+    width: 40% !important;
+}
+
 .goal-area.goal-cubes.play-area canvas {
     border: dotted;
     border-color: white;

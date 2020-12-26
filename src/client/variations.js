@@ -16,15 +16,19 @@ export function displayVariations(game, name) {
     if (game['gametype'] == 'os' && game['onsets_cards_dealt'] == 0) {
         return;
     }
-    renderVariations(game['variations_state'], game['players'], name);
+    renderVariations(game['variations_state'], game['players'], name, game['game_finished']);
 }
 
-export function renderVariations(variations_state, players, name) {
+export function renderVariations(variations_state, players, name, game_ended) {
     let variations_section = document.getElementById("variations");
     variations_section.classList.remove("hidden");
 
     let variations_text_div = variations_section.querySelector("#called-variations");
     variations_text_div.innerHTML = variations_state['variations'].join(", ");
+
+    if (game_ended) {
+        return;
+    }
 
     if (variations_state['num_players_called'] < players.length) {
         updateTurnText("Calling Variations");

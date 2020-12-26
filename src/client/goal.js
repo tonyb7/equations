@@ -3,7 +3,6 @@
 // Dragging functionality taken from https://stackoverflow.com/a/24938627/8157027
 // drawRotated taken from // https://stackoverflow.com/a/17412387/8157027
 
-// import { getEquationsAssetClone } from './assets/equations';
 import { gametype_to_asset_cloner_map } from './assets/assets';
 import { hideGoalSettingButtons } from './board/board';
 import { socket } from './networking';
@@ -16,52 +15,90 @@ let offsetY;
 let cube_dim;
 let cube_width;
 let cube_height;
-let cube_pos_y;
+let init_cube_pos_y;
 
 let dragok = false;
 let startX;
+let startY;
+
+let gametype = 'eq'; // default value
+
+const CANVAS_WIDTH_PROP_EQ = 0.33;
+const CANVAS_HEIGHT_PROP_EQ = 0.09;
+
+const CANVAS_WIDTH_PROP_OS = 0.2;
+const CANVAS_HEIGHT_PROP_OS = 0.2; 
 
 let cubes = [];
 
 export function initializeGoalsetting(game) {
     if (game['game_started']) {
-        // if (game['gametype'] == 'eq') {
-            initializeGoalsettingGlobals();
-            if (game['goalset']) {
-                hideGoalSettingButtons();
-            }
-        // }
-        // else if (game['gametype'] == 'os') {
-        //     // TODO ONSETS
-        // }
+        initializeGoalsettingGlobals(game['gametype']);
+        if (game['goalset']) {
+            hideGoalSettingButtons();
+        }
     }
 }
 
-export function initializeGoalsettingGlobals() {
+export function initializeGoalsettingGlobals(gametype_in) {
+    gametype = gametype_in;
+
     canvas = document.getElementById("goal-sector");
-    canvas.width = window.innerWidth * 0.33;
-    canvas.height = window.innerHeight * 0.09;
+    setCanvasDimensions(gametype_in);
 
     BB = canvas.getBoundingClientRect();
     offsetX = BB.left;
     offsetY = BB.top;
 
-    cube_dim = canvas.width * 0.1;
-    cube_width = cube_dim + 3;
-    cube_height = cube_dim + 2;
+    setDimensionGlobals(gametype_in);
+}
 
-    cube_pos_y = canvas.height/8;
+function setCanvasDimensions(gametype_in) {
+    if (gametype_in === 'eq') {
+        canvas.width = window.innerWidth * CANVAS_WIDTH_PROP_EQ;
+        canvas.height = window.innerHeight * CANVAS_HEIGHT_PROP_EQ;
+    }
+    else if (gametype_in === 'os') {
+        canvas.width = window.innerWidth * CANVAS_WIDTH_PROP_OS;
+        canvas.height = window.innerHeight * CANVAS_HEIGHT_PROP_OS;
+    }
+}
+
+function setDimensionGlobals(gametype_in) {
+    if (gametype_in === 'eq') {
+        cube_dim = canvas.width * 0.1;
+        cube_width = cube_dim + 3;
+        cube_height = cube_dim + 2;
+        init_cube_pos_y = canvas.height / 8;
+    }
+    else if (gametype_in === 'os') {
+        cube_dim = canvas.width * 0.2;
+        cube_width = cube_dim + 3;
+        cube_height = cube_dim + 2;
+        init_cube_pos_y = canvas.height / 4;
+    }
 }
 
 function isWithinCube(r, mouseX, mouseY) {
     return mouseX > r.cube_pos_x && mouseX < r.cube_pos_x + cube_width && 
-           mouseY > cube_pos_y && mouseY < cube_pos_y + cube_height;
+           mouseY > r.cube_pos_y && mouseY < r.cube_pos_y + cube_height;
 }
 
 function getBoundedXPos(x_pos) {
     x_pos = Math.min(x_pos, canvas.width - cube_width);
     x_pos = Math.max(x_pos, 4);
     return x_pos;
+}
+
+function getBoundedYPos(y_pos) {
+    // console.log("initial y_pos=", y_pos);
+    // console.log("canvas.height=", canvas.height);
+    // console.log("cube_height=", cube_height);
+    y_pos = Math.min(y_pos, canvas.height - cube_height);
+    // console.log("after first bound: ", y_pos);
+    y_pos = Math.max(y_pos, 4);
+    // console.log("after second bound: ", y_pos);
+    return y_pos;
 }
 
 // Draw a rounded border around an image on the Canvas
@@ -122,6 +159,7 @@ function mouseDown(e) {
 
     // save the current mouse position
     startX = mx;
+    startY = my;
 }
 
 function mouseUp(e) {
@@ -134,9 +172,10 @@ function mouseUp(e) {
     for (var i = 0; i < cubes.length; i++) {
         if (cubes[i].isDragging) {
             cubes[i].isDragging = false;
-            socket.emit("x_pos_update", {
+            socket.emit("xy_pos_update", {
                 "order": i, 
-                "x_pos_per_mille": cubes[i].cube_pos_x/(canvas.width/1000)
+                "x_pos_per_mille": cubes[i].cube_pos_x/(canvas.width/1000),
+                "y_pos_per_mille": cubes[i].cube_pos_y/(canvas.height/1000),
             });
             return;
         }
@@ -152,10 +191,12 @@ function mouseMove(e) {
 
         // get the current mouse position
         var mx = parseInt(e.clientX - offsetX);
+        var my = parseInt(e.clientY - offsetY);
 
         // calculate the distance the mouse has moved
         // since the last mousemove
         var dx = mx - startX;
+        var dy = my - startY;
 
         // move each rect that isDragging 
         // by the distance the mouse has moved
@@ -164,6 +205,7 @@ function mouseMove(e) {
             var r = cubes[i];
             if (r.isDragging) {
                 r.cube_pos_x = getBoundedXPos(r.cube_pos_x + dx);
+                r.cube_pos_y = getBoundedYPos(r.cube_pos_y + dy);
                 break;
             }
         }
@@ -173,6 +215,7 @@ function mouseMove(e) {
 
         // reset the starting mouse position for the next mousemove
         startX = mx;
+        startY = my;
     }
 }
 
@@ -209,7 +252,7 @@ function clear(context) {
 
 function drawCubes() {
     if (!canvas) {
-        initializeGoalsettingGlobals();
+        initializeGoalsettingGlobals(gametype);
     }
 
     let context = canvas.getContext('2d');
@@ -222,7 +265,7 @@ function drawCubes() {
     for (var i = 0; i < cubes.length; i++) {
         let r = cubes[i];
         // console.log("Calling draw rotated on ", r);
-        drawRotated(context, r.cube, r.cube_pos_x, cube_pos_y, 
+        drawRotated(context, r.cube, r.cube_pos_x, r.cube_pos_y,
                     cube_dim, cube_dim, r.orientation);
     }
 }
@@ -255,33 +298,32 @@ export function resizeGoalsettingCanvas(e) {
     e.stopPropagation();
 
     let old_canvas_width = canvas.width;
-    canvas.width = window.innerWidth * 0.33;
-    canvas.height = window.innerHeight * 0.09;
+    let old_canvas_height = canvas.height;
+    setCanvasDimensions(gametype);
 
     BB = canvas.getBoundingClientRect();
     offsetX = BB.left;
     offsetY = BB.top;
 
-    cube_dim = canvas.width * 0.1;
-    cube_width = cube_dim + 3;
-    cube_height = cube_dim + 2;
-    cube_pos_y = canvas.height/8;
+    setDimensionGlobals(gametype);
 
     // what happens to startX? what if someone resizes window while dragging cube?
 
-    updateCubeXPos(old_canvas_width);
+    updateCubesXYPos(old_canvas_width, old_canvas_height);
     drawCubes();
 }
 
-function updateCubeXPos(old_canvas_width) {
+function updateCubesXYPos(old_canvas_width, old_canvas_height) {
     for (var i = 0; i < cubes.length; i++) {
         // console.log("OLD: ", cubes[i].cube_pos_x/(old_canvas_width/1000));
         cubes[i].cube_pos_x = getBoundedXPos(cubes[i].cube_pos_x * (canvas.width / old_canvas_width));
+        cubes[i].cube_pos_y = getBoundedYPos(cubes[i].cube_pos_y * (canvas.height / old_canvas_height));
         // Emit here because goal line might not look the same after resize
         // due to getBoundedXPos
-        socket.emit("x_pos_update", {
+        socket.emit("xy_pos_update", {
             "order": i, 
-            "x_pos_per_mille":cubes[i].cube_pos_x/(canvas.width/1000),
+            "x_pos_per_mille": cubes[i].cube_pos_x/(canvas.width/1000),
+            "y_pos_per_mille": cubes[i].cube_pos_y/(canvas.height/1000),
         });
         // console.log("NEW: ", cubes[i].cube_pos_x/(canvas.width/1000));
     }
@@ -309,11 +351,23 @@ export function initializeGoalCanvas(gametype, game_info, cube_idx) {
         let image = image_cloner(cube_info['idx'], cube_idx);
 
         image.onload = drawCubes;
+
+        let x_pos = getBoundedXPos(cube_info['x'] * canvas.width/1000);
+        let y_pos = init_cube_pos_y;
+        // console.log("y_pos: ", y_pos);
+        // console.log("cube_info: ", cube_info);
+        if ('y' in cube_info) { // for backwards compat. with games already in the db
+            // console.log("GoT here");
+            y_pos = getBoundedYPos(cube_info['y'] * canvas.width/1000);
+            // console.log("new y_pos ", y_pos);
+        }
+
         cubes.push({
             order: cubes.length,  // index within the cubes array 
             idx: cube_info['idx'],
             cube: image_cloner(cube_info['idx'], cube_idx),
-            cube_pos_x: getBoundedXPos(cube_info['x'] * canvas.width/1000),
+            cube_pos_x: x_pos,
+            cube_pos_y: y_pos,
             isDragging: false,
             orientation: cube_info['orientation'],
         });
@@ -331,6 +385,7 @@ export function addCubeToGoal(idx, cube_image) {
     if (cubes.length !== 0) {
         x_pos += cubes.length * ((3 * x_pos) + cube_width);
     }
+    let y_pos = init_cube_pos_y;
 
     let order = cubes.length;
     cubes.push({
@@ -338,21 +393,24 @@ export function addCubeToGoal(idx, cube_image) {
         idx: idx,
         cube: cube_image.cloneNode(true),
         cube_pos_x: x_pos,
+        cube_pos_y: y_pos,
         isDragging: false,
         orientation: 0,
     });
 
     cube_image.remove();
-    socket.emit("x_pos_update", {
+    socket.emit("xy_pos_update", {
         "order": order, 
         "x_pos_per_mille": x_pos/(canvas.width/1000),
+        "y_pos_per_mille": y_pos/(canvas.height/1000),
     });
     drawCubes();
 }
 
 export function updateGoalline(type, i, new_val) {
-    if (type === "x_pos") {
-        cubes[i].cube_pos_x = getBoundedXPos(new_val * (canvas.width/1000));
+    if (type === "xy_pos") {
+        cubes[i].cube_pos_x = getBoundedXPos(new_val[0] * (canvas.width/1000));
+        cubes[i].cube_pos_y = getBoundedYPos(new_val[1] * (canvas.height/1000));
     }
     else if (type === "orientation") {
         cubes[i].orientation = new_val;

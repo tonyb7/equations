@@ -36,9 +36,9 @@ function setUpNewShakeEquations(data, name) {
     renderResources(data['gametype'], data['cubes']);
 
     // Move to appropriate game phase (calling variations)
-    renderVariations(data['variations_state'], data['players'], name);
+    renderVariations(data['variations_state'], data['players'], name, false);
 
     // Register callbacks
     initializeBoardCallbacks(data['goalsetter'] === name && data['show_bonus']);
-    registerGoalSettingCallbacks(name, data['goalsetter'], true);
+    registerGoalSettingCallbacks(name, data['goalsetter'], true, data['gametype']);
 }

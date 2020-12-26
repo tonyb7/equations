@@ -84,7 +84,7 @@ function registerSocketCallbacks(name) {
     socket.on("five_minute_warning_message", () => printFiveMinWarningMsg());
 
     socket.on("update_variations", (info) => 
-        renderVariations(info['variations_state'], info['players'], name));
+        renderVariations(info['variations_state'], info['players'], name, false));
     socket.on("variations_finished", (data) => handleVariationsFinished(data, name));
 
     socket.on("timer_flip", (info) => updateTimerOnFlip(info));
