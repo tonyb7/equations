@@ -204,9 +204,13 @@ def handle_cube_click(pos):
             or turn_user != user:
         return
 
-    if rooms_info[room]['gametype'] == 'os' and rooms_info[room]['onsets_cards_dealt'] == 0:
-        emit("server_message", f"Please wait for cards to be dealt and variations to be called before moving a cube!")
-        return
+    if rooms_info[room]['gametype'] == 'os':  
+        if rooms_info[room]['onsets_cards_dealt'] == 0:
+            emit("server_message", "Please wait for cards to be dealt and variations to be called before moving a cube!")
+            return
+        if not rooms_info[room]['goalset'] and (pos < 15 or pos > 17):
+            emit("server_message", "You can only use digit cubes on the goal.")
+            return
     
     # Cannot move cubes before finishing calling variations
     if rooms_info[room]['variations_state']['num_players_called'] < len(rooms_info[room]['players']):
@@ -359,6 +363,20 @@ def handle_set_goal():
 
     emit("hide_goal_setting_buttons", room=room)
     rooms_info[room]["goalset"] = True
+
+    if rooms_info[room]['gametype'] == 'os':
+        # Move number cubes to forbidden after goal is set
+        for i in range(15, 18):
+            if (rooms_info[room]["resources"][i] != MOVED_CUBE_IDX):
+                rooms_info[room]["resources"][i] = MOVED_CUBE_IDX
+                rooms_info[room]["forbidden"].append(i)
+                move_command = {
+                    "from": i,
+                    "to": "forbidden-sector",
+                }
+                emit("move_cube", move_command, room=room)
+
+    emit("server_message", "Goal Set!")
     next_turn(room)
 
 @equations.socketio.on("bonus_clicked")
