@@ -26,8 +26,8 @@ let gametype = 'eq'; // default value
 const CANVAS_WIDTH_PROP_EQ = 0.33;
 const CANVAS_HEIGHT_PROP_EQ = 0.09;
 
-const CANVAS_WIDTH_PROP_OS = 0.2;
-const CANVAS_HEIGHT_PROP_OS = 0.2; 
+const CANVAS_WIDTH_PROP_OS = 0.2; // lower to make cube wider
+const CANVAS_HEIGHT_PROP_OS = 0.18; // lower to make cube taller
 
 let cubes = [];
 
@@ -71,10 +71,11 @@ function setDimensionGlobals(gametype_in) {
         cube_height = cube_dim + 2;
         init_cube_pos_y = canvas.height / 8;
     }
-    else if (gametype_in === 'os') {
+    else if (gametype_in === 'os') { 
+        // I don't think these are making a difference...
         cube_dim = canvas.width * 0.2;
-        cube_width = cube_dim + 3;
-        cube_height = cube_dim + 2;
+        cube_width = cube_dim;
+        cube_height = cube_dim + 10;
         init_cube_pos_y = canvas.height / 4;
     }
 }

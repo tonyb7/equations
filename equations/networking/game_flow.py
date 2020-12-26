@@ -208,9 +208,16 @@ def handle_cube_click(pos):
         if rooms_info[room]['onsets_cards_dealt'] == 0:
             emit("server_message", "Please wait for cards to be dealt and variations to be called before moving a cube!")
             return
-        if not rooms_info[room]['goalset'] and (pos < 15 or pos > 17):
-            emit("server_message", "You can only use digit cubes on the goal.")
-            return
+        if not rooms_info[room]['goalset']:
+            if not rooms_info[room]['bonus_clicked']:
+                if pos < 15 or pos > 17:
+                    emit("server_message", "You can only use digit cubes on the goal.")
+                    return
+            else:
+                if pos > 14:
+                    emit("server_message", "You can only bonus with a non-digit cube.")
+                    return
+
     
     # Cannot move cubes before finishing calling variations
     if rooms_info[room]['variations_state']['num_players_called'] < len(rooms_info[room]['players']):
@@ -393,8 +400,12 @@ def handle_bonus_click():
         print("started move but somehow clicked bonus button")
         return
 
+    # Unclick any cubes when bonus is unclicked
+    if rooms_info[room]["bonus_clicked"] and rooms_info[room]["touched_cube"]:
+        handle_cube_click(rooms_info[room]["touched_cube"])
+
     rooms_info[room]["bonus_clicked"] = not rooms_info[room]["bonus_clicked"]
-    print("bonus clicked set to ", rooms_info[room]["bonus_clicked"])
+
 
 @equations.socketio.on("call_judge")
 def handle_call_judge():
