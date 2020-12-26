@@ -83,7 +83,7 @@ def start_shake(new_game, is_restart):
                 "num_players_called": 0,
                 "caller_index": None,
             },
-            "starttime": datetime.datetime.utcnow().timestamp(),
+            "starttime": datetime.datetime.now().timestamp(),
             "last_timer_flip": None,
             # cube_index: fixed length of 24, index is cube's id.
             # For equations, the first six are red, next six are blue, next six are green, 
