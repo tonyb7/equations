@@ -31,6 +31,7 @@ setup(
         'python-editor==1.0.4',
         'python-engineio==3.12.1',
         'python-socketio==4.5.1',
+        'pytz==2020.1',
         'six==1.14.0',
         'SQLAlchemy==1.3.17',
         'Werkzeug==1.0.1',
