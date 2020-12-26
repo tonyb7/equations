@@ -79,11 +79,12 @@ export function initializeElapsedTimer(starttime) {
 
 export function updateGameTimer(time) {
     // Timer should display 60 - (currentTime - time) seconds left
-
+    console.log("executing updateGameTimer with time ", time);
     if (!time) {
         return;
     }
 
+    console.log("setting the interval");
     clearInterval(turnTimer);
     turnTimer = setInterval(() => {
         let current_time = new Date();
@@ -104,13 +105,15 @@ export function updateGameTimer(time) {
             clearInterval(turnTimer);
             time_str = "0:00";
         }
-        
+
+        console.log("displaying time_str: ", time_str);
         setGameTimer(time_str);
     }, 1000);
 
 }
 
 export function updateTimerOnFlip(info) {
+    console.log("updateTimerOnFlip called");
     appendServerMessage(`${info['flipper']} flipped the timer.`);
     updateGameTimer(info["last_timer_flip"]);
 }
