@@ -34,6 +34,7 @@ def register_client(player_info):
         "room": room,
     }
 
+    print(f"QUERYING DB FOR GAME {room}")
     game = Game.query.filter_by(nonce=room).first()
     assert game is not None
     is_player = name in game.players

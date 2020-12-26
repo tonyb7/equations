@@ -77,6 +77,7 @@ def create_game():
         return flask.redirect(flask.url_for('show_index'))
 
     # Commit the game to the database
+    print(f"ADDING GAME {game_nonce} TO THE DATABASE")
     new_game = Game(nonce=game_nonce, gametype=gametype, ended=False, players=[name])
     equations.db.session.add(new_game)
     equations.db.session.commit()
