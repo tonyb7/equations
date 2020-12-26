@@ -15,13 +15,8 @@ def update_cube_xypos(info):
     new_x_pos = info['x_pos_per_mille']
     new_y_pos = info['y_pos_per_mille']
     
-    # print("xy_pos_update!!")
-    # print("before: ", rooms_info[room]["goal"][i])
-
     rooms_info[room]["goal"][i]["x"] = new_x_pos
     rooms_info[room]["goal"][i]["y"] = new_y_pos
-
-    # print("after: ", rooms_info[room]["goal"][i])
 
     update_msg = {
         "type": "xy_pos", 

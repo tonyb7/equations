@@ -5,11 +5,7 @@ import { appendInstructions, appendServerMessage } from './message_utils';
 import { socket } from './networking';
 import { updateTurnText } from './turntext';
 
-// TODO Find everywhere renderVariations is used and see if it can be simplified
 export function displayVariations(game, name) {
-
-    // TODO Do not show any chat messages if game has ended -- only change the variations_text_div!
-    
     if (!game['game_started']) {
         return;
     }
