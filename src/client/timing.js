@@ -79,19 +79,15 @@ export function initializeElapsedTimer(starttime) {
 
 export function updateGameTimer(time) {
     // Timer should display 60 - (currentTime - time) seconds left
-    console.log("executing updateGameTimer with time ", time);
     if (!time) {
         return;
     }
 
-    console.log("setting the interval");
     clearInterval(turnTimer);
     turnTimer = setInterval(() => {
         let current_time = new Date();
 
         let seconds_passed = Math.floor((current_time.getTime()/1000) - time);
-        seconds_passed += current_time.getTimezoneOffset() * 60; // convert to UTC time
-        
         let display_time = 60 - seconds_passed;
 
         let seconds_leading_zero_str = "";
@@ -106,14 +102,12 @@ export function updateGameTimer(time) {
             time_str = "0:00";
         }
 
-        console.log("displaying time_str: ", time_str);
         setGameTimer(time_str);
     }, 1000);
 
 }
 
 export function updateTimerOnFlip(info) {
-    console.log("updateTimerOnFlip called");
     appendServerMessage(`${info['flipper']} flipped the timer.`);
     updateGameTimer(info["last_timer_flip"]);
 }
