@@ -1,6 +1,5 @@
 // Functions related to moving cubes around the board
-import { getEquationsAssetClone } from '../assets/equations';
-import { getOnsetsCubeAssetClone } from '../assets/onsets';
+import { gametype_to_asset_cloner_map } from '../assets/assets';
 
 import { emitCubeClicked, bonusButtonCallback } from '../networking';
 import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
@@ -25,11 +24,6 @@ const gametype_to_num_cubes_map = new Map([
     ["os", 18],
 ]);
 
-const gametype_to_asset_cloner_map = new Map([
-    ["eq", getEquationsAssetClone],
-    ["os", getOnsetsCubeAssetClone],
-]);
-
 export function displayCubes(game) {
     if (!game['game_started']) {
         return;
@@ -37,7 +31,7 @@ export function displayCubes(game) {
     console.assert(game['cube_index'].length > 0);
 
     initializeGoalsetting(game);
-    renderGoal(game['goal'], game['cube_index']);
+    renderGoal(game['gametype'], game['goal'], game['cube_index']);
 
     renderResources(game['gametype'], game['resources']);
     renderSector(game['gametype'], game['forbidden'], "forbidden-sector", game['cube_index']);
@@ -71,13 +65,13 @@ export function renderResources(gametype, cubes) {
     console.log("Finished rolling cubes");
 }
 
-export function renderGoal(goal_info, cube_idx) {
+export function renderGoal(gametype, goal_info, cube_idx) {
     if (goal_info.length > 6) {
         console.log("Something is wrong! Server stored more than 6 cubes in goal!");
     }
 
     sector_cube_count["goal-sector"] = goal_info.length;
-    initializeGoalCanvas(goal_info, cube_idx);
+    initializeGoalCanvas(gametype, goal_info, cube_idx);
 }
 
 function renderSector(gametype, cubes, sectorid, cube_idx) {
