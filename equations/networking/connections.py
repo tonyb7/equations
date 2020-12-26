@@ -155,16 +155,11 @@ def on_disconnect():
     if len(rooms_info[room]["sockets"]) == 0:
         # If all players and spectators leave a non-tournament match before the 
         # game has started, then game is deleted from the rooms_info map only.
-        # Do not delete from database, as a slow refresh has proven to be problematic 
-        # (game will get deleted before refresh finishes)
+        # Do not delete from database, as a slow refresh/hard refresh has proven to be problematic 
+        # (game will get deleted before refresh finishes/refresh causes use of new socket and is slow)
         print(f"Has game started? {rooms_info[room]['game_started']}, tournament: {rooms_info[room]['tournament']}")
         if not rooms_info[room]["game_started"] and rooms_info[room]["tournament"] is None:
             del rooms_info[room]
-            # game = Game.query.filter_by(nonce=room).first()
-            # assert game is not None
-            # print("Deleting game of id ", room)
-            # equations.db.session.delete(game)
-            # equations.db.session.commit()
 
 @equations.socketio.on('leave_game')
 def on_leave():
