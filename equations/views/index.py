@@ -65,11 +65,20 @@ def create_game():
         return flask.redirect(flask.url_for('show_index'))
 
     name = flask.session['username']
-
     game_nonce = generate_gameid()
 
+    gametype = None
+    if flask.request.form['create'] == "Create Equations Game":
+        gametype = 'eq'
+    elif flask.request.form['create'] == "Create On-Sets Game":
+        gametype = 'os'
+    else:
+        flask.flash("Tried to create an invalid type of game (type must be Equations or On-Sets)")
+        return flask.redirect(flask.url_for('show_index'))
+
     # Commit the game to the database
-    new_game = Game(nonce=game_nonce, ended=False, players=[name])
+    print(f"ADDING GAME {game_nonce} TO THE DATABASE")
+    new_game = Game(nonce=game_nonce, gametype=gametype, ended=False, players=[name])
     equations.db.session.add(new_game)
     equations.db.session.commit()
 
@@ -133,8 +142,14 @@ def show_game(nonce):
     
     context = {
         "nonce": nonce,
-        "name": flask.session['username'],
+        "name": name,
     }
 
-    return flask.render_template("game.html", **context)
+    if game_info.gametype is None or game_info.gametype == 'eq':
+        return flask.render_template("game.html", **context)
+    if game_info.gametype == 'os':
+        return flask.render_template("game_onsets.html", **context)
+        
+    flask.flash("Tried to visit a game of invalid type (type must be eq or os)")
+    return flask.redirect(flask.url_for('show_index')) 
 

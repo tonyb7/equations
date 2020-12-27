@@ -1,6 +1,6 @@
 """Functions to handle time control."""
 
-import time
+import datetime
 import flask
 import equations
 from equations.data import get_name_and_room, MapsLock, rooms_info
@@ -35,7 +35,7 @@ def handle_flip_timer():
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed flip_timer!")
 
-    current_time = time.time()
+    current_time = datetime.datetime.now().timestamp()
     if rooms_info[room]["last_timer_flip"] is None:
         rooms_info[room]["last_timer_flip"] = current_time
     else:

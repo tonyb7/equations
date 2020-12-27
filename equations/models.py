@@ -24,6 +24,7 @@ class Game(db.Model):
     __tablename__ = 'games'
 
     nonce = db.Column(db.String(), primary_key=True)
+    gametype = db.Column(db.String()) # Options: eq, os,
     ended = db.Column(db.Boolean, nullable=False)
     tournament = db.Column(db.String())
     players = db.Column(JSON)
@@ -32,6 +33,8 @@ class Game(db.Model):
     p3scores = db.Column(JSON)
     variations_state = db.Column(JSON) # variations of the most recent shake
     cube_index = db.Column(JSON)
+    onsets_cards = db.Column(JSON)
+    onsets_cards_dealt = db.Column(db.Integer)
     resources = db.Column(JSON)
     goal = db.Column(JSON)
     required = db.Column(JSON)
@@ -41,10 +44,11 @@ class Game(db.Model):
     last_timer_flip = db.Column(db.Float)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, nonce, ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
-                 p3scores=[], variations_state = {}, cube_index=[], resources=[], goal=[],
+    def __init__(self, nonce, gametype='eq', ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
+                 p3scores=[], variations_state = {}, cube_index=[], onsets_cards=[], onsets_cards_dealt=0, resources=[], goal=[],
                  required=[], permitted=[], forbidden=[], turn=None, last_timer_flip=0):
         self.nonce = nonce
+        self.gametype = gametype
         self.ended = ended
         self.tournament = tournament
         self.players = players
@@ -53,6 +57,8 @@ class Game(db.Model):
         self.p3scores = p3scores
         self.variations_state = variations_state
         self.cube_index = cube_index
+        self.onsets_cards = onsets_cards
+        self.onsets_cards_dealt = onsets_cards_dealt
         self.resources = resources
         self.goal = goal
         self.required = required

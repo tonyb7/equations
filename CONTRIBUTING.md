@@ -1,8 +1,12 @@
-Rules of Equations
+Rules of the Games
 ==================
 https://www.agloa.org/eq-docs/
 
-https://agloa.org/wp-content/uploads/EqsTourRules19-20.pdf
+https://agloa.org/wp-content/uploads/EqsTourRules20-21.pdf
+
+https://www.agloa.org/os-docs/
+
+https://agloa.org/wp-content/uploads/OSTourRules2021.pdf
 
 Technology Stack
 ================

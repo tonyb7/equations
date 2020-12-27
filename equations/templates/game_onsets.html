@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>On-Sets</title>
+        <link rel="stylesheet" type="text/css" href="/static/css/game.css">
+        <!-- <link rel="stylesheet" type="text/css" href="../static/css/game.css"> -->
+        <style>
+            /* Colors specific to On-Sets */
+            .goal-color {
+                background-color: #743a3f;
+            }
+            .cube-area-color {
+                background-color: #fccf38;
+            }
+        </style>
+        <script language="JavaScript" type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+        <script>
+            $(function () {
+                $(".playable-area").hover(
+                    function () {
+                        $(this).removeClass("hide-border");
+                    },
+                    function () {
+                        $(this).addClass("hide-border");
+                    }
+                );
+            });
+        </script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/game.bundle.js') }}"></script>
+    </head>
+    <body>
+        <div id="main">
+            <div class="main left">
+                <div class="main left top" id="topbar">
+                    <div id="home-link">
+                        <a href="/"><button>Home</button></a>
+                    </div>
+                    <div id="topbar-text">
+                        <h3>On-Sets Game Room</h3>
+                        <p>Welcome <a id="name">{{ name }}</a>!</p>
+                        <p>Share this Room ID for friends to join: <a id="room-nonce">{{ nonce }}</a></p>
+                    </div>
+                </div>
+                <div class="main left bot">
+                    <div class="game">
+                        <div class="board-outer">
+                            <div class="board-inner">
+                                <div class="cube-area cube-area-color">
+                                    <div class="play-sector">
+                                        <div class="play-sector heading">
+                                            <p><b>Forbidden</b></p>
+                                        </div>
+                                        <div class="play-sector cubes">
+                                            <div class="play-sector cubes playable-area hide-border" id="forbidden-sector">
+                                                <table>
+                                                    <tr>
+                                                        <td id="f0"></td>
+                                                        <td id="f1"></td>
+                                                        <td id="f2"></td>
+                                                        <td id="f3"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="f4"></td>
+                                                        <td id="f5"></td>
+                                                        <td id="f6"></td>
+                                                        <td id="f7"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="f8"></td>
+                                                        <td id="f9"></td>
+                                                        <td id="f10"></td>
+                                                        <td id="f11"></td>
+                                                    </tr>
+                                                    <!-- Add more rows if necessary -->
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="play-sector">
+                                        <div class="play-sector heading">
+                                            <p><b>Permitted</b></p>
+                                        </div>
+                                        <div class="play-sector cubes">
+                                            <div class="play-sector cubes playable-area hide-border" id="permitted-sector">
+                                                <table>
+                                                    <tr>
+                                                        <td id="p0"></td>
+                                                        <td id="p1"></td>
+                                                        <td id="p2"></td>
+                                                        <td id="p3"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="p4"></td>
+                                                        <td id="p5"></td>
+                                                        <td id="p6"></td>
+                                                        <td id="p7"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="p8"></td>
+                                                        <td id="p9"></td>
+                                                        <td id="p10"></td>
+                                                        <td id="p11"></td>
+                                                    </tr>
+                                                    <!-- Add more rows if necessary -->
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="play-sector">
+                                        <div class="play-sector heading">
+                                            <p><b>Required</b></p>
+                                        </div>
+                                        <div class="play-sector cubes">
+                                            <div class="play-sector cubes playable-area hide-border" id="required-sector">
+                                                <table>
+                                                    <tr>
+                                                        <td id="q0"></td>
+                                                        <td id="q1"></td>
+                                                        <td id="q2"></td>
+                                                        <td id="q3"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="q4"></td>
+                                                        <td id="q5"></td>
+                                                        <td id="q6"></td>
+                                                        <td id="q7"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="q8"></td>
+                                                        <td id="q9"></td>
+                                                        <td id="q10"></td>
+                                                        <td id="q11"></td>
+                                                    </tr>
+                                                    <!-- Add more rows if necessary -->
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="goal-area goal-color">
+                                        <div class="goal-area goal-text">
+                                            <p><b>Goal:</b></p>
+                                        </div>
+                                        <div class="goal-area goal-cubes">
+                                            <div class="goal-area goal-cubes play-area hide-border goal-os">
+                                                <canvas class="playable-area hide-border canvas-os" id="goal-sector"></canvas>
+                                                <div id="btn-div">
+                                                    <button id="set-goal-button" class="hidden">Goal Set!</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="resources wooden-table">
+                            <div class="resources heading">
+                                <div id="res-text">
+                                </div>
+                                <div id="res-button">
+                                    <button id="bonus-button" class="hidden">Bonus</button>
+                                    <!-- add class "button-clicked" to make button look like it's clicked -->
+                                </div>
+                            </div>
+                            <div class="resources cubes">
+                                <div class="resources cubes playable-area" id="resources-cubes">
+                                    <table>
+                                        <tr>
+                                            <th id="r0">
+                                                <!-- <img src="/static/onsets/onsets-cubes/n0.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="r1">
+                                                <!-- <img src="/static/onsets/onsets-cubes/n0.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="r2"></th>
+                                            <th id="r3"></th>
+                                            <th id="r4"></th>
+                                            <th id="r5"></th>
+                                            <th id="r6"></th>
+                                            <th id="r7"></th>
+                                            <th id="r8"></th>
+                                            <th id="r9"></th>
+                                            <th id="r10"></th>
+                                            <th id="r11">
+                                                <!-- <img src="/static/onsets/onsets-cubes/n0.png" class="rounded-corners"> -->
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th id="r12"></th>
+                                            <th id="r13"></th>
+                                            <th id="r14"></th>
+                                            <th id="r15"></th>
+                                            <th id="r16"></th>
+                                            <th id="r17"></th>
+                                            <th id="r18">
+                                                <!-- <img src="/static/onsets/onsets-cubes/n0.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="r19">
+                                                <!-- <img src="/static/onsets/onsets-cubes/n0.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="r20">
+                                                <!-- <img src="/static/onsets/onsets-cubes/n0.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="r21"></th>
+                                            <th id="r22"></th>
+                                            <th id="r23"></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="resources cards wooden-table">
+                                <div class="resources cards playable-area" id="resources-cards">
+                                    <table>
+                                        <tr>
+                                            <th id="c0">
+                                                <!-- <img src="/static/onsets/onsets-cards/card00.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c1">
+                                                <!-- <img src="/static/onsets/onsets-cards/card01.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c2">
+                                                <!-- <img src="/static/onsets/onsets-cards/card02.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c3">
+                                                <!-- <img src="/static/onsets/onsets-cards/card03.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c4">
+                                                <!-- <img src="/static/onsets/onsets-cards/card04.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c5">
+                                                <!-- <img src="/static/onsets/onsets-cards/card05.png" class="rounded-corners"> -->
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th id="c6">
+                                                <!-- <img src="/static/onsets/onsets-cards/card12.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c7">
+                                                <!-- <img src="/static/onsets/onsets-cards/card13.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c8">
+                                                <!-- <img src="/static/onsets/onsets-cards/card14.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c9">
+                                                <!-- <img src="/static/onsets/onsets-cards/card15.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c10">
+                                                <!-- <img src="../static/onsets/onsets-cards/card10.png" class="rounded-corners"> -->
+                                            </th>
+                                            <th id="c11">
+                                                <!-- <img src="../static/onsets/onsets-cards/card11.png" class="rounded-corners"> -->
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <!-- Under current On-Sets rules, at most 14 cards can be dealt -->
+                                            <!-- But I will keep 18 slots to allow flexibility in how those cards are arranged. -->
+                                            <th id="c12"></th>
+                                            <th id="c13"></th>
+                                            <th id="c14"></th>
+                                            <th id="c15"></th>
+                                            <th id="c16"></th>
+                                            <th id="c17"></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="onsets-cards" -->
+                    </div>
+                    <div class="info">
+                        <div class="stats">
+                            <div class="stats header">
+                                Game Stats
+                            </div>
+                            <div class="stats the-stats-outer">
+                                <div class="stats the-stats-inner">
+                                    <div class="time-elapsed">
+                                        <div id="elapsed-text">Time Elapsed: </div>
+                                        <div id="elapsed">00:00</div>
+                                    </div>
+                                    <div class="scores">
+                                        <table id="scoreboard">
+                                            <tr>
+                                                <th>--------</th>
+                                                <th>--------</th>
+                                                <th>--------</th>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="time">
+                            <div class="time inner">
+                                <div class="time-inner-first">
+                                    <div id="turn-text"><p>Turn: </p></div>
+                                    <div id="turn"><p id="actual-turn-text">--------</p></div>
+                                </div>
+                                <div class="time-inner-second">
+                                    <div id="time-text"><p>Time: </p></div>
+                                    <div id="time" class="display-time-div"><p>0:00</p></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="variations" class="variations hidden">
+                            <div id="variations-header">
+                                <p><b>Variations:</b></p>
+                            </div>
+                            <div id="variations-inner">
+                                <div id="called-variations">
+                                    <!-- K12, MOP -->
+                                </div>
+                                <div id="variations-input-div" class="variations-input hidden">
+                                    <input type="text" class="">
+                                    <button class="">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buttons">
+                            <div class="buttons-inner" id="buttons-div">
+                                <!-- hidden ones are unimplemented buttons -->
+                                <button id="start_game">Start Game</button> <br/>
+                                <button id="flip_timer">Flip Timer</button> <br/>
+                                <button id="call_judge" class="hidden">Call a Judge</button> <br/>
+                                <button id="a_flub">Challenge Now</button> <br/>
+                                <button id="p_flub">Challenge Impossible</button> <br/>
+                                <button id="no_goal">Declare No Goal</button> <br/>
+                                <button id="claim_warning" class="hidden">Call 10 Second Warning</button> <br/>
+                                <button id="claim_minus_one" class="hidden">Claim -1</button> <br/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="main right">
+                <div class="main right top">
+                    <h2>Chat</h2>
+                </div>
+                <div class="main right mid" id="message-list-div">
+                    <ul class="messages" id="message-list">
+                        <li><b>Server: </b>Welcome to On-Sets!</li>
+                        <!-- <li><b>Server: </b>Do you wish to write a solution?</li>
+                        <li class="chat-button"><button>Yes</button><button>No</button></li> -->
+                        <!-- <li><b>Server: </b>Please submit your solution here:</li>
+                        <li class="solution_li">
+                            <input class="solution_box" placeholder="Type your solution here...">
+                            <button class="solution_submit">Submit Solution</button>
+                        </li> -->
+                        <!-- <li><b>Server: </b>Tony submitted the following solution. Do you accept?</li>
+                        <li class="chat-button">
+                            <p>4+5=9</p>
+                            <button>Yes</button><button>No</button>
+                        </li> -->
+                    </ul>
+                </div>
+                <div class="main right bot" id="chat-input" />
+            </div>
+        </div>
+    </body>
+</html>

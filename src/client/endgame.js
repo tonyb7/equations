@@ -4,8 +4,11 @@ import { appendServerMessage, appendSidingOptions,
     appendSolutionPrompt, appendAcceptPrompt, appendAssentToRejectPrompt, 
     appendStartNewShakeButton, appendNoGoalButtons,
     appendEndShakeNoGoal } from './message_utils';
-import { deregisterBoardCallbacks } from './callbacks';
-import { addScoreboardScore, updateTurnText } from './board';
+import { deregisterBoardCallbacks } from './callbacks/callbacks';
+import { updateTurnText } from './turntext';
+import { addScoreboardScore } from './scoreboard';
+import { socket } from './networking';
+import { hideGoalSettingButtons } from './board/board';
 
 
 const challengeTextMap = new Map([
@@ -14,6 +17,15 @@ const challengeTextMap = new Map([
     ["no_goal", "No Goal Declared"],
     ["force_out", "Last Cube Procedure"]
 ]);
+
+export function displayEndgame(game, name) {
+    updateClientOnEndgame(socket, name, game['endgame'], game['players']);
+    if (game['game_started']) {
+        if (game['challenge'] === "no_goal") {
+            hideGoalSettingButtons();
+        }
+    }
+}
 
 export function updateClientOnEndgame(socket, name, endgame_info, players) {
     if (!endgame_info) {
@@ -201,6 +213,9 @@ export function handleReevaluateSolution(socket, name, info) {
 }
 
 export function handleShakeFinish(socket, name, scores, game_finished) {
+
+    console.log("HANDLE SHAKE FINISH");
+    
     let p1score = scores['p1score'];
     let p2score = scores['p2score'];
     let p3score = scores['p3score'];

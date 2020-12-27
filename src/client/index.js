@@ -3,7 +3,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {ChatInput} from './components/ChatInput';
-import { downloadAssets } from './assets';
+import { downloadAssets } from './assets/assets';
 
 $(document).ready(() => {
     ReactDOM.render(<ChatInput />, document.getElementById('chat-input'));

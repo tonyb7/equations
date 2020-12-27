@@ -1,7 +1,8 @@
 // Helper functions for sending messages
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {ChatMessage, NewShakeButton, FiveMinWarning, ConfirmationButtons, SolutionCheck, SolutionPrompt} from './components/ChatMessages';
+import {ChatMessage, NewShakeButton, FiveMinWarning, ConfirmationButtons, 
+    SolutionCheck, SolutionPrompt, UniversePrompt} from './components/ChatMessages';
 
 /** render message component and keep chat-list scrolled to the bottom */
 function renderAndScroll(new_message_li, component) {
@@ -185,6 +186,24 @@ export function appendEndShakeNoGoal(socket) {
             buttonText = "Restart Shake"
             onClick = {() => socket.emit("restart_shake")}
             />);
+}
+
+export function appendUniverseSizePrompt(socket) {
+    // <li><b>Server: </b>Please indicate how many cards you would like to set in the universe:</li>
+    // <li class="universe_li">
+    //     <input class="universe_box" placeholder="" maxlength="2">
+    //     <button class="universe_submit">Set Universe</button>
+    // </li>
+    appendServerMessage("Please indicate how many cards you would like to set in the universe:");
+    let universe_prompt_area = document.createElement('li');
+    universe_prompt_area.classList.add("universe_li");
+
+    renderAndScroll(
+        universe_prompt_area,
+        <UniversePrompt
+            onSubmit={(numCardsStr) => socket.emit("universe_set", numCardsStr)}
+        />
+    );
 }
 
 export function printFiveMinWarningMsg() {

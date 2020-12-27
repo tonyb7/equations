@@ -7,11 +7,13 @@ import flask
 import equations
 import random
 import time
+import datetime
 import re
 from equations.db_serialize import db_insert
 from equations.data import rooms_info, user_info, socket_info, MapsLock
-from equations.data import get_name_and_room, get_current_mover
+from equations.data import get_name_and_room, get_current_mover, get_previous_mover
 from equations.networking.challenge import handle_force_out
+from equations.models import Game
 from flask_socketio import emit
 
 # Constant to represent index of a moved cube in resources list
@@ -52,13 +54,21 @@ def start_shake(new_game, is_restart):
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
 
+    # Take the first n cards when player specifies they want to deal n cards
+    onsets_cards = ['card' + (str(x) if x > 9 else '0' + str(x)) + '.png' for x in range(16)]
+    random.shuffle(onsets_cards)
+
     if is_restart:
         # Goalsetter needs to be the same as the previous shake.
         rooms_info[room]['goalsetter_index'] = \
             (rooms_info[room]['goalsetter_index'] - 1) % len(rooms_info[room]['players'])
     
     if new_game:
+        game = Game.query.filter_by(nonce=room).first()
+        assert game is not None
+
         rooms_info[room] = {
+            "gametype": game.gametype,
             "game_started": True,
             "game_finished": False,
             "tournament": None,
@@ -73,14 +83,20 @@ def start_shake(new_game, is_restart):
                 "num_players_called": 0,
                 "caller_index": None,
             },
-            "starttime": time.time(),
+            "starttime": datetime.datetime.now().timestamp(),
             "last_timer_flip": None,
-            # cube_index is poorly named. fixed length of 24, index is cube's id.
-            # first six are red, next six are blue, next six are green, last six are black.
-            # so if the first element of cube_index was x (where 0 <= x <= 5), the
-            # corresponding cube is given by the file "rx.png" (where x is replaced w/#)
+            # cube_index: fixed length of 24, index is cube's id.
+            # For equations, the first six are red, next six are blue, next six are green, 
+            # last six are black. So if the first element of cube_index was x 
+            # (where 0 <= x <= 5), the corresponding cube is given by the file "rx.png" 
+            # (where x is replaced w/#).
+            # For On-Sets, only the first 18 elements of this array are considered.
+            # The first 8 are colors, next 4 are operations, next 3 are restrictions,
+            # and last 3 are digits.
             "cube_index": rolled_cubes[:], 
             "resources": rolled_cubes,  # fixed length of 24
+            "onsets_cards": onsets_cards if game.gametype == 'os' else [],
+            "onsets_cards_dealt": 0,
             "goal": [],  # stores cube id, x pos on canvas, orientation of cube
             "required": [], # stores cube ids (based on cube_index); same for 2 below
             "permitted": [],
@@ -105,11 +121,14 @@ def start_shake(new_game, is_restart):
         db_insert(room, rooms_info[room])
 
         game_begin_instructions = {
+            'gametype': rooms_info[room]["gametype"],
             'cubes': rolled_cubes,
             'players': current_players,
             'starter': name,
             'goalsetter': get_current_mover(room),
+            'cardsetter': get_previous_mover(room),
             'starttime': rooms_info[room]['starttime'],
+            'show_bonus': True,
             'variations_state': rooms_info[room]['variations_state'],
         }
 
@@ -118,6 +137,8 @@ def start_shake(new_game, is_restart):
         rooms_info[room]["last_timer_flip"] = None
         rooms_info[room]["cube_index"] = rolled_cubes[:]
         rooms_info[room]["resources"] = rolled_cubes
+        rooms_info[room]["onsets_cards"] = onsets_cards if rooms_info[room]['gametype'] == 'os' else []
+        rooms_info[room]["onsets_cards_dealt"] = 0
         rooms_info[room]["goal"] = []
         rooms_info[room]["required"] = []
         rooms_info[room]["permitted"] = []
@@ -143,14 +164,17 @@ def start_shake(new_game, is_restart):
         db_insert(room, rooms_info[room])
 
         goalsetter = get_current_mover(room)
+        cardsetter = get_previous_mover(room)
         shake_begin_instructions = {
+            'gametype': rooms_info[room]["gametype"],
             'cubes': rolled_cubes,
             'players': current_players,
             'goalsetter': goalsetter,
+            'cardsetter': cardsetter,
             'show_bonus': not is_leading(room, goalsetter),
             'variations_state': rooms_info[room]['variations_state'],
         }
-    
+
         emit("begin_shake", shake_begin_instructions, room=room)
 
 @equations.socketio.on('start_game')
@@ -180,6 +204,21 @@ def handle_cube_click(pos):
             or turn_user != user:
         return
 
+    if rooms_info[room]['gametype'] == 'os':  
+        if rooms_info[room]['onsets_cards_dealt'] == 0:
+            emit("server_message", "Please wait for cards to be dealt and variations to be called before moving a cube!")
+            return
+        if not rooms_info[room]['goalset']:
+            if not rooms_info[room]['bonus_clicked']:
+                if pos < 15 or pos > 17:
+                    emit("server_message", "You can only use digit cubes on the goal.")
+                    return
+            else:
+                if pos > 14:
+                    emit("server_message", "You can only bonus with a non-digit cube.")
+                    return
+
+    
     # Cannot move cubes before finishing calling variations
     if rooms_info[room]['variations_state']['num_players_called'] < len(rooms_info[room]['players']):
         emit("server_message", "Please wait for variations to be called before moving a cube!")
@@ -216,6 +255,7 @@ def move_cube(room, sectorid):
             # unit for x is thousandths of canvas width
             # should recv actual value from client after cube is moved
             "x": 0, 
+            "y": 0,
             "orientation": 0,
         }
         rooms_info[room]['goal'].append(goal_cube_dict)
@@ -331,6 +371,20 @@ def handle_set_goal():
 
     emit("hide_goal_setting_buttons", room=room)
     rooms_info[room]["goalset"] = True
+
+    if rooms_info[room]['gametype'] == 'os':
+        # Move number cubes to forbidden after goal is set
+        for i in range(15, 18):
+            if (rooms_info[room]["resources"][i] != MOVED_CUBE_IDX):
+                rooms_info[room]["resources"][i] = MOVED_CUBE_IDX
+                rooms_info[room]["forbidden"].append(i)
+                move_command = {
+                    "from": i,
+                    "to": "forbidden-sector",
+                }
+                emit("move_cube", move_command, room=room)
+
+    emit("server_message", "Goal Set!")
     next_turn(room)
 
 @equations.socketio.on("bonus_clicked")
@@ -346,8 +400,12 @@ def handle_bonus_click():
         print("started move but somehow clicked bonus button")
         return
 
+    # Unclick any cubes when bonus is unclicked
+    if rooms_info[room]["bonus_clicked"] and rooms_info[room]["touched_cube"]:
+        handle_cube_click(rooms_info[room]["touched_cube"])
+
     rooms_info[room]["bonus_clicked"] = not rooms_info[room]["bonus_clicked"]
-    print("bonus clicked set to ", rooms_info[room]["bonus_clicked"])
+
 
 @equations.socketio.on("call_judge")
 def handle_call_judge():
@@ -361,6 +419,10 @@ def handle_variation_called(info):
     [name, room] = get_name_and_room(flask.request.sid)
 
     assert info["player"] == name
+
+    if rooms_info[room]['gametype'] == 'os' and rooms_info[room]['onsets_cards_dealt'] == 0:
+        emit("server_message", f"{name} tried to call variations, but cards have not been dealt yet. Variation not recorded.")
+        return
 
     # Split provided string into variations. A variation in the string is considered
     # to be a consecutive sequence of numbers, letters, underscore, hyphen, 
@@ -395,4 +457,39 @@ def handle_variation_called(info):
         }
         emit("variations_finished", variations_finished_info, room=room)
 
+@equations.socketio.on("universe_set")
+def handle_universe_set(numCardsStr):
+    """Player specified how many cards to set in the universe."""
+    MapsLock()
+    [name, room] = get_name_and_room(flask.request.sid)
+
+    assert room in rooms_info
+    if rooms_info[room]['onsets_cards_dealt'] != 0:
+        print("Can't set universe if universe is already set")
+        return
     
+    numCards = 0
+    try:
+        numCards = int(numCardsStr)
+    except:
+        numCards = -1
+
+    if numCards < 6 or numCards > 14:
+        error_info = {
+            'cardsetter': name,
+            'numCardsStr': numCardsStr,
+        }
+        emit("universe_error", error_info, room=room)
+        return
+    
+    rooms_info[room]['onsets_cards_dealt'] = numCards
+
+    univ_set_info = {
+        'cardsetter': name,
+        'numCards': numCards,
+        'onsets_cards': rooms_info[room]['onsets_cards'],
+        'variations_state': rooms_info[room]['variations_state'],
+        'players': rooms_info[room]['players'],
+    }
+    emit("universe_set", univ_set_info, room=room)
+

@@ -1,16 +1,30 @@
 // Functions to print instructions for variation setting and manage how the
 // variation section looks
 
-import { appendServerMessage } from './message_utils';
-import { updateTurnText } from './board';
+import { appendInstructions, appendServerMessage } from './message_utils';
+import { socket } from './networking';
+import { updateTurnText } from './turntext';
 
-export function renderVariations(socket, variations_state, players, name) {
+export function displayVariations(game, name) {
+    if (!game['game_started']) {
+        return;
+    }
+    if (game['gametype'] == 'os' && game['onsets_cards_dealt'] == 0) {
+        return;
+    }
+    renderVariations(game['variations_state'], game['players'], name, game['game_finished']);
+}
 
+export function renderVariations(variations_state, players, name, game_ended) {
     let variations_section = document.getElementById("variations");
     variations_section.classList.remove("hidden");
 
     let variations_text_div = variations_section.querySelector("#called-variations");
     variations_text_div.innerHTML = variations_state['variations'].join(", ");
+
+    if (game_ended) {
+        return;
+    }
 
     if (variations_state['num_players_called'] < players.length) {
         updateTurnText("Calling Variations");
@@ -43,5 +57,18 @@ export function renderVariations(socket, variations_state, players, name) {
         console.log("The variation calling stage has already finished");
     }
     
+}
+
+export function handleVariationsFinished(data, name) {
+    if (data["is_first_shake"]) {
+        appendInstructions();
+        if (data['goalsetter'] === name) {
+            appendServerMessage("Press \"Goal Set!\" when you're done!");
+        }
+        else {
+            appendServerMessage(`Waiting for ${data['goalsetter']} to finish setting the goal...`);
+        }
+    }
+    updateTurnText(data['goalsetter']);
 }
 

@@ -1,35 +1,55 @@
 // Functions related to moving cubes around the board
-import { getAssetClone } from './assets';
-import { emitCubeClicked, bonusButtonCallback } from './networking';
-import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
-         clearGoalCanvas, addCubeToGoal, initializeGoalsettingGlobals } from './goal';
-import { initializeElapsedTimer, updateGameTimer } from './timing';
+import { gametype_to_asset_cloner_map } from '../assets/assets';
 
-const sector_code_map = new Map([
+import { emitCubeClicked, bonusButtonCallback } from '../networking';
+import { initializeGoalCanvas, deregisterGoalsettingCanvas, 
+         addCubeToGoal, initializeGoalsetting } from '../goal';
+
+export const sector_code_map = new Map([
     ["forbidden-sector", 'f'],
     ["permitted-sector", 'p'],
     ["required-sector", 'q'],
     ["goal-sector", 'g'],
 ]);
 
-let sector_cube_count = {
+export let sector_cube_count = {
     "forbidden-sector": 0,
     "permitted-sector": 0,
     "required-sector": 0,
     "goal-sector": 0,
 };
 
-export function renderResources(cubes) {
-    
+const gametype_to_num_cubes_map = new Map([
+    ["eq", 24],
+    ["os", 18],
+]);
+
+export function displayCubes(game) {
+    if (!game['game_started']) {
+        return;
+    }
+    console.assert(game['cube_index'].length > 0);
+
+    initializeGoalsetting(game);
+    renderGoal(game['gametype'], game['goal'], game['cube_index']);
+
+    renderResources(game['gametype'], game['resources']);
+    renderSector(game['gametype'], game['forbidden'], "forbidden-sector", game['cube_index']);
+    renderSector(game['gametype'], game['permitted'], "permitted-sector", game['cube_index']);
+    renderSector(game['gametype'], game['required'], "required-sector", game['cube_index']);
+}
+
+export function renderResources(gametype, cubes) {
     console.log("Rolling cubes!");
     let resources_div = document.getElementById("resources-cubes");
-    for (let i = 0; i < cubes.length; ++i) {
+    for (let i = 0; i < gametype_to_num_cubes_map.get(gametype); ++i) {
         if (cubes[i] === -1) { // TODO -1 is a magic number...
             continue;
         }
 
         let relevant_th = resources_div.querySelector(`#r${i}`);
-        let image_clone = getAssetClone(i, cubes);
+        let image_cloner = gametype_to_asset_cloner_map.get(gametype);
+        let image_clone = image_cloner(i, cubes);
 
         image_clone.onmouseover = () => {
             image_clone.classList.add("show-border");
@@ -45,16 +65,16 @@ export function renderResources(cubes) {
     console.log("Finished rolling cubes");
 }
 
-export function renderGoal(goal_info, cube_idx) {
+export function renderGoal(gametype, goal_info, cube_idx) {
     if (goal_info.length > 6) {
         console.log("Something is wrong! Server stored more than 6 cubes in goal!");
     }
 
     sector_cube_count["goal-sector"] = goal_info.length;
-    initializeGoalCanvas(goal_info, cube_idx);
+    initializeGoalCanvas(gametype, goal_info, cube_idx);
 }
 
-export function renderSector(cubes, sectorid, cube_idx) {
+function renderSector(gametype, cubes, sectorid, cube_idx) {
     let length_limits = [12, 16, 20];
     for (const length of length_limits) {
         if (cubes.length > length) {
@@ -63,84 +83,17 @@ export function renderSector(cubes, sectorid, cube_idx) {
     }
 
     sector_cube_count[sectorid] = cubes.length;
-    fillSector(cubes, sectorid, cube_idx);
+    fillSector(gametype, cubes, sectorid, cube_idx);
 }
 
-function fillSector(cubes, sectorid, cube_idx) {
+function fillSector(gametype, cubes, sectorid, cube_idx) {
     for (let i = 0; i < cubes.length; ++i) {
         let relevant_th = document.getElementById(`${sector_code_map.get(sectorid)}${i}`);
         let idx = cubes[i]; // idx is the position that cube was in resources originally
 
-        relevant_th.appendChild(getAssetClone(idx, cube_idx));
+        let asset_cloner = gametype_to_asset_cloner_map.get(gametype);
+        relevant_th.appendChild(asset_cloner(idx, cube_idx));
     }
-}
-
-function clearGoal() {
-    clearGoalCanvas();
-    sector_cube_count["goal-sector"] = 0;
-}
-
-function clearSector(sectorid) {
-    let sector_table = document.getElementById(sectorid).querySelector('table');
-
-    // console.log("sector id ", sectorid);
-    // console.log("sector table: ", sector_table);
-
-    for (let i = sector_table.rows.length - 1; i >= 3; --i) {
-        // console.log("deleting row ", i);
-        sector_table.deleteRow(i);
-    }
-
-    for (let i = 0; i < 12; ++i) { // magic bad
-        let th = sector_table.querySelector(`#${sector_code_map.get(sectorid)}${i}`);
-        th.innerHTML = '';
-    }
-
-    sector_cube_count[sectorid] = 0;
-}
-
-function clearResources() {
-    let resources_div = document.getElementById("resources-cubes");
-    for (let i = 0; i < 24; ++i) {
-        let th = resources_div.querySelector(`#r${i}`);
-        th.innerHTML = '';
-    }
-}
-
-export function initializeScoreboard(players) {
-    let scoreboard = document.getElementById("scoreboard");
-    for (let i = 0; i < players.length; ++i) {
-        scoreboard.rows[0].cells.item(i).innerHTML = players[i];
-    }
-    for (let i = players.length; i < 3; ++i) {
-        scoreboard.rows[0].cells.item(i).innerHTML = "--------";
-    }
-    return scoreboard;
-}
-
-function fillScoreboardScores(scoreboard, p1scores, p2scores, p3scores) {
-    if (typeof p1scores === "undefined") {
-        return;
-    }
-
-    if (p1scores.length !== p2scores.length || p2scores.length != p3scores.length) {
-        console.log("Something is messed up with the scores! Not of same length!");
-    }
-
-    for (let i = 0; i < p1scores.length; ++i) {
-        addScoreboardScore(scoreboard, p1scores[i], p2scores[i], p3scores[i]);
-    }
-}
-
-export function addScoreboardScore(scoreboard, p1score, p2score, p3score) {
-    if (scoreboard.rows.length === 2 && scoreboard.rows[1].cells[0].innerHTML == 0) { // hacky
-        scoreboard.deleteRow(1);
-    }
-
-    let new_row = scoreboard.insertRow();
-    new_row.insertCell().innerHTML = p1score;
-    new_row.insertCell().innerHTML = p2score;
-    new_row.insertCell().innerHTML = p3score;
 }
 
 export function highlightResourcesCube(position) {
@@ -155,11 +108,6 @@ export function unhighlightResourcesCube(position) {
     let surrounding_th = document.getElementById(`r${position}`);
     let image = surrounding_th.querySelector("img");
     image.classList.remove("highlight-img");
-}
-
-export function updateTurnText(name) {
-    let turn_elt = document.getElementById("actual-turn-text");
-    turn_elt.innerHTML = `${name}`;
 }
 
 export function moveCube(directions) {
@@ -212,41 +160,6 @@ function addRowsToSector(sectorid, begin_idx) {
     // console.log("new table ", table);
 }
 
-// Render all visuals, including the board, resources/cubes, and scoreboard
-export const renderGameVisuals = (game) => {
-    fillScoreboardScores(initializeScoreboard(game['players']), 
-        game["p1scores"], game["p2scores"], game["p3scores"]);
-    
-    if (game["game_finished"]) {
-        updateTurnText("Game Ended");
-    }
-    else if (!game["game_started"]) {
-        updateTurnText("Not Started");
-    }
-    else {
-        updateTurnText(game['players'][game['turn']]);
-        initializeElapsedTimer(game['starttime']);
-        updateGameTimer(game["last_timer_flip"]);
-    }
-
-    if (game["game_started"]) {
-        document.getElementById("start_game").remove();
-        initializeGoalsettingGlobals();
-        if (game["goalset"]) {
-            hideGoalSettingButtons();
-        }
-
-        renderResources(game['resources']);
-        renderGoal(game['goal'], game['cube_index']);
-        renderSector(game['forbidden'], "forbidden-sector", game['cube_index']);
-        renderSector(game['permitted'], "permitted-sector", game['cube_index']);
-        renderSector(game['required'], "required-sector", game['cube_index']);
-    } 
-
-    // TODO Remember to expand upon once more game features are added
-    // TODO time, scores
-}
-
 export function updateBonusButton(show) {
     let bonus_button = document.getElementById("bonus-button");
     bonus_button.classList.remove("button-clicked");
@@ -274,20 +187,11 @@ export function hideGoalSettingButtons() {
     deregisterGoalsettingCanvas();
 }
 
-export function clearBoard() {
-    let sectorids = ['forbidden-sector', 'permitted-sector', 'required-sector'];
-
-    console.log("Clearing board");
-    clearGoal();
-    for (let sectorid of sectorids) {
-        clearSector(sectorid);
-    }
-
-    clearResources();
-}
-
-export function num_resources_cubes() {
+export function num_resources_cubes(gametype) {
     let not_in_resources = Object.values(sector_cube_count).reduce((a, b) => a + b);
-    console.log("cubes not in resources: ", not_in_resources);
-    return 24 - not_in_resources;
+    // console.log("cubes not in resources: ", not_in_resources);
+
+    let total_cubes = gametype_to_num_cubes_map.get(gametype);
+    return total_cubes - not_in_resources;
 }
+
