@@ -35,6 +35,9 @@ def handle_flip_timer():
     [name, room] = get_name_and_room(flask.request.sid)
     print(f"{name} pressed flip_timer!")
 
+    if name not in rooms_info[room]['players']:
+        return
+
     current_time = datetime.datetime.now().timestamp()
     if rooms_info[room]["last_timer_flip"] is None:
         rooms_info[room]["last_timer_flip"] = current_time
@@ -42,7 +45,7 @@ def handle_flip_timer():
         time_since_flip = current_time - rooms_info[room]["last_timer_flip"]
         if time_since_flip < 5:
             # TODO to prevent cases where multiple players click at the same time
-            # Right now, enforce 5 sec cooldown. There may be a better solution.
+            # Right now, only enforces 5 sec cooldown (no flipping between 0:55 and 1:00)
             emit("server_message", "Please wait at least 5 seconds between timer flips!")
             return
 

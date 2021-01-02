@@ -40,6 +40,6 @@ function setUpNewShakeOnsets(data, name, cardsetter) {
     renderUniversePrompt(name, cardsetter);
 
     // Register callbacks
-    initializeBoardCallbacks(data['goalsetter'] === name && data['show_bonus']);
+    initializeBoardCallbacks(data['players'].includes(name), data['goalsetter'] === name && data['show_bonus']);
     registerGoalSettingCallbacks(name, data['goalsetter'], true, data['gametype']);
 }

@@ -19,10 +19,14 @@ export function registerBoardCallbacks(game, name) {
         return;
     }
 
-    initializeBoardCallbacks(show_bonus_for(game, name));
+    initializeBoardCallbacks(game['players'].includes(name), show_bonus_for(game, name));
 }
 
-export function initializeBoardCallbacks(show_bonus) {
+export function initializeBoardCallbacks(is_player, show_bonus) {
+    if (!is_player) {
+        return;
+    }
+
     for (const id of board_sectors) {
         document.getElementById(id).onclick = () => {
             console.log(`${id} clicked`);
