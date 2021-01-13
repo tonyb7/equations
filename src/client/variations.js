@@ -46,7 +46,8 @@ export function renderVariations(variations_state, players, name, game_ended) {
             };
 
             appendServerMessage("It is your turn to call variations. Please enter the variations you want to call in the " + 
-                "text box to the left (in the \"Variations\" section), and hit \"Submit\" when you are done!");
+                "text box to the left (in the \"Variations\" section). To call multiple variations, separate each variation by a comma. " + 
+                "Hit \"Submit\" when you are done!");
         }
         else {
             appendServerMessage(`It is ${players[variations_state['caller_index']]}'s turn to call variations. Waiting 
