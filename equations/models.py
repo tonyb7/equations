@@ -25,6 +25,7 @@ class Game(db.Model):
 
     nonce = db.Column(db.String(), primary_key=True)
     gametype = db.Column(db.String()) # Options: eq, os,
+    division = db.Column(db.String()) # Currently 'Basic' used for os. None by default.
     ended = db.Column(db.Boolean, nullable=False)
     tournament = db.Column(db.String())
     players = db.Column(JSON)
@@ -44,11 +45,12 @@ class Game(db.Model):
     last_timer_flip = db.Column(db.Float)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, nonce, gametype='eq', ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
+    def __init__(self, nonce, gametype='eq', division=None, ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
                  p3scores=[], variations_state = {}, cube_index=[], onsets_cards=[], onsets_cards_dealt=0, resources=[], goal=[],
                  required=[], permitted=[], forbidden=[], turn=None, last_timer_flip=0):
         self.nonce = nonce
         self.gametype = gametype
+        self.division = division
         self.ended = ended
         self.tournament = tournament
         self.players = players
@@ -68,7 +70,7 @@ class Game(db.Model):
         self.last_timer_flip = last_timer_flip
 
     def __repr__(self):
-        return f"<Game {nonce}>"
+        return f"<Game {self.nonce}>"
 
 class Groups(db.Model):
     """A group describes a set of players under a number of coaches. For example,

@@ -19,6 +19,7 @@ def db_insert(room, game_info):
     game = games[0]
 
     game.gametype = game_info["gametype"]
+    game.division = game_info["division"]
     game.ended = ended
     game.tournament = game_info["tournament"]
     game.players = game_info["players"]
@@ -47,6 +48,7 @@ def db_deserialize(db_result):
 
     game_info = {
         "gametype": 'eq' if len(db_result.gametype) == 0 else db_result.gametype,
+        "division": db_result.division if db_result.division else '',
         "game_started": len(db_result.cube_index) > 0,
         "game_finished": db_result.ended,
         "tournament": db_result.tournament,

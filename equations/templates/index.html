@@ -32,7 +32,14 @@
                 <!-- NOTE: if you ever change the "value" texts below, you must 
                     change index.py create_game as well -->
                 <input type="submit" name="create" value="Create Equations Game"/> 
-                <input type="submit" name="create" value="Create On-Sets Game"/>
+                
+                <button id="onsets-button" type="button">Create On-Sets Game</button>
+                <div id="onsets-divisions">
+                    <p>Please choose whether you would like to play with or without restrictions:</p>
+                    <input type="submit" name="create" value="Without Restrictions (Basic)"/>
+                    <input type="submit" name="create" value="With Restrictions"/>
+                </div>
+                
             </form>
         </div>
         <div id='join-existing'>
@@ -59,23 +66,34 @@
                 $('#join-existing').slideUp(0);
                 $('#join-new').slideUp(0);
                 $('#join-groups').slideUp(0);
+                $('#onsets-divisions').slideUp(0);
 
                 $('#create-button').on('click', function() {
                     $('#join-existing').slideUp(0);
                     $('#join-new').slideDown(300);
                     $('#join-groups').slideUp(0);
+                    $('#onsets-divisions').slideUp(0);
                 });
 
                 $('#join-button').on('click', function() {
                     $('#join-new').slideUp(0);
                     $('#join-existing').slideDown(300);
                     $('#join-groups').slideUp(0);
+                    $('#onsets-divisions').slideUp(0);
                 });
 
                 $('#groups-button').on('click', function() {
                     $('#join-new').slideUp(0);
                     $('#join-existing').slideUp(0);
                     $('#join-groups').slideDown(300);
+                    $('#onsets-divisions').slideUp(0);
+                });
+
+                $('#onsets-button').on('click', function() {
+                    $('#join-new').slideDown(0);
+                    $('#join-existing').slideUp(0);
+                    $('#join-groups').slideUp(0);
+                    $('#onsets-divisions').slideDown(300); 
                 });
             });
         </script>
