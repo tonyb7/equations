@@ -98,7 +98,7 @@ def join_game():
         return flask.redirect(flask.url_for('show_index'))
     
     name = flask.session['username']
-    room = flask.request.form['room']
+    room = flask.request.form['room'].upper()
 
     game_info = Game.query.filter_by(nonce=room).first()
     if game_info is None:
