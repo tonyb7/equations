@@ -51,8 +51,16 @@ def start_shake(new_game, is_restart):
     assert name in current_players
     assert len(current_players) <= 3
 
+    game = Game.query.filter_by(nonce=room).first()
+    assert game is not None
+    gametype = 'eq' if len(game.gametype) == 0 else game.gametype
+    division = game.division if game.division else ''
+
     random.seed(time.time())
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
+    if gametype == 'os' and division == 'Basic':
+        for i in [12, 13, 14]: # index of blue cubes
+            rolled_cubes[i] = random.randint(0, 3) # don't roll restriction cubes
 
     # Take the first n cards when player specifies they want to deal n cards
     onsets_cards = ['card' + (str(x) if x > 9 else '0' + str(x)) + '.png' for x in range(16)]
@@ -64,11 +72,10 @@ def start_shake(new_game, is_restart):
             (rooms_info[room]['goalsetter_index'] - 1) % len(rooms_info[room]['players'])
     
     if new_game:
-        game = Game.query.filter_by(nonce=room).first()
-        assert game is not None
 
         rooms_info[room] = {
-            "gametype": game.gametype,
+            "gametype": gametype,
+            "division": division,
             "game_started": True,
             "game_finished": False,
             "tournament": None,
@@ -95,7 +102,7 @@ def start_shake(new_game, is_restart):
             # and last 3 are digits.
             "cube_index": rolled_cubes[:], 
             "resources": rolled_cubes,  # fixed length of 24
-            "onsets_cards": onsets_cards if game.gametype == 'os' else [],
+            "onsets_cards": onsets_cards if gametype == 'os' else [],
             "onsets_cards_dealt": 0,
             "goal": [],  # stores cube id, x pos on canvas, orientation of cube
             "required": [], # stores cube ids (based on cube_index); same for 2 below

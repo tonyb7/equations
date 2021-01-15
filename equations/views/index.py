@@ -67,10 +67,16 @@ def create_game():
     name = flask.session['username']
     game_nonce = generate_gameid()
 
+    # TODO: These if-elif statements are kind of ugly, but not sure how else to
+    # encode info from the forms
     gametype = None
+    division = None
     if flask.request.form['create'] == "Create Equations Game":
         gametype = 'eq'
-    elif flask.request.form['create'] == "Create On-Sets Game":
+    elif flask.request.form['create'] == "Without Restrictions (Basic)": 
+        gametype = 'os'
+        division = 'Basic'
+    elif flask.request.form['create'] == "With Restrictions":
         gametype = 'os'
     else:
         flask.flash("Tried to create an invalid type of game (type must be Equations or On-Sets)")
@@ -78,7 +84,7 @@ def create_game():
 
     # Commit the game to the database
     print(f"ADDING GAME {game_nonce} TO THE DATABASE")
-    new_game = Game(nonce=game_nonce, gametype=gametype, ended=False, players=[name])
+    new_game = Game(nonce=game_nonce, gametype=gametype, division=division, ended=False, players=[name])
     equations.db.session.add(new_game)
     equations.db.session.commit()
 
@@ -143,6 +149,7 @@ def show_game(nonce):
     context = {
         "nonce": nonce,
         "name": name,
+        "division": game_info.division if game_info.division else '',
     }
 
     if game_info.gametype is None or game_info.gametype == 'eq':

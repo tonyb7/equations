@@ -37,7 +37,9 @@ def register_client(player_info):
     print(f"QUERYING DB FOR GAME {room}")
     game = Game.query.filter_by(nonce=room).first()
     assert game is not None
-    is_player = name in game.players
+    is_player = False
+    if game.players and name in game.players:
+        is_player = True
 
     if room not in rooms_info:
         rooms_info[room] = db_deserialize(game)
@@ -107,47 +109,50 @@ def on_disconnect():
     del socket_info[socketid]
 
     # Remove socket from user's maps
-    user_info[username]["latest_socketids"][room].remove(socketid)
-    if len(user_info[username]["latest_socketids"][room]) == 0:
-
-        print(f"{username} is no longer connected to {room}")
-        del user_info[username]["latest_socketids"][room]
-
-        # Remove spectators on disconnect.
-        if username in rooms_info[room]['spectators']:
-            rooms_info[room]['spectators'].remove(username)
-        
-        # Leave the room if the player requested to leave the room, and the game hasn't started yet.
-        if username in rooms_info[room]['players'] and room in user_info[username]['leave_requests'] \
-                and not rooms_info[room]['game_started'] and rooms_info[room]["tournament"] is None:
-            # Button should not be clickable if this is a tournament match
-            assert rooms_info[room]['tournament'] is None
-            # Remove the user as a player from the database
-            game = Game.query.filter_by(nonce=room).first()
-            assert game is not None
-            player_list = copy.deepcopy(game.players)
-            player_list.remove(username)
-            game.players = player_list
-            equations.db.session.commit()
-            # Remove room from this user's leave requests -- it was used up
-            user_info[username]['leave_requests'].remove(room)
-            # Remove player from rooms_info and report to the clientside
-            rooms_info[room]['players'].remove(username)
-            emit("player_left", rooms_info[room]["players"], room=room)
-            emit("server_message", f"{username} is no longer a player in this game.")
-        
-        # Unmap user if he/she has not more socket connections.
-        # User could still be a player in a game.
-        if len(user_info[username]["latest_socketids"]) == 0:
-            del user_info[username]
-        
-        emit("server_message", f"All of {username}'s connections to this room "
-                                "have disconnected.", room=room)
-        print(f"Client {socketid}: {username} completely disconnected from room {room}")
-
+    if username not in user_info:
+        print(f"(connections.py:on_disconnect) {username} not in user_info map!")
     else:
-        print(f"Socket {socketid} for user {username} disconnected, but user "
-               "still has another connection to the room open")
+        user_info[username]["latest_socketids"][room].remove(socketid)
+        if len(user_info[username]["latest_socketids"][room]) == 0:
+
+            print(f"{username} is no longer connected to {room}")
+            del user_info[username]["latest_socketids"][room]
+
+            # Remove spectators on disconnect.
+            if username in rooms_info[room]['spectators']:
+                rooms_info[room]['spectators'].remove(username)
+            
+            # Leave the room if the player requested to leave the room, and the game hasn't started yet.
+            if username in rooms_info[room]['players'] and room in user_info[username]['leave_requests'] \
+                    and not rooms_info[room]['game_started'] and rooms_info[room]["tournament"] is None:
+                # Button should not be clickable if this is a tournament match
+                assert rooms_info[room]['tournament'] is None
+                # Remove the user as a player from the database
+                game = Game.query.filter_by(nonce=room).first()
+                assert game is not None
+                player_list = copy.deepcopy(game.players)
+                player_list.remove(username)
+                game.players = player_list
+                equations.db.session.commit()
+                # Remove room from this user's leave requests -- it was used up
+                user_info[username]['leave_requests'].remove(room)
+                # Remove player from rooms_info and report to the clientside
+                rooms_info[room]['players'].remove(username)
+                emit("player_left", rooms_info[room]["players"], room=room)
+                emit("server_message", f"{username} is no longer a player in this game.")
+            
+            # Unmap user if he/she has not more socket connections.
+            # User could still be a player in a game.
+            if len(user_info[username]["latest_socketids"]) == 0:
+                del user_info[username]
+            
+            emit("server_message", f"All of {username}'s connections to this room "
+                                    "have disconnected.", room=room)
+            print(f"Client {socketid}: {username} completely disconnected from room {room}")
+
+        else:
+            print(f"Socket {socketid} for user {username} disconnected, but user "
+                    "still has another connection to the room open")
 
     rooms_info[room]["sockets"].remove(socketid)
     print(f"Sockets left in room {room}: {len(rooms_info[room]['sockets'])}")
