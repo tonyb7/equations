@@ -19,7 +19,10 @@ from flask_socketio import emit
 # Constant to represent index of a moved cube in resources list
 MOVED_CUBE_IDX = -1
 # Total cubes in the game
-TOTAL_CUBES = 24
+TOTAL_CUBES_MAP = {
+    'eq': 24,
+    'os': 18,
+}
 
 def start_shake(new_game, is_restart):
     """Handle logic for starting a shake. new_game specifies if shake
@@ -306,7 +309,8 @@ def next_turn(room):
     rooms_info[room]["turn"] = next_turn_idx
 
     turn_player = rooms_info[room]["players"][next_turn_idx]
-    cubes_in_resources = TOTAL_CUBES - rooms_info[room]['resources'].count(MOVED_CUBE_IDX)
+    total_cubes = TOTAL_CUBES_MAP[rooms_info[room]['gametype']]
+    cubes_in_resources = total_cubes - rooms_info[room]['resources'].count(MOVED_CUBE_IDX)
     print("Cubes in resources: ", cubes_in_resources)
 
     next_turn_command = {
