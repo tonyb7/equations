@@ -75,3 +75,9 @@ table th input {
     color: white;
     font-weight: bold;
 }
+
+footer {
+    font-family:'Courier'; 
+    font-size:12pt;
+    color: white;
+}
