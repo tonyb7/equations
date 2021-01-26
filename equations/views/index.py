@@ -73,7 +73,7 @@ def create_game():
     division = None
     if flask.request.form['create'] == "Create Equations Game":
         gametype = 'eq'
-    elif flask.request.form['create'] == "Without Restrictions (Basic)": 
+    elif flask.request.form['create'] == "Without Restrictions": 
         gametype = 'os'
         division = 'Basic'
     elif flask.request.form['create'] == "With Restrictions":
