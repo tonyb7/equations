@@ -63,7 +63,7 @@ def start_shake(new_game, is_restart):
     rolled_cubes = [random.randint(0, 5) for _ in range(24)]
     if gametype == 'os' and division == 'Basic':
         for i in [12, 13, 14]: # index of blue cubes
-            rolled_cubes[i] = random.randint(0, 3) # don't roll restriction cubes
+            rolled_cubes[i] = random.randint(4, 5) # don't roll restriction cubes
 
     # Take the first n cards when player specifies they want to deal n cards
     onsets_cards = ['card' + (str(x) if x > 9 else '0' + str(x)) + '.png' for x in range(16)]
