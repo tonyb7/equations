@@ -23,7 +23,7 @@ setup(
         'greenlet==0.4.15',
         'gunicorn==20.0.4',
         'itsdangerous==1.1.0',
-        'Jinja2==2.11.2',
+        'Jinja2==2.11.3',
         'Mako==1.1.2',
         'MarkupSafe==1.1.1',
         'psycopg2==2.8.5',
