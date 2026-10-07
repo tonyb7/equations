@@ -7,6 +7,7 @@ import flask
 import equations
 from equations.data import rooms_info, user_info, MapsLock
 from equations.models import Game
+from sqlalchemy import text
 
 
 @equations.app.route("/favicon.ico")
@@ -42,6 +43,18 @@ def show_index():
 
     return flask.render_template("index.html", **context)
 
+
+@equations.app.route("/healthz", methods=['GET'])
+def show_health():
+    """Report whether the web process can reach its database."""
+    try:
+        equations.db.session.execute(text("SELECT 1"))
+    except Exception:  # pylint: disable=broad-except
+        equations.db.session.rollback()
+        return flask.jsonify(status="unhealthy", database="unavailable"), 503
+
+    return flask.jsonify(status="ok", database="ok")
+
 def generate_gameid():
     # Generate a unique game id
     game_nonce = None
@@ -71,12 +84,13 @@ def create_game():
     # encode info from the forms
     gametype = None
     division = None
-    if flask.request.form['create'] == "Create Equations Game":
+    create_action = flask.request.form['create']
+    if create_action == "Create Equations Game":
         gametype = 'eq'
-    elif flask.request.form['create'] == "Without Restrictions": 
+    elif create_action == "Without Restrictions":
         gametype = 'os'
         division = 'Basic'
-    elif flask.request.form['create'] == "With Restrictions":
+    elif create_action == "With Restrictions":
         gametype = 'os'
     else:
         flask.flash("Tried to create an invalid type of game (type must be Equations or On-Sets)")
@@ -159,4 +173,3 @@ def show_game(nonce):
         
     flask.flash("Tried to visit a game of invalid type (type must be eq or os)")
     return flask.redirect(flask.url_for('show_index')) 
-

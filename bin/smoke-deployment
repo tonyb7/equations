@@ -1,0 +1,23 @@
+#!/bin/bash
+# Verify the public web, database, and Engine.IO entry points after deployment.
+
+set -Eeuo pipefail
+
+base_url="${1:-https://equations-online.herokuapp.com}"
+base_url="${base_url%/}"
+
+health_response=$(curl --fail --silent --show-error --max-time 20 "$base_url/healthz")
+if [[ "$health_response" != *'"status":"ok"'* ]]; then
+    echo "Unexpected health response: $health_response" >&2
+    exit 1
+fi
+
+socket_response=$(curl --fail --silent --show-error --max-time 20 \
+    --header "Origin: $base_url" \
+    "$base_url/socket.io/?EIO=4&transport=polling")
+if [[ "$socket_response" != 0\{*'"sid"'* ]]; then
+    echo "Engine.IO handshake did not return a session ID" >&2
+    exit 1
+fi
+
+echo "Deployment smoke test passed: $base_url"

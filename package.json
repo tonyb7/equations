@@ -4,11 +4,11 @@
   "description": "Play Equations (AG) online",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode production --config webpack.config.js",
+    "test": "./bin/test",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --mode production --config webpack.config.js",
     "start": "./bin/run",
     "run": "npm run build && npm start",
-    "watch": "webpack --watch --info-verbosity verbose --mode development --config webpack.config.js "
+    "watch": "NODE_OPTIONS=--openssl-legacy-provider webpack --watch --info-verbosity verbose --mode development --config webpack.config.js "
   },
   "repository": {
     "type": "git",
@@ -26,8 +26,7 @@
   },
   "homepage": "https://github.com/tonyb7/equations#readme",
   "dependencies": {
-    "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0"
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.4",

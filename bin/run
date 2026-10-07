@@ -8,4 +8,22 @@ dirpath=$(dirname $(realpath $0))
 set -x
 
 source $dirpath/env.sh
-flask run --host 0.0.0.0 --port 8000
+
+if [[ -x "$dirpath/../env/bin/flask" ]]; then
+    flask_cmd="$dirpath/../env/bin/flask"
+    python_cmd="$dirpath/../env/bin/python"
+else
+    flask_cmd="${FLASK:-flask}"
+    python_cmd="${PYTHON:-python3}"
+fi
+
+if [[ "$DATABASE_URL" == sqlite:* ]]; then
+    "$python_cmd" - <<'PY'
+from equations import app, db
+
+with app.app_context():
+    db.create_all()
+PY
+fi
+
+"$flask_cmd" run --host 0.0.0.0 --port "${PORT:-8000}"

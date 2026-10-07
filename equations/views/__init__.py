@@ -1,6 +1,7 @@
 from equations.views.index import show_favicon
 from equations.views.index import show_index
 from equations.views.index import show_game
+from equations.views.index import show_health
 
 from equations.views.accounts import show_login
 from equations.views.accounts import show_logout

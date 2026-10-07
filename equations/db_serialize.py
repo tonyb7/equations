@@ -1,7 +1,7 @@
 """Helper functions to serialize and deserialize input/output to db."""
 
 import time
-import pytz
+from datetime import timezone
 import equations
 from equations.models import Game
 
@@ -43,7 +43,7 @@ def db_insert(room, game_info):
 
 def db_deserialize(db_result):
     """Translate db result to game_info dict. Kinda dupe down there."""
-    created_time = db_result.created.replace(tzinfo=pytz.UTC).timestamp()
+    created_time = db_result.created.replace(tzinfo=timezone.utc).timestamp()
     seconds_since_created = time.time() - created_time
 
     game_info = {

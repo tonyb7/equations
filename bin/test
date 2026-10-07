@@ -1,0 +1,22 @@
+#!/bin/bash
+# Run backend smoke tests and the frontend production build.
+
+set -Eeuo pipefail
+
+dirpath=$(dirname "$(realpath "$0")")
+rootpath=$(dirname "$dirpath")
+
+export SECRET_KEY="${SECRET_KEY:-test-secret-key}"
+export DATABASE_URL="${DATABASE_URL:-sqlite:///$rootpath/var/test.sqlite3}"
+mkdir -p "$rootpath/var"
+
+if [[ -n "${PYTHON:-}" ]]; then
+    python_cmd="$PYTHON"
+elif [[ -x "$rootpath/env/bin/python" ]]; then
+    python_cmd="$rootpath/env/bin/python"
+else
+    python_cmd="python3"
+fi
+
+npm run build
+"$python_cmd" -m unittest discover -s tests

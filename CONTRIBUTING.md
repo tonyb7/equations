@@ -61,23 +61,29 @@ source env/bin/activate
 pip install -e .
 ```
 
-4. Compile JavaScript bundle
+4. Install JavaScript dependencies and run the smoke test
 ```
-npm install .
-npm run build
+npm install
+npm test
 ```
 
-5. Set up the database. Please read the [PostgreSQL Setup](#postgresql-setup) section for instructions. Once the database is set up, run the following script:
+The smoke test compiles the JavaScript bundle, creates a temporary SQLite
+database, imports the Flask app, loads the homepage, creates a test account, and
+checks a small model regression.
+
+5. Optional: use PostgreSQL instead of the default SQLite database. Please read
+the [PostgreSQL Setup](#postgresql-setup) section for instructions. Once the
+database is set up, run the following script:
 ```
 ./bin/setupdb
 ```
 
-7. Run Flask server
+6. Run Flask server
 ```
 npm start # (or equivalently, ./bin/run)
 ```
 
-8. Go to http://localhost:8000 in browser
+7. Go to http://localhost:8000 in browser
 
 # PostgreSQL Setup
 These set up steps are tailored most specifically towards Windows Subsystem for Linux (WSL) users. Many of these steps apply to Linux users as well. Mac users might be able to skip some of the steps in this section, but they should at least read the comments in the [`bin/run`](https://github.com/tonyb7/equations/blob/master/bin/setupdb) file for setup directions. The end result should be to have a PostgreSQL server listening on port 5432, and to have a database called `eq_dev` created.

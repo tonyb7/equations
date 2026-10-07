@@ -1,8 +1,12 @@
 #!/bin/bash
 
-export FLASK_DEBUG=TRUE
-export FLASK_APP=equations
-export EQ_SETTINGS=config.py
-export DATABASE_URL="postgres:///eq_dev"
-export SECRET_KEY=$'ND\xc5\xe1\xb4\xaf\xdaG?-`\x19\xd9\xd2\xea\x80<\x10\x89\x12\xba\x0e>u'  # dev secret key
+dirpath=$(dirname "$(realpath "$0")")
+rootpath=$(dirname "$dirpath")
 
+mkdir -p "$rootpath/var"
+
+export FLASK_DEBUG="${FLASK_DEBUG:-TRUE}"
+export FLASK_APP="${FLASK_APP:-equations}"
+export EQ_SETTINGS="${EQ_SETTINGS:-config.py}"
+export DATABASE_URL="${DATABASE_URL:-sqlite:///$rootpath/var/equations.sqlite3}"
+export SECRET_KEY="${SECRET_KEY:-dev-secret-key-change-me}"

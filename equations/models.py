@@ -4,13 +4,27 @@ import datetime
 from equations import db
 from sqlalchemy.dialects.postgresql import JSON
 
+
+def utcnow():
+    """Return UTC as a naive value for the existing database columns."""
+    return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+
+
+def _list(value=None):
+    return [] if value is None else value
+
+
+def _dict(value=None):
+    return {} if value is None else value
+
+
 class User(db.Model):
     """Represents a registered user."""
     __tablename__ = 'users'
 
     username = db.Column(db.String(20), primary_key=True)
     password = db.Column(db.String(), nullable=False)
-    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    created = db.Column(db.DateTime, default=utcnow)
 
     def __init__(self, username, password):
         self.username = username
@@ -43,29 +57,30 @@ class Game(db.Model):
     forbidden = db.Column(JSON)
     turn = db.Column(db.Integer)
     last_timer_flip = db.Column(db.Float)
-    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    created = db.Column(db.DateTime, default=utcnow)
 
-    def __init__(self, nonce, gametype='eq', division=None, ended=False, tournament=None, players=[], p1scores=[], p2scores=[],
-                 p3scores=[], variations_state = {}, cube_index=[], onsets_cards=[], onsets_cards_dealt=0, resources=[], goal=[],
-                 required=[], permitted=[], forbidden=[], turn=None, last_timer_flip=0):
+    def __init__(self, nonce, gametype='eq', division=None, ended=False, tournament=None, players=None, p1scores=None,
+                 p2scores=None, p3scores=None, variations_state=None, cube_index=None, onsets_cards=None,
+                 onsets_cards_dealt=0, resources=None, goal=None, required=None, permitted=None, forbidden=None,
+                 turn=None, last_timer_flip=0):
         self.nonce = nonce
         self.gametype = gametype
         self.division = division
         self.ended = ended
         self.tournament = tournament
-        self.players = players
-        self.p1scores = p1scores
-        self.p2scores = p2scores
-        self.p3scores = p3scores
-        self.variations_state = variations_state
-        self.cube_index = cube_index
-        self.onsets_cards = onsets_cards
+        self.players = _list(players)
+        self.p1scores = _list(p1scores)
+        self.p2scores = _list(p2scores)
+        self.p3scores = _list(p3scores)
+        self.variations_state = _dict(variations_state)
+        self.cube_index = _list(cube_index)
+        self.onsets_cards = _list(onsets_cards)
         self.onsets_cards_dealt = onsets_cards_dealt
-        self.resources = resources
-        self.goal = goal
-        self.required = required
-        self.permitted = permitted
-        self.forbidden = forbidden
+        self.resources = _list(resources)
+        self.goal = _list(goal)
+        self.required = _list(required)
+        self.permitted = _list(permitted)
+        self.forbidden = _list(forbidden)
         self.turn = turn
         self.last_timer_flip = last_timer_flip
 
@@ -89,9 +104,9 @@ class Groups(db.Model):
     def __init__(self, id=None, name=None, owners=None, players=None, tournaments=None):
         self.id = id
         self.name = name
-        self.owners = owners
-        self.players = players
-        self.tournaments = tournaments
+        self.owners = _dict(owners)
+        self.players = _dict(players)
+        self.tournaments = _dict(tournaments)
 
     def __repr__(self):
         return f"<Group {self.id}>"
@@ -110,15 +125,14 @@ class Tournaments(db.Model):
     groups = db.Column(JSON) # ids of groups included in this tournament
     players = db.Column(JSON) # players who have signed up
 
-    def __init__(self, id=None, name=None, group_id=None, table_info={}, groups=[],
-                 players = []):
+    def __init__(self, id=None, name=None, group_id=None, table_info=None, groups=None,
+                 players=None):
         self.id = id
         self.name = name
         self.group_id = group_id
-        self.table_info = table_info
-        self.groups = groups
-        self.players = players
+        self.table_info = _dict(table_info)
+        self.groups = _list(groups)
+        self.players = _list(players)
     
     def __repr__(self):
         return f"<Tournament {self.id}"
-

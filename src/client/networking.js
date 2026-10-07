@@ -16,33 +16,43 @@ import { handleGameBegin, handleShakeBegin, handleNextTurn, handleGameOver } fro
 import { displayState, displayStatePlayer } from './state';
 
 const socketProtocol = (window.location.protocol.includes('https')) ? 'wss' : 'ws';
-export const socket = io(`${socketProtocol}://${window.location.host}`, {reconnection: false});
-const connectedPromise = new Promise(resolve => {
-    socket.on('connect', () => {
-        console.log('Connected to server!');
-        resolve();
-    });
+export const socket = io(`${socketProtocol}://${window.location.host}`, {
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 500,
+    reconnectionDelayMax: 5000,
 });
 
 export const connect = () => {
-    connectedPromise.then(() => {
-        // Retrieve room and player info
+    registerSocketCallbacks(document.getElementById("name").innerHTML);
+
+    let registeredSocketId = null;
+    const registerClient = () => {
+        if (!socket.connected || registeredSocketId === socket.id) {
+            return;
+        }
+
         let room_nonce = document.getElementById("room-nonce").innerHTML;
         let name = document.getElementById("name").innerHTML;
-
         let player_info = {
             'room': room_nonce, 
             'name': name,
         };
 
-        // Register callbacks
-        registerSocketCallbacks(name);
-
-        // Tell server wanna join
+        registeredSocketId = socket.id;
         console.log(`Connecting as ${name} in room ${room_nonce}`);
         socket.emit("register_client", player_info);
-    })
-    .catch((error) => console.log("Error: ", error));
+    };
+
+    socket.on('connect', () => {
+        console.log('Connected to server!');
+        registerClient();
+    });
+    socket.on('connect_error', (error) => {
+        console.log('Connection failed; retrying:', error.message);
+    });
+
+    registerClient();
 }
 
 function registerSocketCallbacks(name) {
@@ -105,4 +115,3 @@ export function bonusButtonCallback() {
     this.classList.toggle("button-clicked");
     socket.emit("bonus_clicked");
 }
-

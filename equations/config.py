@@ -1,12 +1,22 @@
-"""Equations development configuration."""
+"""Equations application configuration."""
 
 import os
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+
+def normalize_database_url(database_url):
+    """Normalize database URLs from common hosting providers."""
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql://", 1)
+    return database_url
+
 
 # Root of this application, useful if it doesn't occupy an entire domain
 APPLICATION_ROOT = '/'
 
 # Secret key for encrypting cookies
-SECRET_KEY = os.environb[b'SECRET_KEY']
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-me')
 SESSION_COOKIE_NAME = 'login'
 
 # File Upload to var/uploads/
@@ -19,11 +29,12 @@ SESSION_COOKIE_NAME = 'login'
 
 # Database file is var/equations.sqlite3
 DATABASE_FILENAME = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-    'var', 'equations.sqlite3'
+    PROJECT_ROOT, 'var', 'equations.sqlite3'
 )
 
-SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+SQLALCHEMY_DATABASE_URI = normalize_database_url(
+    os.environ.get('DATABASE_URL', f"sqlite:///{DATABASE_FILENAME}")
+)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 #BASE_URL = "http://localhost:8000"
