@@ -14,6 +14,11 @@ from equations.models import Game, Tournaments  # noqa: E402
 
 
 class AppSmokeTest(unittest.TestCase):
+    def test_postgres_url_uses_installed_driver(self):
+        from equations.config import normalize_database_url
+        for prefix in ("postgres://", "postgresql://"):
+            self.assertEqual(normalize_database_url(prefix + "localhost/db"), "postgresql+psycopg2://localhost/db")
+
     @classmethod
     def setUpClass(cls):
         equations.app.config.update(TESTING=True)
