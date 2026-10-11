@@ -44,6 +44,14 @@ def show_index():
     return flask.render_template("index.html", **context)
 
 
+@equations.app.route("/privacy/", methods=['GET'])
+def show_privacy():
+    """Publish the privacy policy for Thinker Games."""
+    response = flask.make_response(flask.render_template("privacy.html"))
+    response.headers["Cache-Control"] = "public, max-age=3600"
+    return response
+
+
 @equations.app.route("/healthz", methods=['GET'])
 def show_health():
     """Report whether the web process can reach its database."""

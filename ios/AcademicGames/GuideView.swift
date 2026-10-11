@@ -26,6 +26,7 @@ struct GuideView: View {
                     Text("Thinker Games • version 1.0")
                     Text("Online accounts and game data are stored by the game server. Offline practice progress stays on your device. No ads or analytics SDKs are included in this app.")
                     Link("Project source and support", destination: URL(string: "https://github.com/tonyb7/equations")!)
+                    Link("Privacy Policy", destination: URL(string: "https://equations-online.herokuapp.com/privacy/")!)
                     Text("This is a community project, not an official AGLOA app.")
                 }
                 Section("This device") {

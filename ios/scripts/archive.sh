@@ -9,6 +9,6 @@ xcodebuild -project AcademicGames.xcodeproj -scheme AcademicGames \
   -configuration Release -destination 'generic/platform=iOS' \
   -archivePath build/AcademicGames.xcarchive \
   DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-  CURRENT_PROJECT_VERSION="${BUILD_NUMBER:-3}" \
+  CURRENT_PROJECT_VERSION="${BUILD_NUMBER:-4}" \
   -allowProvisioningUpdates archive
 echo "Archive ready: ios/build/AcademicGames.xcarchive"
