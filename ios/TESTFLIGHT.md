@@ -2,7 +2,7 @@
 
 ## Current release candidate
 
-Version **1.0.0 (2)** uses the names **Thinker Games**, **Equalities**, and **Set Maker**. The bundle identifier remains `com.sleeperlabs.academicgames`; the signing team is **Sleeper Labs LLC (U38WUGYRBV)**. Internal project and scheme names remain AcademicGames.
+Version **1.0.0 (3)** uses the names **Thinker Games**, **Equalities**, and **Set Maker**. The bundle identifier remains `com.sleeperlabs.academicgames`; the signing team is **Sleeper Labs LLC (U38WUGYRBV)**. Internal project and scheme names remain AcademicGames.
 
 If Xcode's first-upload dialog says AcademicGames is taken, change the App Store **Name** field to Thinker Games. Keep the existing bundle ID. If necessary, create that record in App Store Connect first, then retry the upload.
 
@@ -21,7 +21,7 @@ Run `bash ios/scripts/check.sh` before archiving. In Xcode select Any iOS Device
 Alternatively, after the account is configured, run:
 
 ```bash
-APPLE_TEAM_ID=YOUR_TEAM_ID BUILD_NUMBER=2 bash ios/scripts/archive.sh
+APPLE_TEAM_ID=YOUR_TEAM_ID BUILD_NUMBER=3 bash ios/scripts/archive.sh
 APPLE_TEAM_ID=YOUR_TEAM_ID bash ios/scripts/upload.sh
 ```
 
