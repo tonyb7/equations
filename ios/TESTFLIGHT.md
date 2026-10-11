@@ -1,5 +1,13 @@
 # TestFlight beta release
 
+## Current release candidate
+
+Version **1.0.0 (2)** uses the names **Thinker Games**, **Equalities**, and **Set Maker**. The bundle identifier remains `com.sleeperlabs.academicgames`; the signing team is **Sleeper Labs LLC (U38WUGYRBV)**. Internal project and scheme names remain AcademicGames.
+
+If Xcode's first-upload dialog says AcademicGames is taken, change the App Store **Name** field to Thinker Games. Keep the existing bundle ID. If necessary, create that record in App Store Connect first, then retry the upload.
+
+The command-line archive currently fails at signing with `errSecInternalComponent` because macOS Keychain refuses access to the signing key. Archive from Xcode and approve its Keychain prompt locally. Compilation and simulator tests pass, but this does not mean a signed build has been uploaded.
+
 ## Apple account setup
 
 Use the adult owner's paid Apple Developer Program membership. Sign in through Xcode > Settings > Accounts; don't send passwords to Codex. Open the AcademicGames target > Signing & Capabilities, select the paid team, and keep automatic signing enabled. Register `com.sleeperlabs.academicgames` (or choose a different unique identifier and update `project.yml`).
