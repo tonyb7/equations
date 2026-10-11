@@ -38,3 +38,11 @@ to multiple workers or dynos.
 
 # Contributing
 See [`CONTRIBUTING.md`](https://github.com/tonyb7/equations/blob/master/CONTRIBUTING.md) for a summary of this project's technology stack and steps for setting up the server for development.
+
+# iPhone and iPad
+
+The native SwiftUI app lives in [`ios/`](ios/README.md). Open
+`ios/AcademicGames.xcodeproj` with full Xcode to run it in Simulator or on an
+iPhone. It includes online multiplayer through the existing game server and
+native offline arithmetic practice. The iOS guide covers testing, TestFlight,
+and the remaining App Store release requirements.

@@ -1,0 +1,4 @@
+Core/.build/
+**/xcuserdata/
+.DS_Store
+build/
