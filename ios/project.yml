@@ -22,7 +22,7 @@ targets:
       - package: GameCore
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.tonybai.academicgames
+        PRODUCT_BUNDLE_IDENTIFIER: com.sleeperlabs.academicgames
         TARGETED_DEVICE_FAMILY: '1,2'
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:

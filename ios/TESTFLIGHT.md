@@ -2,7 +2,7 @@
 
 ## Apple account setup
 
-Use the adult owner's paid Apple Developer Program membership. Sign in through Xcode > Settings > Accounts; don't send passwords to Codex. Open the AcademicGames target > Signing & Capabilities, select the paid team, and keep automatic signing enabled. Register `com.tonybai.academicgames` (or choose a different unique identifier and update `project.yml`).
+Use the adult owner's paid Apple Developer Program membership. Sign in through Xcode > Settings > Accounts; don't send passwords to Codex. Open the AcademicGames target > Signing & Capabilities, select the paid team, and keep automatic signing enabled. Register `com.sleeperlabs.academicgames` (or choose a different unique identifier and update `project.yml`).
 
 Create an iOS app record in App Store Connect using the same bundle ID, name **Academic Games Online** if available, primary language English, and an internal SKU such as `academic-games-ios`. Creating the app record is separate from uploading its build.
 

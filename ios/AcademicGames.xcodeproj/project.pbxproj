@@ -176,7 +176,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tonybai.academicgames;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sleeperlabs.academicgames;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -319,7 +319,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tonybai.academicgames;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sleeperlabs.academicgames;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

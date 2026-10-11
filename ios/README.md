@@ -53,7 +53,7 @@ In Xcode:
 1. Add your Apple Account in Xcode Settings > Accounts.
 2. Select the project, then the AcademicGames target > Signing & Capabilities.
 3. Keep automatic signing enabled and select your team. For local testing you can use a free Personal Team, subject to Apple's provisioning limits.
-4. Replace the default bundle identifier `com.tonybai.academicgames` if Apple reports it isn't available. Use a unique identifier you control; keep it consistent for App Store distribution.
+4. Replace the default bundle identifier `com.sleeperlabs.academicgames` if Apple reports it isn't available. Use a unique identifier you control; keep it consistent for App Store distribution.
 5. Select your connected iPhone and press Command+R. Follow any trust/signing prompts.
 
 ## 4. Share through TestFlight
