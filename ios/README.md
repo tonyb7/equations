@@ -1,6 +1,6 @@
 # Academic Games for iPhone and iPad
 
-This first version combines the existing online Equations/On-Sets game with a SwiftUI lobby, native room sharing, an offline arithmetic practice mode, saved practice progress, and an in-app guide. It targets iOS 17+. It uses the existing HTTPS game server; no separate paid backend is needed.
+This first version combines the existing online Equalities/Set Maker game with a SwiftUI lobby, native room sharing, an offline arithmetic practice mode, saved practice progress, and an in-app guide. It targets iOS 17+. It uses the existing HTTPS game server; no separate paid backend is needed.
 
 **Status:** the Xcode project is generated. Core logic is testable separately. Full Xcode is required for an iOS build, Simulator, device testing, screenshots, and submission. The app is a development candidate, not yet an App Store submission-ready release. See the release checklist below.
 
@@ -30,7 +30,7 @@ Test these flows:
 
 1. Open Practice, answer correctly and incorrectly, and check feedback. Restart the app; solved count and best streak should persist. Turn off connectivity and confirm Practice still works.
 2. Open the online lobby, sign in with a game account, and create a room. In a separate browser or device, sign in as another account and **Join as Player** using the code. Start Game and send chat in both directions.
-3. Try Equations and On-Sets. Rotate to landscape. Scroll to the chat panel, pinch to zoom, tap cubes, set a goal, and complete a turn. Check the keyboard doesn't prevent reaching controls.
+3. Try Equalities and Set Maker. Rotate to landscape. Scroll to the chat panel, pinch to zoom, tap cubes, set a goal, and complete a turn. Check the keyboard doesn't prevent reaching controls.
 4. Share a room link using the native toolbar. The friend must still sign in and join as a player through the lobby. This version doesn't claim universal-link support.
 5. Background the app briefly, return, and verify reconnection. Disable internet while loading a page and verify a useful error/retry state. A socket outage after a page has loaded is handled by the existing game's reconnect logic, not the native page-loading banner.
 6. Check small and large iPhones, iPad, larger text, and VoiceOver. The online board retains its desktop layout and supports scrolling/zooming; it still needs real-device usability testing.
@@ -91,7 +91,7 @@ Once these are done, select the processed build in App Store Connect, finish the
 - `PrivacyInfo.xcprivacy`: required-reason declaration for on-device preferences.
 - Online navigation stays on the game host. User-tapped external HTTPS links open outside the app. App Transport Security is not disabled.
 - No purchases, ads, tracking SDKs, push notifications, or Android build are included.
-- Practice is a small arithmetic warm-up, not an implementation of official Equations tournament rules.
+- Practice is a small arithmetic warm-up, not an implementation of official Equalities tournament rules.
 - This does not modify or deploy the Flask server. Live multiplayer remains on the existing Heroku app and retains its server limitations.
 
 The app icon is generated from simple geometric artwork by `scripts/make-icon.swift`; to regenerate it run:

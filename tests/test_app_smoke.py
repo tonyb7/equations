@@ -42,7 +42,7 @@ class AppSmokeTest(unittest.TestCase):
             response = client.get("/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Academic Games Online", response.data)
+        self.assertIn(b"Thinker Games", response.data)
 
     def test_socket_handshake_accepts_https_origin_behind_proxy(self):
         import importlib.metadata
@@ -96,12 +96,23 @@ class AppSmokeTest(unittest.TestCase):
             )
             response = client.post(
                 "/create/",
-                data={"create": "Create Equations Game"},
+                data={"create": "Create Equalities Game"},
                 follow_redirects=True,
             )
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Equations Game Room", response.data)
+        self.assertIn(b"Equalities Game Room", response.data)
+
+    def test_renamed_game_forms_and_cached_equations_form(self):
+        for action, heading in [("Create Equations Game", b"Equalities Game Room"),
+                                ("Without Restrictions", b"Set Maker Game Room"),
+                                ("With Restrictions", b"Set Maker Game Room")]:
+            with self.subTest(action=action), equations.app.test_client() as client:
+                with client.session_transaction() as session:
+                    session["username"] = "game_creator"
+                response = client.post("/create/", data={"create": action}, follow_redirects=True)
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(heading, response.data)
 
     def test_socket_client_can_register_for_a_game(self):
         with equations.app.app_context():

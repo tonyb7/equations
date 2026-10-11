@@ -4,7 +4,7 @@
 
 Use the adult owner's paid Apple Developer Program membership. Sign in through Xcode > Settings > Accounts; don't send passwords to Codex. Open the AcademicGames target > Signing & Capabilities, select the paid team, and keep automatic signing enabled. Register `com.sleeperlabs.academicgames` (or choose a different unique identifier and update `project.yml`).
 
-Create an iOS app record in App Store Connect using the same bundle ID, name **Academic Games Online** if available, primary language English, and an internal SKU such as `academic-games-ios`. Creating the app record is separate from uploading its build.
+Create an iOS app record in App Store Connect using the same bundle ID, name **Thinker Games** if available, primary language English, and an internal SKU such as `academic-games-ios`. Creating the app record is separate from uploading its build.
 
 ## Build and upload
 
@@ -13,7 +13,7 @@ Run `bash ios/scripts/check.sh` before archiving. In Xcode select Any iOS Device
 Alternatively, after the account is configured, run:
 
 ```bash
-APPLE_TEAM_ID=YOUR_TEAM_ID BUILD_NUMBER=1 bash ios/scripts/archive.sh
+APPLE_TEAM_ID=YOUR_TEAM_ID BUILD_NUMBER=2 bash ios/scripts/archive.sh
 APPLE_TEAM_ID=YOUR_TEAM_ID bash ios/scripts/upload.sh
 ```
 
@@ -21,7 +21,7 @@ Use a new build number for every upload. A signed archive requires Apple credent
 
 ## Beta description
 
-Academic Games Online lets friends play Equations and On-Sets using the shared online game server. Native arithmetic practice works offline and saves progress on the device. This early beta is for testing multiplayer connectivity and the experience on iPhone and iPad.
+Thinker Games lets friends play Equalities and Set Maker using the shared online game server. Native arithmetic practice works offline and saves progress on the device. This early beta is for testing multiplayer connectivity and the experience on iPhone and iPad.
 
 ## What to test
 
@@ -29,7 +29,7 @@ Academic Games Online lets friends play Equations and On-Sets using the shared o
 - Sign into two different game accounts on two devices (or one app and one browser).
 - Create a room; have the other player join through the lobby as a player.
 - Start Game, send chat both directions, move cubes, set a goal, and finish a turn.
-- Test Equations and On-Sets. Rotate, scroll the board, zoom, and use the keyboard/chat.
+- Test Equalities and Set Maker. Rotate, scroll the board, zoom, and use the keyboard/chat.
 - Background and resume; briefly interrupt connectivity and confirm reconnection.
 - Report crashes and unusable controls through TestFlight feedback.
 

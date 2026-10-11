@@ -85,7 +85,7 @@ def create_game():
     gametype = None
     division = None
     create_action = flask.request.form['create']
-    if create_action == "Create Equations Game":
+    if create_action in ("Create Equalities Game", "Create Equations Game"):
         gametype = 'eq'
     elif create_action == "Without Restrictions":
         gametype = 'os'
@@ -93,7 +93,7 @@ def create_game():
     elif create_action == "With Restrictions":
         gametype = 'os'
     else:
-        flask.flash("Tried to create an invalid type of game (type must be Equations or On-Sets)")
+        flask.flash("Tried to create an invalid type of game (type must be Equalities or Set Maker)")
         return flask.redirect(flask.url_for('show_index'))
 
     # Commit the game to the database

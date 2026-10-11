@@ -2,7 +2,7 @@
 {% block content %}
     <br/><br/>
     <img src="/static/images/background.jpg">
-    
+
     {% if not logged_in %}
         <div id="join-options">
             <button id="login" onclick="window.location.href='/login/'">Log In</button>
@@ -21,25 +21,25 @@
                 </p>
             </div>
         {% endif %}
-        
-        <div id="join-options">    
+
+        <div id="join-options">
             <button id="create-button">Create Game</button>
             <button id="join-button">Join Game</button>
             <button id="groups-button">Groups & Tournaments</button>
         </div>
         <div id='join-new'>
             <form id="join-new" action="/create/" method="post" enctype="multipart/form-data">
-                <!-- NOTE: if you ever change the "value" texts below, you must 
+                <!-- NOTE: if you ever change the "value" texts below, you must
                     change index.py create_game as well -->
-                <input type="submit" name="create" value="Create Equations Game"/> 
-                
-                <button id="onsets-button" type="button">Create On-Sets Game</button>
+                <input type="submit" name="create" value="Create Equalities Game"/>
+
+                <button id="onsets-button" type="button">Create Set Maker Game</button>
                 <div id="onsets-divisions">
                     <p>Please choose whether you would like to play with or without restrictions:</p>
                     <input type="submit" name="create" value="Without Restrictions"/>
                     <input type="submit" name="create" value="With Restrictions"/>
                 </div>
-                
+
             </form>
         </div>
         <div id='join-existing'>
@@ -93,7 +93,7 @@
                     $('#join-new').slideDown(0);
                     $('#join-existing').slideUp(0);
                     $('#join-groups').slideUp(0);
-                    $('#onsets-divisions').slideDown(300); 
+                    $('#onsets-divisions').slideDown(300);
                 });
             });
         </script>
