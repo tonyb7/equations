@@ -2,6 +2,8 @@
 
 This first version combines the existing online Equations/On-Sets game with a SwiftUI lobby, native room sharing, an offline arithmetic practice mode, saved practice progress, and an in-app guide. It targets iOS 17+. It uses the existing HTTPS game server; no separate paid backend is needed.
 
+Sleeper Labs LLC is a no-revenue entity. Academic Games exists purely for the community.
+
 **Status:** the Xcode project is generated. Core logic is testable separately. Full Xcode is required for an iOS build, Simulator, device testing, screenshots, and submission. The app is a development candidate, not yet an App Store submission-ready release. See the release checklist below.
 
 ## 1. Install Xcode and open the project

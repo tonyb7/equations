@@ -3,6 +3,8 @@ Academic Games Server
 
 Academic Games online
 
+Sleeper Labs LLC is a no-revenue entity. Academic Games exists purely for the community.
+
 https://www.agloa.org/equations/
 
 https://www.agloa.org/on-sets/
