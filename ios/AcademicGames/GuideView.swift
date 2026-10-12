@@ -9,7 +9,7 @@ struct GuideView: View {
             List {
                 Section("Play with friends") {
                     Text("1. Open the online lobby and sign in.")
-                    Text("2. Create an Equalities or Set Maker room.")
+                    Text("2. Create an Equations or On-Sets room.")
                     Text("3. Share its code. Your friends sign in and choose Join as Player in the lobby.")
                     Text("4. With two or three players in the room, tap Start Game. Use chat to agree on variations.")
                     Text("The board is easiest in landscape. Scroll horizontally to reach chat and pinch to zoom.")
@@ -19,11 +19,11 @@ struct GuideView: View {
                     Text("Online matches need an internet connection. Returning from the background may reconnect you; if the server restarts, live room state may be lost.")
                 }
                 Section("Learn the games") {
-                    Link("Equalities rules", destination: URL(string: "https://www.agloa.org/eq-docs/")!)
-                    Link("Set Maker rules", destination: URL(string: "https://www.agloa.org/os-docs/")!)
+                    Link("Equations rules", destination: URL(string: "https://www.agloa.org/eq-docs/")!)
+                    Link("On-Sets rules", destination: URL(string: "https://www.agloa.org/os-docs/")!)
                 }
                 Section("About") {
-                    Text("Thinker Games • version 1.0")
+                    Text("Academic Games • version 1.0")
                     Text("Online accounts and game data are stored by the game server. Offline practice progress stays on your device. No ads or analytics SDKs are included in this app.")
                     Link("Project source and support", destination: URL(string: "https://github.com/tonyb7/equations")!)
                     Link("Privacy Policy", destination: URL(string: "https://equations-online.herokuapp.com/privacy/")!)

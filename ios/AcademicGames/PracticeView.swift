@@ -41,7 +41,7 @@ struct PracticeView: View {
                         Spacer()
                         Label("Best streak: \(bestStreak)", systemImage: "flame")
                     }.font(.subheadline)
-                    Text("Arithmetic warm-up, not a full Equalities match. Multiplayer uses the online game.")
+                    Text("Arithmetic warm-up, not a full Equations match. Multiplayer uses the online game.")
                         .font(.footnote).foregroundStyle(.secondary).multilineTextAlignment(.center)
                 }.padding(24).frame(maxWidth: 600)
             }.frame(maxWidth: .infinity).navigationTitle("Practice")

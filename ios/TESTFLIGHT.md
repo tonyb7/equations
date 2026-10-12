@@ -2,9 +2,9 @@
 
 ## Current release candidate
 
-Version **1.0.0 (4)** uses the names **Thinker Games**, **Equalities**, and **Set Maker**. The bundle identifier remains `com.sleeperlabs.academicgames`; the signing team is **Sleeper Labs LLC (U38WUGYRBV)**. Internal project and scheme names remain AcademicGames.
+Version **1.0.0 (5)** uses the names **Academic Games**, **Equations**, and **On-Sets**. The bundle identifier remains `com.sleeperlabs.academicgames`; the signing team is **Sleeper Labs LLC (U38WUGYRBV)**. Internal project and scheme names remain AcademicGames.
 
-If Xcode's first-upload dialog says AcademicGames is taken, change the App Store **Name** field to Thinker Games. Keep the existing bundle ID. If necessary, create that record in App Store Connect first, then retry the upload.
+If Xcode's first-upload dialog says AcademicGames is taken, change the App Store **Name** field to Academic Games. Keep the existing bundle ID. If necessary, create that record in App Store Connect first, then retry the upload.
 
 The command-line archive currently fails at signing with `errSecInternalComponent` because macOS Keychain refuses access to the signing key. Archive from Xcode and approve its Keychain prompt locally. Compilation and simulator tests pass, but this does not mean a signed build has been uploaded.
 
@@ -12,7 +12,7 @@ The command-line archive currently fails at signing with `errSecInternalComponen
 
 Use the adult owner's paid Apple Developer Program membership. Sign in through Xcode > Settings > Accounts; don't send passwords to Codex. Open the AcademicGames target > Signing & Capabilities, select the paid team, and keep automatic signing enabled. Register `com.sleeperlabs.academicgames` (or choose a different unique identifier and update `project.yml`).
 
-Create an iOS app record in App Store Connect using the same bundle ID, name **Thinker Games** if available, primary language English, and an internal SKU such as `academic-games-ios`. Creating the app record is separate from uploading its build.
+Create an iOS app record in App Store Connect using the same bundle ID, name **Academic Games** if available, primary language English, and an internal SKU such as `academic-games-ios`. Creating the app record is separate from uploading its build.
 
 ## Build and upload
 
@@ -21,7 +21,7 @@ Run `bash ios/scripts/check.sh` before archiving. In Xcode select Any iOS Device
 Alternatively, after the account is configured, run:
 
 ```bash
-APPLE_TEAM_ID=YOUR_TEAM_ID BUILD_NUMBER=4 bash ios/scripts/archive.sh
+APPLE_TEAM_ID=YOUR_TEAM_ID BUILD_NUMBER=5 bash ios/scripts/archive.sh
 APPLE_TEAM_ID=YOUR_TEAM_ID bash ios/scripts/upload.sh
 ```
 
@@ -29,7 +29,7 @@ Use a new build number for every upload. A signed archive requires Apple credent
 
 ## Beta description
 
-Thinker Games lets friends play Equalities and Set Maker using the shared online game server. Native arithmetic practice works offline and saves progress on the device. This early beta is for testing multiplayer connectivity and the experience on iPhone and iPad.
+Academic Games lets friends play Equations and On-Sets using the shared online game server. Native arithmetic practice works offline and saves progress on the device. This early beta is for testing multiplayer connectivity and the experience on iPhone and iPad.
 
 ## What to test
 
@@ -37,7 +37,7 @@ Thinker Games lets friends play Equalities and Set Maker using the shared online
 - Sign into two different game accounts on two devices (or one app and one browser).
 - Create a room; have the other player join through the lobby as a player.
 - Start Game, send chat both directions, move cubes, set a goal, and finish a turn.
-- Test Equalities and Set Maker. Rotate, scroll the board, zoom, and use the keyboard/chat.
+- Test Equations and On-Sets. Rotate, scroll the board, zoom, and use the keyboard/chat.
 - Background and resume; briefly interrupt connectivity and confirm reconnection.
 - Report crashes and unusable controls through TestFlight feedback.
 

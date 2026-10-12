@@ -52,7 +52,7 @@ struct PlayView: View {
                         VStack(alignment: .leading, spacing: 24) {
                             Image(systemName: "square.grid.3x3.fill").font(.system(size: 70)).foregroundStyle(.indigo)
                             Text("Your next match starts here.").font(.largeTitle.bold())
-                            Text("Play Equalities and Set Maker with friends. Sign in or create an account, create a room, and share its code. A game needs 2 or 3 players.")
+                            Text("Play Equations and On-Sets with friends. Sign in or create an account, create a room, and share its code. A game needs 2 or 3 players.")
                             Button("Open online lobby") { started = true; game.load() }
                                 .buttonStyle(.borderedProminent).controlSize(.large)
                             Text("Already have a room?").font(.headline)

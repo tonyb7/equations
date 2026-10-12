@@ -46,7 +46,7 @@ def show_index():
 
 @equations.app.route("/privacy/", methods=['GET'])
 def show_privacy():
-    """Publish the privacy policy for Thinker Games."""
+    """Publish the privacy policy for Academic Games."""
     response = flask.make_response(flask.render_template("privacy.html"))
     response.headers["Cache-Control"] = "public, max-age=3600"
     return response
@@ -93,7 +93,7 @@ def create_game():
     gametype = None
     division = None
     create_action = flask.request.form['create']
-    if create_action in ("Create Equalities Game", "Create Equations Game"):
+    if create_action == "Create Equations Game":
         gametype = 'eq'
     elif create_action == "Without Restrictions":
         gametype = 'os'
@@ -101,7 +101,7 @@ def create_game():
     elif create_action == "With Restrictions":
         gametype = 'os'
     else:
-        flask.flash("Tried to create an invalid type of game (type must be Equalities or Set Maker)")
+        flask.flash("Tried to create an invalid type of game (type must be Equations or On-Sets)")
         return flask.redirect(flask.url_for('show_index'))
 
     # Commit the game to the database

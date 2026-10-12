@@ -1,7 +1,7 @@
-Thinker Games Server
+Academic Games Server
 ============================
 
-Thinker Games online
+Academic Games online
 
 https://www.agloa.org/equations/
 
